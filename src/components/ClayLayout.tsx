@@ -1,5 +1,7 @@
 import { Button } from "@/components/ui/button";
+import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
+import { useQuery } from "convex/react";
 import { Home, Search, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router";
 
@@ -11,6 +13,7 @@ const navLinks = [
 
 export function ClayHeader() {
   const { isAuthenticated } = useAuth();
+  const isCreator = useQuery(api.creator.isCreator);
 
   return (
     <header className="sticky top-0 z-40 px-4 pt-4">
@@ -28,6 +31,9 @@ export function ClayHeader() {
           {navLinks.map((link) => (
             <NavLink key={link.to} to={link.to} label={link.label} />
           ))}
+          {isCreator === true && (
+            <NavLink to="/creator" label="Creator studio" />
+          )}
         </nav>
 
         <div className="ml-auto flex items-center gap-2 md:ml-0">

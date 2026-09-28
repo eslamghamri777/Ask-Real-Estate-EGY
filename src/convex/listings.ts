@@ -1,14 +1,27 @@
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
-import { query } from "./_generated/server";
+import { query, type QueryCtx } from "./_generated/server";
 
 /**
  * Public shape of a listing sent to the client. Deliberately omits `price`:
  * pricing is shared privately when a customer messages the team — it is never
  * rendered on the site nor exposed through the API.
+ *
+ * Photos: creator uploads are stored in Convex storage (`photoIds`) and
+ * resolved to URLs here; older seeded listings keep direct URLs in `photos`.
  */
-function publicListing(l: Doc<"listings">) {
+async function publicListing(ctx: QueryCtx, l: Doc<"listings">) {
+  const uploadedUrls = l.photoIds?.length
+    ? (
+        await Promise.all(
+          l.photoIds.map((id) => ctx.storage.getUrl(id)),
+        )
+      ).filter((url): url is string => url !== null)
+    : [];
+
+  const photos = uploadedUrls.length > 0 ? uploadedUrls : l.photos;
+
   return {
     _id: l._id,
     _creationTime: l._creationTime,
@@ -21,13 +34,13 @@ function publicListing(l: Doc<"listings">) {
     bedrooms: l.bedrooms,
     bathrooms: l.bathrooms,
     areaSqm: l.areaSqm,
-    photos: l.photos,
+    photos,
     amenities: l.amenities,
     featured: l.featured,
   };
 }
 
-/** Paginated browse with filters — the heart of v1. */
+/** Paginated browse with filters — the heart of the catalog. */
 export const list = query({
   args: {
     paginationOpts: paginationOptsValidator,
@@ -80,7 +93,8 @@ export const list = query({
       );
     }
 
-    return { ...page, page: results.map(publicListing) };
+    const mapped = await Promise.all(results.map((l) => publicListing(ctx, l)));
+    return { ...page, page: mapped };
   },
 });
 
@@ -91,7 +105,7 @@ export const get = query({
       .query("listings")
       .withIndex("by_slug", (q) => q.eq("slug", args.slug))
       .unique();
-    return listing ? publicListing(listing) : null;
+    return listing ? publicListing(ctx, listing) : null;
   },
 });
 
@@ -102,7 +116,7 @@ export const featured = query({
       .query("listings")
       .withIndex("by_featured", (q) => q.eq("featured", true))
       .take(6);
-    return rows.map(publicListing);
+    return await Promise.all(rows.map((l) => publicListing(ctx, l)));
   },
 });
 
@@ -112,11 +126,13 @@ export const areas = query({
     const all = await ctx.db.query("listings").collect();
     const counts = new Map<string, { count: number; photo: string }>();
     for (const l of all) {
-      const entry = counts.get(l.area);
-      if (entry) {
-        entry.count += 1;
+      if (!counts.has(l.area)) {
+        const cover = l.photoIds?.length
+          ? await ctx.storage.getUrl(l.photoIds[0])
+          : (l.photos[0] ?? "");
+        counts.set(l.area, { count: 1, photo: cover ?? "" });
       } else {
-        counts.set(l.area, { count: 1, photo: l.photos[0] ?? "" });
+        counts.get(l.area)!.count += 1;
       }
     }
     return Array.from(counts.entries())
@@ -144,6 +160,7 @@ export const related = query({
       .query("listings")
       .withIndex("by_area", (q) => q.eq("area", args.area))
       .collect();
-    return inArea.filter((l) => l.slug !== args.slug).slice(0, 3).map(publicListing);
+    const picks = inArea.filter((l) => l.slug !== args.slug).slice(0, 3);
+    return await Promise.all(picks.map((l) => publicListing(ctx, l)));
   },
 });

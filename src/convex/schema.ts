@@ -56,7 +56,10 @@ const schema = defineSchema(
       bedrooms: v.number(),
       bathrooms: v.number(),
       areaSqm: v.number(),
+      /** legacy/deprecated — new uploads go to storage; kept for old seeds */
       photos: v.array(v.string()),
+      /** Convex storage IDs for creator uploads; resolved to URLs for the public site */
+      photoIds: v.optional(v.array(v.id("_storage"))),
       amenities: v.array(v.string()),
       featured: v.optional(v.boolean()),
     })
