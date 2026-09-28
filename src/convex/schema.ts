@@ -34,6 +34,14 @@ const schema = defineSchema(
 
     // add other tables here
 
+    inquiries: defineTable({
+      listingId: v.id("listings"),
+      name: v.string(),
+      email: v.string(),
+      phone: v.optional(v.string()),
+      message: v.string(),
+    }).index("by_listing", ["listingId"]),
+
     listings: defineTable({
       slug: v.string(),
       title: v.string(),

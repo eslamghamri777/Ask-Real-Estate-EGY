@@ -1,26 +1,29 @@
 import { ClayFooter, ClayHeader } from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useAuth } from "@/hooks/use-auth";
 import { api } from "@/convex/_generated/api";
+import type { Id } from "@/convex/_generated/dataModel";
 import { motion } from "framer-motion";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import {
   ArrowLeft,
   Bath,
   BedDouble,
-  Check,
   ChevronLeft,
   ChevronRight,
   Expand,
-  Heart,
   MapPin,
-  Phone,
+  MessageSquare,
   Search,
+  Send,
   Sparkles,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
+import { toast } from "sonner";
 
 export default function ListingDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -32,8 +35,12 @@ export default function ListingDetail() {
     api.listings.related,
     { slug: slug ?? "", area: listing?.area ?? "" },
   );
+  const inquiries = useQuery(
+    api.inquiries.forListing,
+    listing ? { listingId: listing._id } : "skip",
+  );
 
-  // reset the gallery when moving between listings
+  // reset the gallery when moving between properties
   useEffect(() => {
     setPhotoIndex(0);
   }, [slug]);
@@ -43,12 +50,12 @@ export default function ListingDetail() {
       <div className="flex min-h-screen flex-col">
         <ClayHeader />
         <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-10">
-          <Skeleton className="h-[26rem] w-full rounded-[2rem]" />
+          <Skeleton className="h-[26rem] w-full rounded-[1.75rem]" />
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
-            <Skeleton className="h-72 rounded-[1.75rem] lg:col-span-2" />
-            <Skeleton className="h-72 rounded-[1.75rem]" />
+            <Skeleton className="h-72 rounded-[1.5rem] lg:col-span-2" />
+            <Skeleton className="h-72 rounded-[1.5rem]" />
           </div>
-          <Skeleton className="mt-6 h-64 w-full rounded-[1.75rem]" />
+          <Skeleton className="mt-6 h-64 w-full rounded-[1.5rem]" />
         </main>
         <ClayFooter />
       </div>
@@ -61,19 +68,19 @@ export default function ListingDetail() {
         <ClayHeader />
         <main className="flex flex-1 items-center justify-center px-4">
           <div className="clay-card clay-md max-w-md px-8 py-12 text-center">
-            <span className="clay-icon clay-sheen mx-auto size-14 bg-clay-blush">
+            <span className="clay-icon clay-sheen mx-auto size-14 bg-secondary">
               <Search className="size-6" />
             </span>
-            <h1 className="mt-4 text-2xl font-extrabold">Listing not found</h1>
+            <h1 className="font-display mt-4 text-2xl">Listing not found</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              This home may have been taken off the market.
+              This property may have been taken off the market.
             </p>
             <Button
               onClick={() => navigate("/listings")}
               className="clay-btn clay-btn-primary mt-6 rounded-full px-6"
             >
               <ArrowLeft className="size-4" />
-              Browse all listings
+              Browse the catalog
             </Button>
           </div>
         </main>
@@ -97,19 +104,19 @@ export default function ListingDetail() {
           className="clay-chip clay-squish mb-5 inline-flex bg-card px-4 py-2 text-sm"
         >
           <ArrowLeft className="size-4" />
-          Back to listings
+          Back to the catalog
         </Link>
 
         <div className="grid gap-6 lg:grid-cols-3">
           {/* ============ Gallery ============ */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             className="lg:col-span-2"
           >
             <div className="clay-card overflow-hidden p-3">
-              <div className="relative overflow-hidden rounded-[1.5rem]">
+              <div className="relative overflow-hidden rounded-[1.25rem]">
                 <img
                   src={photos[photoIndex]}
                   alt={listing.title}
@@ -141,11 +148,11 @@ export default function ListingDetail() {
                   <button
                     key={`${photo}-${i}`}
                     onClick={() => setPhotoIndex(i)}
-                    className={`overflow-hidden rounded-2xl transition-all ${
+                    className={`overflow-hidden rounded-2xl transition-all shadow-none ${
                       i === photoIndex
                         ? "clay-md ring-2 ring-primary"
                         : "clay-sm opacity-80 hover:opacity-100"
-                    } shadow-none`}
+                    }`}
                   >
                     <img
                       src={photo}
@@ -161,7 +168,7 @@ export default function ListingDetail() {
 
           {/* ============ Info panel ============ */}
           <motion.aside
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.08 }}
           >
@@ -170,7 +177,7 @@ export default function ListingDetail() {
                 <span className="clay-chip bg-primary px-3.5 py-1.5 text-xs text-primary-foreground">
                   {listing.purpose === "sale" ? "For sale" : "For rent"}
                 </span>
-                <span className="clay-chip bg-clay-sky px-3.5 py-1.5 text-xs capitalize">
+                <span className="clay-chip bg-card px-3.5 py-1.5 text-xs capitalize">
                   {listing.type}
                 </span>
                 {listing.featured && (
@@ -182,7 +189,7 @@ export default function ListingDetail() {
               </div>
 
               <div>
-                <h1 className="text-2xl font-extrabold leading-snug tracking-tight">
+                <h1 className="font-display text-2xl leading-snug tracking-tight">
                   {listing.title}
                 </h1>
                 <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -191,13 +198,13 @@ export default function ListingDetail() {
                 </p>
               </div>
 
-              <p className="text-3xl font-extrabold text-primary">
+              <p className="text-2xl font-semibold text-primary">
                 {listing.purpose === "rent"
-                  ? `${listing.price.toLocaleString()} EGP/mo`
+                  ? `${listing.price.toLocaleString()} EGP / month`
                   : `${listing.price.toLocaleString()} EGP`}
               </p>
 
-              <div className="clay-well grid grid-cols-3 gap-2 rounded-[1.5rem] p-4 text-center">
+              <div className="clay-well grid grid-cols-3 gap-2 rounded-[1.25rem] p-4 text-center">
                 <DetailStat
                   icon={<BedDouble className="size-5" />}
                   value={`${listing.bedrooms}`}
@@ -215,43 +222,35 @@ export default function ListingDetail() {
                 />
               </div>
 
-              <div className="flex flex-col gap-2.5">
-                <Button className="clay-btn clay-btn-primary h-12 rounded-full text-base">
-                  <Phone className="size-4" />
-                  Ask about this home
-                </Button>
-                <Button className="clay-btn clay-btn-light h-11 rounded-full">
-                  <Heart className="size-4" />
-                  Save home
-                </Button>
-              </div>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Interested in this property? Send us a message below and a
+                member of our team will get back to you personally.
+              </p>
             </div>
           </motion.aside>
 
           {/* ============ Description ============ */}
           <motion.section
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.12 }}
-            className="lg:col-span-3"
+            className="lg:col-span-2"
           >
-            <div className="clay-card clay-md p-6 sm:p-8">
-              <h2 className="text-xl font-extrabold">About this home</h2>
+            <div className="clay-card clay-md h-full p-6 sm:p-8">
+              <h2 className="font-display text-xl">About this property</h2>
               <p className="mt-3 leading-relaxed text-muted-foreground">
                 {listing.description}
               </p>
 
-              <h2 className="mt-8 text-xl font-extrabold">
-                What makes it special
-              </h2>
-              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <h2 className="font-display mt-8 text-xl">Features & amenities</h2>
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {listing.amenities.map((amenity) => (
                   <div
                     key={amenity}
-                    className="clay-chip clay-squish justify-start bg-secondary px-4 py-3 text-sm"
+                    className="flex items-center gap-2.5 text-sm font-medium"
                   >
-                    <span className="clay-icon clay-sheen size-7 bg-clay-mint">
-                      <Check className="size-4" />
+                    <span className="clay-icon clay-sheen size-7 shrink-0 bg-secondary">
+                      <Sparkles className="size-3.5" />
                     </span>
                     {amenity}
                   </div>
@@ -259,13 +258,23 @@ export default function ListingDetail() {
               </div>
             </div>
           </motion.section>
+
+          {/* ============ Inquiry ============ */}
+          <motion.section
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.16 }}
+          >
+            <InquiryPanel listingId={listing._id} inquiries={inquiries} />
+          </motion.section>
         </div>
 
         {/* ============ Related ============ */}
         {related && related.length > 0 && (
-          <section className="pt-14">
-            <h2 className="text-2xl font-extrabold tracking-tight">
-              More in {listing.area}
+          <section className="pt-16">
+            <span className="eyebrow">Also in {listing.area}</span>
+            <h2 className="font-display mt-2 text-2xl tracking-tight">
+              Similar properties nearby
             </h2>
             <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((l) => (
@@ -293,8 +302,176 @@ function DetailStat({
   return (
     <div className="flex flex-col items-center gap-1">
       <span className="clay-icon clay-sheen size-10 bg-card">{icon}</span>
-      <p className="text-lg font-extrabold">{value}</p>
-      <p className="text-xs font-semibold text-muted-foreground">{label}</p>
+      <p className="text-lg font-semibold">{value}</p>
+      <p className="text-xs font-medium text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
+type Inquiry = {
+  _id: string;
+  name: string;
+  message: string;
+  _creationTime: number;
+};
+
+function InquiryPanel({
+  listingId,
+  inquiries,
+}: {
+  listingId: Id<"listings">;
+  inquiries: Inquiry[] | undefined;
+}) {
+  const { isLoading, isAuthenticated, user } = useAuth();
+  const navigate = useNavigate();
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [sending, setSending] = useState(false);
+
+  useEffect(() => {
+    if (!name && user?.name) setName(user.name);
+    if (!email && user?.email) setEmail(user.email);
+  }, [user, name, email]);
+
+  const sendInquiry = useMutation(api.inquiries.send);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (sending) return;
+    setSending(true);
+    try {
+      await sendInquiry({
+        listingId,
+        name,
+        email,
+        phone: phone || undefined,
+        message,
+      });
+      toast.success("Message sent", {
+        description: "Our team will reply to you shortly.",
+      });
+      setMessage("");
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Something went wrong. Please try again.",
+      );
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="clay-card clay-md flex h-full flex-col gap-4 p-6">
+      <div className="flex items-center gap-2.5">
+        <span className="clay-icon clay-sheen size-10 bg-primary text-primary-foreground">
+          <MessageSquare className="size-5" />
+        </span>
+        <div>
+          <h2 className="font-display text-lg leading-tight">
+            Message our team
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            We usually reply within one business day.
+          </p>
+        </div>
+      </div>
+
+      {isLoading ? (
+        <Skeleton className="h-48 rounded-[1.25rem]" />
+      ) : !isAuthenticated ? (
+        <div className="clay-well flex flex-1 flex-col items-center justify-center gap-3 rounded-[1.25rem] px-6 py-8 text-center">
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Sign in to ask about this property. Your message goes straight to
+            the agent handling it.
+          </p>
+          <Button
+            onClick={() =>
+              navigate(
+                `/auth?returnTo=${encodeURIComponent(
+                  `${window.location.pathname}`,
+                )}`,
+              )
+            }
+            className="clay-btn clay-btn-primary mt-1 rounded-full px-6"
+          >
+            Sign in to continue
+          </Button>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          <div className="grid grid-cols-2 gap-3">
+            <Input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Your name"
+              required
+              className="clay-input h-11 shadow-none"
+            />
+            <Input
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder="Phone (optional)"
+              type="tel"
+              className="clay-input h-11 shadow-none"
+            />
+          </div>
+          <Input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
+            type="email"
+            required
+            className="clay-input h-11 shadow-none"
+          />
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Ask about viewing times, service charges, the neighborhood — anything."
+            required
+            rows={4}
+            maxLength={2000}
+            className="clay-input resize-none shadow-none"
+          />
+          <Button
+            type="submit"
+            disabled={sending}
+            className="clay-btn clay-btn-primary h-11 rounded-full"
+          >
+            <Send className="size-4" />
+            {sending ? "Sending…" : "Send message"}
+          </Button>
+        </form>
+      )}
+
+      {/* Inquiry trail */}
+      {inquiries && inquiries.length > 0 && (
+        <div className="mt-2 border-t border-border pt-4">
+          <p className="eyebrow">
+            Recent messages ({inquiries.length})
+          </p>
+          <ul className="mt-3 flex max-h-64 flex-col gap-3 overflow-y-auto pr-1">
+            {inquiries.map((inquiry) => (
+              <li key={inquiry._id} className="clay-well rounded-2xl p-3.5">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-semibold">{inquiry.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {new Date(inquiry._creationTime).toLocaleDateString(
+                      "en-GB",
+                      { day: "numeric", month: "short" },
+                    )}
+                  </p>
+                </div>
+                <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                  {inquiry.message}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

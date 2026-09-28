@@ -117,14 +117,14 @@ export default function Listings() {
       <ClayHeader />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-10">
-        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">
-          Browse homes in Cairo
+        <h1 className="font-display text-3xl tracking-tight sm:text-4xl">
+          Properties across Cairo
         </h1>
         <p className="mt-2 text-muted-foreground">
           {results.status === "LoadingFirstPage"
             ? "Loading listings…"
             : `Showing ${results.results.length} ${
-                results.results.length === 1 ? "home" : "homes"
+                results.results.length === 1 ? "property" : "properties"
               }`}
         </p>
 
@@ -286,7 +286,6 @@ export default function Listings() {
                 type="submit"
                 className="clay-btn clay-btn-primary h-12 rounded-full px-7"
               >
-                <Search className="size-4" />
                 Search
               </Button>
             </div>
@@ -306,10 +305,10 @@ export default function Listings() {
               <span className="clay-icon clay-sheen mx-auto size-14 bg-clay-blush">
                 <Search className="size-6" />
               </span>
-              <h2 className="mt-4 text-xl font-extrabold">No homes found</h2>
+              <h2 className="font-display mt-4 text-xl">No matching properties</h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Try widening your search — fewer filters, another area, or a
-                different budget.
+                Nothing matches this combination right now. Try widening your
+                search — fewer filters, another area, or a different budget.
               </p>
               <Button
                 onClick={clearFilters}
@@ -332,13 +331,13 @@ export default function Listings() {
                     onClick={() => results.loadMore(9)}
                     className="clay-btn clay-btn-light h-12 rounded-full px-8"
                   >
-                    Load more homes
+                    Show more
                   </Button>
                 </div>
               )}
               {results.status === "Exhausted" && results.results.length > 9 && (
                 <p className="mt-10 text-center text-sm text-muted-foreground">
-                  You've seen every home matching this search.
+                  You've reached the end of the results.
                 </p>
               )}
             </>

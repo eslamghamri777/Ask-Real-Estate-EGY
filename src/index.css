@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap");
+
 /* DO NOT CHANGE */
 @import "tailwindcss";
 @import "tw-animate-css";
@@ -42,127 +44,126 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* CHANGE VALUES FOR THEME — Claymorphism: matte pastel clay, inflated shadows */
+/* CHANGE VALUES FOR THEME — refined clay: warm stone, soft depth, one bronze accent */
 :root {
-  --radius: 1.5rem;
+  --radius: 1.25rem;
 
-  /* soft clay canvas */
-  --background: oklch(0.96 0.02 60);
-  --foreground: oklch(0.32 0.04 45);
+  /* warm stone canvas */
+  --background: oklch(0.965 0.008 70);
+  --foreground: oklch(0.27 0.015 60);
 
-  /* clay surfaces */
-  --card: oklch(0.99 0.012 60);
-  --card-foreground: oklch(0.32 0.04 45);
-  --popover: oklch(0.99 0.012 60);
-  --popover-foreground: oklch(0.32 0.04 45);
+  /* surfaces */
+  --card: oklch(0.99 0.005 70);
+  --card-foreground: oklch(0.27 0.015 60);
+  --popover: oklch(0.99 0.005 70);
+  --popover-foreground: oklch(0.27 0.015 60);
 
-  /* terracotta — warm baked-clay action color */
-  --primary: oklch(0.62 0.17 45);
-  --primary-foreground: oklch(0.99 0.01 60);
+  /* deep bronze — the single action color */
+  --primary: oklch(0.42 0.055 65);
+  --primary-foreground: oklch(0.98 0.005 80);
 
-  /* pastel clay secondaries: sand, mint, sky, blush, lilac */
-  --secondary: oklch(0.93 0.035 75);
-  --secondary-foreground: oklch(0.4 0.06 55);
-  --muted: oklch(0.93 0.03 60);
-  --muted-foreground: oklch(0.48 0.04 55);
-  --accent: oklch(0.92 0.045 170);
-  --accent-foreground: oklch(0.35 0.05 170);
+  /* tonal neutrals */
+  --secondary: oklch(0.94 0.01 70);
+  --secondary-foreground: oklch(0.35 0.02 60);
+  --muted: oklch(0.94 0.008 70);
+  --muted-foreground: oklch(0.5 0.015 60);
+  --accent: oklch(0.93 0.012 70);
+  --accent-foreground: oklch(0.32 0.02 60);
 
-  --destructive: oklch(0.62 0.2 25);
+  --destructive: oklch(0.55 0.15 25);
 
-  /* clay has no crisp borders — soft tonal steps instead */
-  --border: oklch(0.9 0.03 60);
-  --input: oklch(0.9 0.03 60);
-  --ring: oklch(0.62 0.17 45);
+  --border: oklch(0.91 0.008 70);
+  --input: oklch(0.91 0.008 70);
+  --ring: oklch(0.42 0.055 65);
 
-  --chart-1: oklch(0.62 0.17 45);
-  --chart-2: oklch(0.72 0.13 165);
-  --chart-3: oklch(0.7 0.12 240);
-  --chart-4: oklch(0.75 0.14 20);
-  --chart-5: oklch(0.65 0.12 300);
+  --chart-1: oklch(0.42 0.055 65);
+  --chart-2: oklch(0.6 0.04 70);
+  --chart-3: oklch(0.55 0.03 90);
+  --chart-4: oklch(0.5 0.035 45);
+  --chart-5: oklch(0.6 0.02 120);
 
-  --sidebar: oklch(0.99 0.012 60);
-  --sidebar-foreground: oklch(0.32 0.04 45);
-  --sidebar-primary: oklch(0.62 0.17 45);
-  --sidebar-primary-foreground: oklch(0.99 0.01 60);
-  --sidebar-accent: oklch(0.93 0.035 75);
-  --sidebar-accent-foreground: oklch(0.4 0.06 55);
-  --sidebar-border: oklch(0.9 0.03 60);
-  --sidebar-ring: oklch(0.62 0.17 45);
+  --sidebar: oklch(0.99 0.005 70);
+  --sidebar-foreground: oklch(0.27 0.015 60);
+  --sidebar-primary: oklch(0.42 0.055 65);
+  --sidebar-primary-foreground: oklch(0.98 0.005 80);
+  --sidebar-accent: oklch(0.94 0.01 70);
+  --sidebar-accent-foreground: oklch(0.35 0.02 60);
+  --sidebar-border: oklch(0.91 0.008 70);
+  --sidebar-ring: oklch(0.42 0.055 65);
 
-  /* claymorphism recipe: soft drop shadow + inner top-left light + inner bottom-right dark */
-  --clay-shadow-sm: 0 0.25rem 0.75rem oklch(0.55 0.08 45 / 0.18),
-    inset 0.15rem 0.15rem 0.4rem oklch(1 0 0 / 0.9),
-    inset -0.15rem -0.15rem 0.4rem oklch(0.82 0.04 60 / 0.5);
-  --clay-shadow-md: 0 0.5rem 1.5rem oklch(0.55 0.08 45 / 0.2),
-    inset 0.25rem 0.25rem 0.6rem oklch(1 0 0 / 0.9),
-    inset -0.25rem -0.25rem 0.6rem oklch(0.82 0.04 60 / 0.5);
-  --clay-shadow-lg: 0 1rem 2.5rem oklch(0.55 0.08 45 / 0.22),
-    inset 0.25rem 0.25rem 0.75rem oklch(1 0 0 / 0.9),
-    inset -0.25rem -0.25rem 0.75rem oklch(0.82 0.04 60 / 0.5);
-  --clay-shadow-inset: inset 0.3rem 0.3rem 0.7rem oklch(0.86 0.03 60 / 0.9),
-    inset -0.3rem -0.3rem 0.7rem oklch(1 0 0 / 0.9);
+  /* clay depth, desaturated: gentle drop shadow + whisper-soft inner light */
+  --clay-shadow-sm: 0 0.2rem 0.7rem oklch(0.45 0.03 65 / 0.12),
+    inset 0.1rem 0.1rem 0.3rem oklch(1 0 0 / 0.75),
+    inset -0.1rem -0.1rem 0.3rem oklch(0.86 0.015 70 / 0.45);
+  --clay-shadow-md: 0 0.4rem 1.3rem oklch(0.45 0.03 65 / 0.14),
+    inset 0.15rem 0.15rem 0.45rem oklch(1 0 0 / 0.75),
+    inset -0.15rem -0.15rem 0.45rem oklch(0.86 0.015 70 / 0.45);
+  --clay-shadow-lg: 0 0.8rem 2.2rem oklch(0.45 0.03 65 / 0.16),
+    inset 0.15rem 0.15rem 0.5rem oklch(1 0 0 / 0.75),
+    inset -0.15rem -0.15rem 0.5rem oklch(0.86 0.015 70 / 0.45);
+  --clay-shadow-inset: inset 0.2rem 0.2rem 0.5rem oklch(0.89 0.01 70 / 0.8),
+    inset -0.2rem -0.2rem 0.5rem oklch(1 0 0 / 0.9);
 
-  /* pastel clay accent hues for playful chips & cards */
-  --clay-mint: oklch(0.9 0.06 165);
-  --clay-sky: oklch(0.9 0.05 230);
-  --clay-blush: oklch(0.91 0.05 15);
-  --clay-lilac: oklch(0.9 0.05 300);
-  --clay-sand: oklch(0.92 0.045 80);
-  --clay-butter: oklch(0.93 0.08 95);
+  /* quiet tonal steps for section chips (kept subtle by design) */
+  --clay-mint: oklch(0.93 0.015 70);
+  --clay-sky: oklch(0.93 0.012 250);
+  --clay-blush: oklch(0.93 0.014 40);
+  --clay-lilac: oklch(0.93 0.01 70);
+  --clay-sand: oklch(0.93 0.018 80);
+  --clay-butter: oklch(0.92 0.025 75);
 }
 
 .dark {
-  --background: oklch(0.26 0.025 50);
-  --foreground: oklch(0.94 0.015 60);
-  --card: oklch(0.31 0.03 50);
-  --card-foreground: oklch(0.94 0.015 60);
-  --popover: oklch(0.31 0.03 50);
-  --popover-foreground: oklch(0.94 0.015 60);
-  --primary: oklch(0.72 0.15 45);
-  --primary-foreground: oklch(0.25 0.04 45);
-  --secondary: oklch(0.37 0.03 55);
-  --secondary-foreground: oklch(0.94 0.015 60);
-  --muted: oklch(0.37 0.03 55);
-  --muted-foreground: oklch(0.72 0.03 60);
-  --accent: oklch(0.38 0.04 170);
-  --accent-foreground: oklch(0.92 0.04 170);
-  --destructive: oklch(0.68 0.18 25);
-  --border: oklch(0.42 0.035 50);
-  --input: oklch(0.42 0.035 50);
-  --ring: oklch(0.72 0.15 45);
-  --chart-1: oklch(0.72 0.15 45);
-  --chart-2: oklch(0.68 0.12 165);
-  --chart-3: oklch(0.66 0.11 240);
-  --chart-4: oklch(0.7 0.13 20);
-  --chart-5: oklch(0.62 0.11 300);
-  --sidebar: oklch(0.31 0.03 50);
-  --sidebar-foreground: oklch(0.94 0.015 60);
-  --sidebar-primary: oklch(0.72 0.15 45);
-  --sidebar-primary-foreground: oklch(0.25 0.04 45);
-  --sidebar-accent: oklch(0.37 0.03 55);
-  --sidebar-accent-foreground: oklch(0.94 0.015 60);
-  --sidebar-border: oklch(0.42 0.035 50);
-  --sidebar-ring: oklch(0.72 0.15 45);
+  --background: oklch(0.235 0.012 65);
+  --foreground: oklch(0.93 0.008 75);
+  --card: oklch(0.29 0.014 65);
+  --card-foreground: oklch(0.93 0.008 75);
+  --popover: oklch(0.29 0.014 65);
+  --popover-foreground: oklch(0.93 0.008 75);
+  --primary: oklch(0.78 0.06 75);
+  --primary-foreground: oklch(0.22 0.015 65);
+  --secondary: oklch(0.34 0.014 65);
+  --secondary-foreground: oklch(0.93 0.008 75);
+  --muted: oklch(0.34 0.014 65);
+  --muted-foreground: oklch(0.68 0.012 70);
+  --accent: oklch(0.34 0.014 65);
+  --accent-foreground: oklch(0.93 0.008 75);
+  --destructive: oklch(0.65 0.15 25);
+  --border: oklch(0.38 0.014 65);
+  --input: oklch(0.38 0.014 65);
+  --ring: oklch(0.78 0.06 75);
+  --chart-1: oklch(0.78 0.06 75);
+  --chart-2: oklch(0.62 0.04 70);
+  --chart-3: oklch(0.6 0.03 90);
+  --chart-4: oklch(0.58 0.04 45);
+  --chart-5: oklch(0.65 0.02 120);
+  --sidebar: oklch(0.29 0.014 65);
+  --sidebar-foreground: oklch(0.93 0.008 75);
+  --sidebar-primary: oklch(0.78 0.06 75);
+  --sidebar-primary-foreground: oklch(0.22 0.015 65);
+  --sidebar-accent: oklch(0.34 0.014 65);
+  --sidebar-accent-foreground: oklch(0.93 0.008 75);
+  --sidebar-border: oklch(0.38 0.014 65);
+  --sidebar-ring: oklch(0.78 0.06 75);
 
-  --clay-shadow-sm: 0 0.25rem 0.75rem oklch(0.2 0.04 50 / 0.5),
-    inset 0.15rem 0.15rem 0.4rem oklch(0.42 0.035 50 / 0.7),
-    inset -0.15rem -0.15rem 0.4rem oklch(0.22 0.03 50 / 0.8);
-  --clay-shadow-md: 0 0.5rem 1.5rem oklch(0.2 0.04 50 / 0.55),
-    inset 0.25rem 0.25rem 0.6rem oklch(0.44 0.035 50 / 0.6),
-    inset -0.25rem -0.25rem 0.6rem oklch(0.22 0.03 50 / 0.8);
-  --clay-shadow-lg: 0 1rem 2.5rem oklch(0.2 0.04 50 / 0.55),
-    inset 0.25rem 0.25rem 0.75rem oklch(0.44 0.035 50 / 0.6),
-    inset -0.25rem -0.25rem 0.75rem oklch(0.22 0.03 50 / 0.8);
-  --clay-shadow-inset: inset 0.3rem 0.3rem 0.7rem oklch(0.24 0.03 50 / 0.8),
-    inset -0.3rem -0.3rem 0.7rem oklch(0.4 0.035 50 / 0.6);
+  --clay-shadow-sm: 0 0.2rem 0.7rem oklch(0.18 0.01 65 / 0.45),
+    inset 0.1rem 0.1rem 0.3rem oklch(0.4 0.014 65 / 0.7),
+    inset -0.1rem -0.1rem 0.3rem oklch(0.2 0.012 65 / 0.7);
+  --clay-shadow-md: 0 0.4rem 1.3rem oklch(0.18 0.01 65 / 0.5),
+    inset 0.15rem 0.15rem 0.45rem oklch(0.42 0.014 65 / 0.6),
+    inset -0.15rem -0.15rem 0.45rem oklch(0.2 0.012 65 / 0.7);
+  --clay-shadow-lg: 0 0.8rem 2.2rem oklch(0.18 0.01 65 / 0.5),
+    inset 0.15rem 0.15rem 0.5rem oklch(0.42 0.014 65 / 0.6),
+    inset -0.15rem -0.15rem 0.5rem oklch(0.2 0.012 65 / 0.7);
+  --clay-shadow-inset: inset 0.2rem 0.2rem 0.5rem oklch(0.22 0.012 65 / 0.7),
+    inset -0.2rem -0.2rem 0.5rem oklch(0.4 0.014 65 / 0.55);
 
-  --clay-mint: oklch(0.4 0.06 165);
-  --clay-sky: oklch(0.4 0.05 230);
-  --clay-blush: oklch(0.42 0.05 15);
-  --clay-lilac: oklch(0.4 0.05 300);
-  --clay-sand: oklch(0.42 0.045 80);
-  --clay-butter: oklch(0.43 0.07 95);
+  --clay-mint: oklch(0.34 0.014 65);
+  --clay-sky: oklch(0.34 0.014 250);
+  --clay-blush: oklch(0.34 0.014 40);
+  --clay-lilac: oklch(0.34 0.014 70);
+  --clay-sand: oklch(0.34 0.014 80);
+  --clay-butter: oklch(0.34 0.02 75);
 }
 
 @theme inline {
@@ -172,6 +173,10 @@
   --color-clay-lilac: var(--clay-lilac);
   --color-clay-sand: var(--clay-sand);
   --color-clay-butter: var(--clay-butter);
+
+  /* type: quiet serif for display, workhorse sans for everything else */
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
@@ -180,23 +185,19 @@
   }
   body {
     @apply bg-background text-foreground;
-    /* warm clay background wash */
+    /* barely-there warm wash — depth without noise */
     background-image: radial-gradient(
-        60rem 40rem at 8% -10%,
-        oklch(0.95 0.05 75 / 0.9),
+        70rem 45rem at 10% -15%,
+        oklch(0.965 0.014 80 / 0.8),
         transparent 60%
       ),
       radial-gradient(
-        55rem 35rem at 95% 0%,
-        oklch(0.93 0.05 160 / 0.7),
+        60rem 40rem at 100% -5%,
+        oklch(0.955 0.01 60 / 0.6),
         transparent 55%
-      ),
-      radial-gradient(
-        50rem 40rem at 50% 115%,
-        oklch(0.94 0.045 25 / 0.6),
-        transparent 60%
       );
     background-attachment: fixed;
+    -webkit-font-smoothing: antialiased;
   }
   button:not([disabled]),
   [role="button"]:not([disabled]) {
@@ -204,7 +205,7 @@
   }
 }
 
-/* ============ Claymorphism utility layer ============ */
+/* ============ Refined clay utilities ============ */
 @utility clay-sm {
   box-shadow: var(--clay-shadow-sm);
 }
@@ -221,75 +222,73 @@
   box-shadow: var(--clay-shadow-inset);
   transform: translateY(0.125rem) scale(0.985);
 }
-/* convex “clay ball” gradient sheen used on chips, dots, and icons */
+/* faint top-left light — suggestion of curvature, not a highlight */
 @utility clay-sheen {
   background-image: linear-gradient(
-    145deg,
-    oklch(1 0 0 / 0.55) 0%,
-    oklch(1 0 0 / 0.12) 38%,
-    oklch(0.6 0.05 50 / 0.08) 100%
+    150deg,
+    oklch(1 0 0 / 0.28) 0%,
+    oklch(1 0 0 / 0.05) 40%,
+    oklch(0.5 0.02 65 / 0.04) 100%
   );
 }
 @utility clay-text {
-  text-shadow: 0 0.075em 0.15em oklch(0.55 0.08 45 / 0.35);
+  text-shadow: 0 0.05em 0.1em oklch(0.4 0.03 65 / 0.12);
 }
 
 /* ============ Component clay classes ============ */
 @layer components {
-  /* plush card: inflated pastel slab */
+  /* soft-edged card with gentle depth */
   .clay-card {
-    @apply rounded-[1.75rem] bg-card;
+    @apply rounded-[1.5rem] bg-card;
     box-shadow: var(--clay-shadow-md);
   }
   .clay-card-hover {
     transition:
-      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
-      box-shadow 0.25s ease;
+      transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.35s ease;
   }
   .clay-card-hover:hover {
-    transform: translateY(-0.375rem);
+    transform: translateY(-0.25rem);
     box-shadow: var(--clay-shadow-lg);
   }
-  /* pressed-in search well */
+  /* pressed-in well for search bars and stat panels */
   .clay-well {
-    @apply rounded-[2rem] bg-secondary;
+    @apply rounded-[1.5rem] bg-secondary;
     box-shadow: var(--clay-shadow-inset);
   }
-  /* squishy pill button */
+  /* pill button — soft rise on hover, quiet settle on press */
   .clay-btn {
     @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold;
     box-shadow: var(--clay-shadow-sm);
     transition:
-      transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
-      box-shadow 0.18s ease,
-      filter 0.18s ease;
+      transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.25s ease,
+      background-color 0.25s ease;
   }
   .clay-btn:hover {
-    transform: translateY(-0.125rem);
-    filter: brightness(1.04);
+    transform: translateY(-0.0625rem);
   }
   .clay-btn:active {
-    transform: translateY(0.0625rem) scale(0.97);
+    transform: translateY(0.03125rem) scale(0.99);
     box-shadow: var(--clay-shadow-inset);
   }
   .clay-btn-primary {
     @apply clay-sheen bg-primary text-primary-foreground;
-    text-shadow: 0 0.0625em 0.125em oklch(0.4 0.1 45 / 0.4);
   }
   .clay-btn-light {
     @apply clay-sheen bg-card text-foreground;
   }
-  /* pill chip on any pastel hue */
+  /* tonal pill — reads as label, not confetti */
   .clay-chip {
     @apply clay-sheen inline-flex items-center gap-1.5 rounded-full font-semibold;
     box-shadow: var(--clay-shadow-sm);
   }
-  /* puffy icon puck */
+  /* rounded icon holder */
   .clay-icon {
     @apply clay-sheen inline-flex items-center justify-center rounded-2xl;
     box-shadow: var(--clay-shadow-sm);
   }
-  /* squishy input that settles into clay */
+  /* input that settles softly into the surface */
   .clay-input {
     @apply w-full rounded-full bg-card px-5 py-3 text-foreground outline-none placeholder:text-muted-foreground;
     box-shadow: var(--clay-shadow-inset);
@@ -298,16 +297,28 @@
   .clay-input:focus-visible {
     box-shadow:
       var(--clay-shadow-inset),
-      0 0 0 0.25rem oklch(0.62 0.17 45 / 0.25);
+      0 0 0 0.2rem oklch(0.42 0.055 65 / 0.22);
   }
-  /* soft squish on interactive clay pieces */
+  textarea.clay-input {
+    @apply rounded-[1.25rem];
+  }
   .clay-squish {
-    transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
   }
   .clay-squish:hover {
-    transform: translateY(-0.125rem);
+    transform: translateY(-0.0625rem);
   }
   .clay-squish:active {
-    transform: scale(0.96);
+    transform: scale(0.98);
+  }
+  /* serif display headings */
+  .font-display {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  /* small tracked label above sections */
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground;
   }
 }

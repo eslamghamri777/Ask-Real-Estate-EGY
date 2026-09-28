@@ -4,33 +4,28 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
-import {
-  Building2,
-  Home,
-  KeyRound,
-  MapPin,
-  Search,
-  Star,
-} from "lucide-react";
 import { useQuery } from "convex/react";
-import { useState } from "react";
+import { ArrowRight, MapPin, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router";
+import { useState } from "react";
 
-const areaChipHues = [
-  "bg-clay-mint",
+const areaTones = [
+  "bg-clay-butter",
+  "bg-clay-sand",
   "bg-clay-sky",
   "bg-clay-blush",
   "bg-clay-lilac",
-  "bg-clay-sand",
-  "bg-clay-butter",
+  "bg-clay-mint",
 ];
 
 const fadeUp = {
-  initial: { opacity: 0, y: 24 },
+  initial: { opacity: 0, y: 18 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: "-60px" },
-  transition: { duration: 0.55, ease: "easeOut" as const },
+  transition: { duration: 0.6, ease: "easeOut" as const },
 };
+
+const POPULAR_AREAS = ["Zamalek", "Maadi", "New Cairo", "Heliopolis", "Sheikh Zayed", "Downtown"];
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -44,7 +39,7 @@ export default function Landing() {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (purpose) params.set("purpose", purpose);
+    params.set("purpose", purpose);
     if (area) params.set("area", area);
     if (q.trim()) params.set("q", q.trim());
     navigate(`/listings?${params.toString()}`);
@@ -55,60 +50,57 @@ export default function Landing() {
       <ClayHeader />
 
       <main className="flex-1">
-        {/* ============ Hero: search bar + areas first ============ */}
-        <section className="mx-auto w-full max-w-6xl px-4 pt-10 sm:pt-16">
+        {/* ============ Hero: search first ============ */}
+        <section className="mx-auto w-full max-w-6xl px-4 pt-14 sm:pt-20">
           <div className="mx-auto max-w-3xl text-center">
             <motion.span
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4 }}
-              className="clay-chip clay-sm bg-clay-butter px-4 py-2 text-sm"
+              transition={{ duration: 0.5 }}
+              className="eyebrow"
             >
-              <MapPin className="size-4" />
-              Cairo, Egypt
+              Property sales & lettings · Cairo
             </motion.span>
 
             <motion.h1
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.08 }}
-              className="clay-text mt-5 text-4xl font-extrabold leading-tight tracking-tight sm:text-6xl"
+              transition={{ duration: 0.6, delay: 0.06 }}
+              className="font-display clay-text mt-4 text-4xl leading-[1.12] tracking-tight sm:text-6xl"
             >
-              Find your place
+              Find the right home,
               <br />
-              in <span className="text-primary">Cairo</span>
+              with the right people
             </motion.h1>
 
             <motion.p
-              initial={{ opacity: 0, y: 16 }}
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.16 }}
-              className="mx-auto mt-4 max-w-xl text-base text-muted-foreground sm:text-lg"
+              transition={{ duration: 0.6, delay: 0.14 }}
+              className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
             >
-              Homes for sale and rent across the city — browse real listings
-              with photos, in the areas you love.
+              Ask Real Estate lists a small, verified portfolio of homes for
+              sale and rent across Cairo. Browse the full catalog freely —
+              when something is right, our team is one message away.
             </motion.p>
           </div>
 
-          {/* Clay search bar */}
+          {/* Search panel */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }}
+            initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.55, delay: 0.24 }}
-            className="clay-card clay-lg mx-auto mt-8 max-w-4xl p-4 sm:p-5"
+            transition={{ duration: 0.6, delay: 0.22 }}
+            className="clay-card clay-lg mx-auto mt-10 max-w-4xl p-4 sm:p-5"
           >
-            {/* Buy / Rent toggle */}
             <div className="clay-well mx-auto mb-4 flex w-fit items-center gap-1 rounded-full p-1.5">
               <PurposeTab
                 active={purpose === "sale"}
                 onClick={() => setPurpose("sale")}
-                icon={<Home className="size-4" />}
                 label="Buy"
               />
               <PurposeTab
                 active={purpose === "rent"}
                 onClick={() => setPurpose("rent")}
-                icon={<KeyRound className="size-4" />}
                 label="Rent"
               />
             </div>
@@ -135,7 +127,7 @@ export default function Landing() {
                 <input
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
-                  placeholder="Keyword — villa, penthouse, Nile…"
+                  placeholder="Keyword — villa, penthouse, Nile view…"
                   className="clay-input pl-10"
                   aria-label="Keyword"
                 />
@@ -144,51 +136,43 @@ export default function Landing() {
                 type="submit"
                 className="clay-btn clay-btn-primary h-12 shrink-0 rounded-full px-7 text-base"
               >
-                <Search className="size-4" />
                 Search
+                <ArrowRight className="size-4" />
               </Button>
             </form>
-          </motion.div>
 
-          {/* Area quick chips */}
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.36 }}
-            className="mt-6 flex flex-wrap items-center justify-center gap-2"
-          >
-            <span className="text-sm font-semibold text-muted-foreground">
-              Popular:
-            </span>
-            {["Zamalek", "Maadi", "New Cairo", "Heliopolis", "Sheikh Zayed", "Downtown"].map(
-              (name) => (
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+              <span className="text-sm text-muted-foreground">Popular:</span>
+              {POPULAR_AREAS.map((name) => (
                 <button
                   key={name}
-                  onClick={() => navigate(`/listings?area=${encodeURIComponent(name)}`)}
-                  className="clay-chip clay-squish bg-card px-4 py-2 text-sm"
+                  onClick={() =>
+                    navigate(`/listings?area=${encodeURIComponent(name)}`)
+                  }
+                  className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
                 >
-                  <MapPin className="size-3.5 text-primary" />
                   {name}
                 </button>
-              ),
-            )}
+              ))}
+            </div>
           </motion.div>
         </section>
 
         {/* ============ Areas ============ */}
-        <section className="mx-auto w-full max-w-6xl px-4 pt-20">
-          <motion.div {...fadeUp} className="flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-                Explore Cairo by area
-              </h2>
-              <p className="mt-1.5 text-muted-foreground">
-                Every neighborhood has its own rhythm — pick yours.
-              </p>
-            </div>
+        <section className="mx-auto w-full max-w-6xl px-4 pt-24">
+          <motion.div {...fadeUp} className="max-w-2xl">
+            <span className="eyebrow">Neighborhoods</span>
+            <h2 className="font-display mt-3 text-3xl tracking-tight sm:text-4xl">
+              Start with the area
+            </h2>
+            <p className="mt-3 leading-relaxed text-muted-foreground">
+              Each district keeps its own character — from the leafy river
+              streets of Zamalek to the gated compounds of New Cairo. Choose
+              the one that feels like home.
+            </p>
           </motion.div>
 
-          <div className="mt-7 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+          <div className="mt-8 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
             {areas === undefined
               ? Array.from({ length: 6 }).map((_, i) => (
                   <Skeleton key={i} className="clay-sm h-44 rounded-[1.5rem]" />
@@ -196,25 +180,25 @@ export default function Landing() {
               : areas.map((a, i) => (
                   <motion.button
                     key={a.name}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-40px" }}
-                    transition={{ duration: 0.45, delay: i * 0.05 }}
-                    onClick={() => navigate(`/listings?area=${encodeURIComponent(a.name)}`)}
-                    className={`clay-card clay-card-hover clay-squish relative h-44 overflow-hidden text-left ${
-                      areaChipHues[i % areaChipHues.length]
-                    }`}
+                    transition={{ duration: 0.5, delay: i * 0.05 }}
+                    onClick={() =>
+                      navigate(`/listings?area=${encodeURIComponent(a.name)}`)
+                    }
+                    className={`clay-card clay-card-hover clay-squish relative h-44 overflow-hidden text-left ${areaTones[i % areaTones.length]}`}
                   >
                     <img
                       src={a.photo}
                       alt=""
                       loading="lazy"
-                      className="absolute inset-x-4 top-4 h-20 rounded-2xl object-cover shadow-md"
+                      className="absolute inset-x-3 top-3 h-20 rounded-xl object-cover"
                     />
-                    <div className="absolute inset-x-4 bottom-4">
-                      <p className="text-base font-extrabold">{a.name}</p>
-                      <p className="text-xs font-semibold opacity-70">
-                        {a.count} {a.count === 1 ? "listing" : "listings"}
+                    <div className="absolute inset-x-4 bottom-3.5">
+                      <p className="font-display text-base">{a.name}</p>
+                      <p className="text-xs font-medium opacity-70">
+                        {a.count} {a.count === 1 ? "property" : "properties"}
                       </p>
                     </div>
                   </motion.button>
@@ -222,41 +206,42 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ============ Featured listings ============ */}
-        <section className="mx-auto w-full max-w-6xl px-4 pt-20">
+        {/* ============ Featured ============ */}
+        <section className="mx-auto w-full max-w-6xl px-4 pt-24">
           <motion.div {...fadeUp} className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <span className="clay-chip clay-sm bg-clay-mint px-3.5 py-1.5 text-xs">
-                <Star className="size-3.5" />
-                Handpicked
-              </span>
-              <h2 className="mt-3 text-2xl font-extrabold tracking-tight sm:text-3xl">
-                Featured homes
+            <div className="max-w-2xl">
+              <span className="eyebrow">The portfolio</span>
+              <h2 className="font-display mt-3 text-3xl tracking-tight sm:text-4xl">
+                Featured properties
               </h2>
-              <p className="mt-1.5 text-muted-foreground">
-                A first look at what's on the market right now.
+              <p className="mt-3 leading-relaxed text-muted-foreground">
+                A first look at what's available right now — each one visited
+                and photographed by our own team.
               </p>
             </div>
             <Button
               asChild
               className="clay-btn clay-btn-light h-11 rounded-full px-6"
             >
-              <Link to="/listings">View all listings</Link>
+              <Link to="/listings">
+                View the full catalog
+                <ArrowRight className="size-4" />
+              </Link>
             </Button>
           </motion.div>
 
-          <div className="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {featured === undefined
               ? Array.from({ length: 6 }).map((_, i) => (
-                  <Skeleton key={i} className="h-96 rounded-[1.75rem]" />
+                  <Skeleton key={i} className="h-96 rounded-[1.5rem]" />
                 ))
               : featured.map((l, i) => (
                   <motion.div
                     key={l._id}
-                    initial={{ opacity: 0, y: 24 }}
+                    initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-40px" }}
-                    transition={{ duration: 0.5, delay: i * 0.07 }}
+                    transition={{ duration: 0.5, delay: i * 0.06 }}
                   >
                     <ListingCard listing={l} />
                   </motion.div>
@@ -264,30 +249,42 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ============ Stats strip ============ */}
-        <section className="mx-auto w-full max-w-6xl px-4 pt-20">
-          <motion.div
-            {...fadeUp}
-            className="clay-card clay-md grid gap-6 px-8 py-8 text-center sm:grid-cols-3"
-          >
-            <StatChip
-              hue="bg-clay-butter"
-              icon={<Building2 className="size-5" />}
-              value={stats === undefined ? "—" : `${stats.total}`}
-              label="Listings on Ask"
-            />
-            <StatChip
-              hue="bg-clay-mint"
-              icon={<Home className="size-5" />}
-              value={stats === undefined ? "—" : `${stats.forSale}`}
-              label="Homes for sale"
-            />
-            <StatChip
-              hue="bg-clay-sky"
-              icon={<KeyRound className="size-5" />}
-              value={stats === undefined ? "—" : `${stats.forRent}`}
-              label="Places to rent"
-            />
+        {/* ============ Trust ============ */}
+        <section className="mx-auto w-full max-w-6xl px-4 pt-24">
+          <motion.div {...fadeUp} className="clay-card clay-md px-8 py-12 sm:px-12">
+            <div className="mx-auto max-w-2xl text-center">
+              <span className="eyebrow">Why Ask</span>
+              <h2 className="font-display mt-3 text-3xl tracking-tight sm:text-4xl">
+                Serious about property, personal about people
+              </h2>
+            </div>
+            <div className="mt-10 grid gap-8 text-center sm:grid-cols-3">
+              <TrustPoint
+                title="Verified listings"
+                body="Every property is visited and photographed by our team before it appears here. No stock imagery, no surprises."
+              />
+              <TrustPoint
+                title="Straight answers"
+                body="Ask us anything about a home — pricing, service charges, the neighborhood. You'll hear back from a person, not a bot."
+              />
+              <TrustPoint
+                title="Patient guidance"
+                body="Buying or renting is a big decision. We move at your pace and tell you plainly when a place isn't right for you."
+              />
+            </div>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
+              <span className="font-semibold">
+                {stats === undefined ? "—" : stats.total} live listings
+              </span>
+              <span className="size-1 rounded-full bg-muted-foreground/40" />
+              <span className="font-semibold">
+                {stats === undefined ? "—" : stats.forSale} for sale
+              </span>
+              <span className="size-1 rounded-full bg-muted-foreground/40" />
+              <span className="font-semibold">
+                {stats === undefined ? "—" : stats.forRent} for rent
+              </span>
+            </div>
           </motion.div>
         </section>
       </main>
@@ -300,45 +297,30 @@ export default function Landing() {
 function PurposeTab({
   active,
   onClick,
-  icon,
   label,
 }: {
   active: boolean;
   onClick: () => void;
-  icon: React.ReactNode;
   label: string;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`clay-squish flex items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold transition-all ${
-        active ? "clay-sheen bg-card clay-sm" : "text-muted-foreground hover:text-foreground"
+      className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
+        active ? "bg-card clay-sm" : "text-muted-foreground hover:text-foreground"
       }`}
     >
-      {icon}
       {label}
     </button>
   );
 }
 
-function StatChip({
-  hue,
-  icon,
-  value,
-  label,
-}: {
-  hue: string;
-  icon: React.ReactNode;
-  value: string;
-  label: string;
-}) {
+function TrustPoint({ title, body }: { title: string; body: string }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <span className={`clay-icon clay-sheen size-12 ${hue}`}>{icon}</span>
-      <p className="text-3xl font-extrabold">{value}</p>
-      <p className="text-sm font-semibold text-muted-foreground">{label}</p>
+      <h3 className="font-display text-lg">{title}</h3>
+      <p className="text-sm leading-relaxed text-muted-foreground">{body}</p>
     </div>
   );
 }
-

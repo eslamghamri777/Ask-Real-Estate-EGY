@@ -1,11 +1,11 @@
 {
-  "name": "freebuff.com application",
-  "short_name": "freebuff.com",
-  "description": "freebuff.com application",
+  "name": "Ask Real Estate",
+  "short_name": "Ask Real Estate",
+  "description": "Property sales and lettings across Cairo, Egypt.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "background_color": "#f7f4ef",
+  "theme_color": "#5b4a35",
   "icons": [
     {
       "src": "/logo.svg",
