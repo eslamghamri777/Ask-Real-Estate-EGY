@@ -39,6 +39,31 @@ export const hasAccessCode = query({
   handler: async () => Boolean(process.env.CREATOR_ACCESS_CODE),
 });
 
+/**
+ * Grants creator rights automatically when the signed-in account is the
+ * designated creator email (CREATOR_EMAIL env var). Called when /creator is
+ * opened — signing in with the creator email + password is enough.
+ */
+export const ensureCreatorForEmail = mutation({
+  args: {},
+  returns: v.boolean(),
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (!userId) return false;
+
+    const user = await ctx.db.get(userId);
+    if (!user) return false;
+    if (user.role === "admin") return true;
+
+    const expected = (process.env.CREATOR_EMAIL ?? "").trim().toLowerCase();
+    if (!expected || !user.email) return false;
+    if (user.email.trim().toLowerCase() !== expected) return false;
+
+    await ctx.db.patch(userId, { role: "admin" });
+    return true;
+  },
+});
+
 /** Redeem the creator access code. Returns true when the code was correct. */
 export const redeemAccessCode = mutation({
   args: { code: v.string() },

@@ -23,7 +23,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 
@@ -89,9 +89,16 @@ function CreatorBody() {
 function AccessGate({ signedIn }: { signedIn: boolean }) {
   const hasCode = useQuery(api.creator.hasAccessCode);
   const redeem = useMutation(api.creator.redeemAccessCode);
+  const ensureCreator = useMutation(api.creator.ensureCreatorForEmail);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Signing in with the designated creator email auto-grants access on mount.
+  useEffect(() => {
+    if (!signedIn) return;
+    void ensureCreator().catch(() => undefined);
+  }, [signedIn, ensureCreator]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -124,9 +131,9 @@ function AccessGate({ signedIn }: { signedIn: boolean }) {
       </p>
 
       {!signedIn ? (
-        <Button asChild className="clay-btn clay-btn-primary mt-6 rounded-full px-6">
-          <Link to="/auth?returnTo=%2Fcreator">Sign in</Link>
-        </Button>
+        <div className="mt-6">
+          <EmailPasswordForm onSignedIn={() => undefined} />
+        </div>
       ) : hasCode === false ? (
         <p className="clay-well mt-6 rounded-2xl px-4 py-3 text-sm text-muted-foreground">
           No access code is configured on the server yet. Set the
@@ -159,6 +166,94 @@ function AccessGate({ signedIn }: { signedIn: boolean }) {
       )}
     </div>
   );
+}
+
+/* ============ Email + password sign-in ============ */
+
+function EmailPasswordForm({ onSignedIn }: { onSignedIn: () => void }) {
+  const { signIn } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(null);
+    try {
+      await signIn("password", { email, password, flow: "signIn" });
+      onSignedIn();
+    } catch {
+      setError(
+        "Couldn't sign in with those details. If the account doesn't exist yet, choose “Create account with password”. ",
+      );
+      setSubmitting(false);
+    }
+  };
+
+  const signUp = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await signIn("password", { email, password, flow: "signUp" });
+      onSignedIn();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Sign-up failed.";
+      setError(
+        message.includes("already exists") || message.includes("Account already exists")
+          ? "An account with this email already exists — sign in instead."
+          : message,
+      );
+      setSubmitting(false);
+      return;
+    }
+    toast.success("Welcome to the team");
+  };
+
+  return (
+    <form onSubmit={submit} className="flex flex-col gap-3 text-left">
+      <Input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Creator email"
+        required
+        autoComplete="email"
+        className="clay-input h-11 shadow-none"
+      />
+      <Input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        required
+        minLength={8}
+        autoComplete="current-password"
+        className="clay-input h-11 shadow-none"
+      />
+      {error && <p className="text-sm text-destructive">{error}</p>}
+      <Button
+        type="submit"
+        disabled={submitting}
+        className="clay-btn clay-btn-primary h-11 rounded-full"
+      >
+        {submitting ? <Loader2 className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
+        Sign in with password
+      </Button>
+      <p className="text-center text-xs text-muted-foreground">
+        First time here?{" "}
+        <button
+          type="button"
+          onClick={signUp}
+          disabled={submitting}
+          className="font-semibold text-primary underline-offset-2 hover:underline"
+        >
+          Create the creator account with this email and password
+        </button>
+      </p>
+    </form>
+ );
 }
 
 /* ============ Publish form ============ */
