@@ -16,7 +16,7 @@ import { Home, KeyRound, RotateCcw, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 
-const TYPES = ["apartment", "villa", "penthouse", "duplex", "studio", "townhouse"];
+const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
 
 export default function Listings() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -95,7 +95,7 @@ export default function Listings() {
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-10">
         <h1 className="font-display text-3xl tracking-tight sm:text-4xl">
-          Properties across Cairo
+          Properties across Egypt
         </h1>
         <p className="mt-2 text-muted-foreground">
           {results.status === "LoadingFirstPage"

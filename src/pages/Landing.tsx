@@ -25,7 +25,16 @@ const fadeUp = {
   transition: { duration: 0.6, ease: "easeOut" as const },
 };
 
-const POPULAR_AREAS = ["Zamalek", "Maadi", "New Cairo", "Heliopolis", "Sheikh Zayed", "Downtown"];
+const POPULAR_AREAS = [
+  "New Cairo",
+  "Sheikh Zayed",
+  "New Administrative Capital",
+  "North Coast",
+  "Ain Sokhna",
+  "Heliopolis",
+  "El Shorouk",
+  "Madinaty",
+];
 
 export default function Landing() {
   const navigate = useNavigate();
@@ -59,7 +68,7 @@ export default function Landing() {
               transition={{ duration: 0.5 }}
               className="eyebrow"
             >
-              Property sales & lettings · Cairo
+              Property sales & lettings · Egypt
             </motion.span>
 
             <motion.h1
@@ -80,7 +89,7 @@ export default function Landing() {
               className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
             >
               Ask Real Estate lists a small, verified portfolio of homes for
-              sale and rent across Cairo. Browse the full catalog freely —
+              sale and rent across Egypt. Browse the full catalog freely —
               when something is right, our team is one message away.
             </motion.p>
           </div>
@@ -117,7 +126,7 @@ export default function Landing() {
                 <input
                   value={area}
                   onChange={(e) => setArea(e.target.value)}
-                  placeholder="Area — Zamalek, Maadi, New Cairo…"
+                  placeholder="Area — New Cairo, North Coast, Ain Sokhna…"
                   className="clay-input pl-10"
                   aria-label="Area"
                 />
@@ -166,9 +175,9 @@ export default function Landing() {
               Start with the area
             </h2>
             <p className="mt-3 leading-relaxed text-muted-foreground">
-              Each district keeps its own character — from the leafy river
-              streets of Zamalek to the gated compounds of New Cairo. Choose
-              the one that feels like home.
+              Each destination keeps its own character — from the gated
+              compounds of New Cairo to the Red Sea shores of Ain Sokhna and
+              the North Coast. Choose the one that feels like home.
             </p>
           </motion.div>
 
@@ -313,7 +322,7 @@ export default function Landing() {
               Chat on WhatsApp · 0100 953 3599
             </a>
             <p className="mt-4 text-xs text-muted-foreground/70">
-              Available Saturday–Thursday, 10am–8pm Cairo time
+              Available Saturday–Thursday, 10am–8pm Egypt time
             </p>
           </motion.div>
         </section>

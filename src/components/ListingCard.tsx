@@ -40,7 +40,7 @@ export function ListingCard({ listing }: { listing: Listing }) {
             <h3 className="font-display text-lg leading-snug">{listing.title}</h3>
             <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
               <MapPin className="size-3.5" />
-              {listing.area}, Cairo
+              {listing.area}, Egypt
             </p>
           </div>
         </div>

@@ -118,7 +118,7 @@ export function ClayFooter() {
           </span>
         </div>
         <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-          Property sales and lettings across Cairo. Every listing is verified
+          Property sales and lettings across Egypt. Every listing is verified
           by our team before it goes live — so what you see is what you'll
           find when you visit.
         </p>

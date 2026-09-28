@@ -27,7 +27,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router";
 import { toast } from "sonner";
 
-const TYPES = ["apartment", "villa", "penthouse", "duplex", "studio", "townhouse"];
+const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
 
 /** Photos above this size are rejected with a clear message instead of failing mid-upload. */
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024; // 8 MB

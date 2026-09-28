@@ -195,7 +195,7 @@ export default function ListingDetail() {
                 </h1>
                 <p className="mt-1.5 flex items-center gap-1.5 text-sm text-muted-foreground">
                   <MapPin className="size-4" />
-                  {listing.area}, Cairo
+                  {listing.area}, Egypt
                 </p>
               </div>
 
