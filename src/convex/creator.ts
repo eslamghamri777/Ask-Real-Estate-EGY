@@ -198,12 +198,13 @@ export const myPosts = query({
     const posts = await ctx.db
       .query("listings")
       .withIndex("by_slug")
-      .order("desc")
       .collect();
+    posts.sort((a, b) => b._creationTime - a._creationTime);
 
     return await Promise.all(
       posts.map(async (post) => ({
         _id: post._id,
+        _creationTime: post._creationTime,
         slug: post.slug,
         title: post.title,
         purpose: post.purpose,

@@ -29,6 +29,9 @@ import { toast } from "sonner";
 
 const TYPES = ["apartment", "villa", "penthouse", "duplex", "studio", "townhouse"];
 
+/** Photos above this size are rejected with a clear message instead of failing mid-upload. */
+const MAX_PHOTO_BYTES = 8 * 1024 * 1024; // 8 MB
+
 export default function Creator() {
   return (
     <div className="flex min-h-screen flex-col">
@@ -270,6 +273,7 @@ function PublishForm() {
   const [uploading, setUploading] = useState(false);
 
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [purpose, setPurpose] = useState<"sale" | "rent">("sale");
   const [type, setType] = useState("apartment");
   const [area, setArea] = useState("");
@@ -287,13 +291,25 @@ function PublishForm() {
     setError(null);
     try {
       for (const file of Array.from(files)) {
-        if (!file.type.startsWith("image/")) continue;
+        if (!file.type.startsWith("image/")) {
+          setError(`"${file.name}" isn't an image — skipped.`);
+          continue;
+        }
+        if (file.size > MAX_PHOTO_BYTES) {
+          setError(
+            `"${file.name}" is ${(file.size / 1024 / 1024).toFixed(1)} MB — photos must be under 8 MB.`,
+          );
+          continue;
+        }
         const uploadUrl = await generateUploadUrl();
         const res = await fetch(uploadUrl, {
           method: "POST",
           headers: { "Content-Type": file.type },
           body: file,
         });
+        if (!res.ok) {
+          throw new Error(`Upload failed for "${file.name}".`);
+        }
         const { storageId } = (await res.json()) as { storageId: Id<"_storage"> };
         setPending((p) => [
           ...p,
@@ -315,8 +331,7 @@ function PublishForm() {
     try {
       await createPost({
         title,
-        description: (document.getElementById("post-description") as HTMLTextAreaElement)
-          ?.value ?? "",
+        description,
         purpose,
         type,
         area,
@@ -340,9 +355,8 @@ function PublishForm() {
       setBedrooms("2");
       setBathrooms("1");
       setFeatured(false);
+      setDescription("");
       setPending([]);
-      const desc = document.getElementById("post-description") as HTMLTextAreaElement | null;
-      if (desc) desc.value = "";
     } catch (err) {
       setError(err instanceof Error ? err.message : "Publishing failed.");
     } finally {
@@ -414,7 +428,8 @@ function PublishForm() {
         />
 
         <textarea
-          id="post-description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           required
           rows={3}
           placeholder="Describe the property — light, layout, the street, what makes it special."
