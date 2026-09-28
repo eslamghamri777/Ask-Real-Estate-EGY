@@ -1,0 +1,17 @@
+{
+  "name": "Ask Real Estate",
+  "short_name": "Ask Real Estate",
+  "description": "Property sales and lettings across Cairo, Egypt.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f7f4ef",
+  "theme_color": "#5b4a35",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
