@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
 import { useQuery } from "convex/react";
-import { Home, Search, UserRound } from "lucide-react";
+import { Home, MessageCircle, Search, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router";
 
 const navLinks = [
@@ -10,6 +10,12 @@ const navLinks = [
   { to: "/listings?purpose=rent", label: "Rent" },
   { to: "/listings", label: "All properties" },
 ];
+
+/** Ask Real Estate WhatsApp line — 0100 953 3599 (+20 100 953 3599 international). */
+export function whatsappUrl(message?: string): string {
+  const base = "https://wa.me/201009533599";
+  return message ? `${base}?text=${encodeURIComponent(message)}` : base;
+}
 
 export function ClayHeader() {
   const { isAuthenticated } = useAuth();
@@ -31,12 +37,31 @@ export function ClayHeader() {
           {navLinks.map((link) => (
             <NavLink key={link.to} to={link.to} label={link.label} />
           ))}
+          <a
+            href={whatsappUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            Contact us
+          </a>
           {isCreator === true && (
             <NavLink to="/creator" label="Creator studio" />
           )}
         </nav>
 
         <div className="ml-auto flex items-center gap-2 md:ml-0">
+          <a
+            href={whatsappUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Contact us on WhatsApp"
+            className="md:hidden"
+          >
+            <span className="clay-icon clay-sheen size-10 bg-card text-foreground">
+              <MessageCircle className="size-5" />
+            </span>
+          </a>
           <Link to="/listings" className="md:hidden" aria-label="Browse properties">
             <span className="clay-icon clay-sheen size-10 bg-card text-foreground">
               <Search className="size-5" />
@@ -107,6 +132,15 @@ export function ClayFooter() {
               {link.label}
             </Link>
           ))}
+          <a
+            href={whatsappUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            <MessageCircle className="size-4" />
+            Contact us · 0100 953 3599
+          </a>
         </div>
         <p className="text-xs text-muted-foreground/70">
           © {new Date().getFullYear()} Ask Real Estate · Cairo, Egypt

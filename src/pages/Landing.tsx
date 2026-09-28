@@ -1,11 +1,11 @@
-import { ClayFooter, ClayHeader } from "@/components/ClayLayout";
+import { ClayFooter, ClayHeader, whatsappUrl } from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
 import { useQuery } from "convex/react";
-import { ArrowRight, MapPin, Search } from "lucide-react";
+import { ArrowRight, MapPin, MessageCircle, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 
@@ -285,6 +285,36 @@ export default function Landing() {
                 {stats === undefined ? "—" : stats.forRent} for rent
               </span>
             </div>
+          </motion.div>
+        </section>
+        {/* ============ Contact ============ */}
+        <section className="mx-auto w-full max-w-6xl px-4 pt-24">
+          <motion.div {...fadeUp} className="clay-card clay-md px-8 py-12 text-center sm:px-12">
+            <span className="clay-icon clay-sheen mx-auto size-14 bg-primary text-primary-foreground">
+              <MessageCircle className="size-6" />
+            </span>
+            <h2 className="font-display mt-5 text-3xl tracking-tight sm:text-4xl">
+              Talk to us directly
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl leading-relaxed text-muted-foreground">
+              Questions about a home, the area, or pricing? Message us on
+              WhatsApp — a real person from the team replies, usually within
+              minutes.
+            </p>
+            <a
+              href={whatsappUrl(
+                "Hello Ask Real Estate! I have a question about a property.",
+              )}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="clay-btn clay-btn-primary mt-7 inline-flex h-12 items-center gap-2 rounded-full px-8 text-base"
+            >
+              <MessageCircle className="size-5" />
+              Chat on WhatsApp · 0100 953 3599
+            </a>
+            <p className="mt-4 text-xs text-muted-foreground/70">
+              Available Saturday–Thursday, 10am–8pm Cairo time
+            </p>
           </motion.div>
         </section>
       </main>

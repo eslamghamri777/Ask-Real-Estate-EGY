@@ -1,4 +1,4 @@
-import { ClayFooter, ClayHeader } from "@/components/ClayLayout";
+import { ClayFooter, ClayHeader, whatsappUrl } from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Expand,
   MapPin,
+  MessageCircle,
   MessageSquare,
   Search,
   Send,
@@ -206,6 +207,17 @@ export default function ListingDetail() {
                   Message us below for full pricing details and current offers on
                   this property.
                 </p>
+                <a
+                  href={whatsappUrl(
+                    `Hello, I'm interested in "${listing.title}" (${listing.area}). Could you share the pricing details?`,
+                  )}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="clay-btn clay-btn-light mt-3 flex h-10 items-center justify-center gap-2 rounded-full px-4 text-sm"
+                >
+                  <MessageCircle className="size-4" />
+                  Ask on WhatsApp
+                </a>
               </div>
 
               <div className="clay-well grid grid-cols-3 gap-2 rounded-[1.25rem] p-4 text-center">
@@ -269,7 +281,11 @@ export default function ListingDetail() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.16 }}
           >
-            <InquiryPanel listingId={listing._id} inquiries={inquiries} />
+            <InquiryPanel
+              listingId={listing._id}
+              inquiries={inquiries}
+              listingArea={listing.area}
+            />
           </motion.section>
         </div>
 
@@ -322,9 +338,11 @@ type Inquiry = {
 function InquiryPanel({
   listingId,
   inquiries,
+  listingArea,
 }: {
   listingId: Id<"listings">;
   inquiries: Inquiry[] | undefined;
+  listingArea: string;
 }) {
   const { isLoading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
@@ -385,8 +403,7 @@ function InquiryPanel({
 
       {isLoading ? (
         <Skeleton className="h-48 rounded-[1.25rem]" />
-      ) : !isAuthenticated ? (
-        <div className="clay-well flex flex-1 flex-col items-center justify-center gap-3 rounded-[1.25rem] px-6 py-8 text-center">
+      ) : !isAuthenticated ? (        <div className="clay-well flex flex-1 flex-col items-center justify-center gap-3 rounded-[1.25rem] px-6 py-8 text-center">
           <p className="text-sm leading-relaxed text-muted-foreground">
             Sign in to ask about this property. Your message goes straight to
             the agent handling it.
@@ -397,12 +414,21 @@ function InquiryPanel({
                 `/auth?returnTo=${encodeURIComponent(
                   `${window.location.pathname}`,
                 )}`,
-              )
-            }
+              )}
             className="clay-btn clay-btn-primary mt-1 rounded-full px-6"
           >
             Sign in to continue
           </Button>
+          <a
+            href={whatsappUrl(
+              `Hello, I'm interested in a property in ${listingArea} and have a few questions.`,
+            )}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium text-primary underline-offset-2 hover:underline"
+          >
+            Or chat with us on WhatsApp →
+          </a>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
