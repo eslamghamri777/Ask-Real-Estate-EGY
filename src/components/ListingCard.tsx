@@ -8,18 +8,11 @@ export type Listing = {
   purpose: "sale" | "rent";
   type: string;
   area: string;
-  price: number;
   bedrooms: number;
   bathrooms: number;
   areaSqm: number;
   photos: string[];
 };
-
-export function formatPrice(price: number, purpose: Listing["purpose"]) {
-  return purpose === "rent"
-    ? `${(price / 1000).toFixed(0)}K EGP / month`
-    : `${(price / 1_000_000).toFixed(2).replace(/\.00$/, "")}M EGP`;
-}
 
 export function ListingCard({ listing }: { listing: Listing }) {
   return (
@@ -53,12 +46,14 @@ export function ListingCard({ listing }: { listing: Listing }) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-base font-semibold text-primary">
-            {formatPrice(listing.price, listing.purpose)}
-          </span>
-          <span className="text-sm text-muted-foreground">·</span>
-          <span className="text-sm capitalize text-muted-foreground">
+          <span className="text-sm font-medium capitalize text-primary">
             {listing.type}
+          </span>
+          <span className="text-xs text-muted-foreground">·</span>
+          <span className="text-xs text-muted-foreground">
+            {listing.purpose === "sale"
+              ? "Pricing on request"
+              : "Rent on request"}
           </span>
         </div>
 

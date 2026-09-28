@@ -10,8 +10,6 @@ export const list = query({
     area: v.optional(v.string()),
     type: v.optional(v.string()),
     bedrooms: v.optional(v.number()),
-    minPrice: v.optional(v.number()),
-    maxPrice: v.optional(v.number()),
     q: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -45,12 +43,6 @@ export const list = query({
     }
     if (args.bedrooms) {
       results = results.filter((l) => l.bedrooms >= args.bedrooms!);
-    }
-    if (args.minPrice) {
-      results = results.filter((l) => l.price >= args.minPrice!);
-    }
-    if (args.maxPrice) {
-      results = results.filter((l) => l.price <= args.maxPrice!);
     }
     if (args.q) {
       const q = args.q.toLowerCase();

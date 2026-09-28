@@ -198,11 +198,15 @@ export default function ListingDetail() {
                 </p>
               </div>
 
-              <p className="text-2xl font-semibold text-primary">
-                {listing.purpose === "rent"
-                  ? `${listing.price.toLocaleString()} EGP / month`
-                  : `${listing.price.toLocaleString()} EGP`}
-              </p>
+              <div className="clay-well rounded-2xl px-4 py-3">
+                <p className="text-sm font-semibold">
+                  {listing.purpose === "sale" ? "Pricing on request" : "Rent on request"}
+                </p>
+                <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                  Message us below for full pricing details and current offers on
+                  this property.
+                </p>
+              </div>
 
               <div className="clay-well grid grid-cols-3 gap-2 rounded-[1.25rem] p-4 text-center">
                 <DetailStat

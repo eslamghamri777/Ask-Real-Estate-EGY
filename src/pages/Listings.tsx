@@ -17,8 +17,6 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 
 const TYPES = ["apartment", "villa", "penthouse", "duplex", "studio", "townhouse"];
-const SALE_STEPS = [5_000_000, 10_000_000, 15_000_000, 20_000_000, 25_000_000, 30_000_000];
-const RENT_STEPS = [20_000, 40_000, 60_000, 80_000, 100_000];
 
 export default function Listings() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -31,12 +29,6 @@ export default function Listings() {
   const [bedrooms, setBedrooms] = useState(
     Number(searchParams.get("bedrooms")) || 0,
   );
-  const [minPrice, setMinPrice] = useState(
-    Number(searchParams.get("minPrice")) || 0,
-  );
-  const [maxPrice, setMaxPrice] = useState(
-    Number(searchParams.get("maxPrice")) || 0,
-  );
   const [q, setQ] = useState(searchParams.get("q") || "");
 
   // keep filter state in sync when the URL changes (e.g. header nav links)
@@ -45,8 +37,6 @@ export default function Listings() {
     setArea(searchParams.get("area") || "");
     setType(searchParams.get("type") || "");
     setBedrooms(Number(searchParams.get("bedrooms")) || 0);
-    setMinPrice(Number(searchParams.get("minPrice")) || 0);
-    setMaxPrice(Number(searchParams.get("maxPrice")) || 0);
     setQ(searchParams.get("q") || "");
   }, [searchParams]);
 
@@ -59,8 +49,6 @@ export default function Listings() {
       area: area || undefined,
       type: type || undefined,
       bedrooms: bedrooms || undefined,
-      minPrice: minPrice || undefined,
-      maxPrice: maxPrice || undefined,
       q: q.trim() || undefined,
     },
     { initialNumItems: 9 },
@@ -82,10 +70,7 @@ export default function Listings() {
 
   const changePurpose = (next: "all" | "sale" | "rent") => {
     setPurpose(next);
-    // price scales differ between sale and rent — reset price filters on switch
-    setMinPrice(0);
-    setMaxPrice(0);
-    applyToUrl({ purpose: next === "all" ? "" : next, minPrice: "", maxPrice: "" });
+    applyToUrl({ purpose: next === "all" ? "" : next });
   };
 
   const clearFilters = () => {
@@ -93,23 +78,15 @@ export default function Listings() {
     setArea("");
     setType("");
     setBedrooms(0);
-    setMinPrice(0);
-    setMaxPrice(0);
     setQ("");
     setSearchParams({}, { replace: true });
   };
-
-  const priceSteps = purpose === "rent" ? RENT_STEPS : SALE_STEPS;
-  const fmt = (n: number) =>
-    purpose === "rent" ? `${n / 1000}K` : `${n / 1_000_000}M`;
 
   const activeFilterCount =
     (purpose !== "all" ? 1 : 0) +
     (area ? 1 : 0) +
     (type ? 1 : 0) +
     (bedrooms ? 1 : 0) +
-    (minPrice ? 1 : 0) +
-    (maxPrice ? 1 : 0) +
     (q.trim() ? 1 : 0);
 
   return (
@@ -152,7 +129,7 @@ export default function Listings() {
           </div>
 
           <form
-            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
             onSubmit={(e) => {
               e.preventDefault();
               applyToUrl({ q: q.trim() });
@@ -218,52 +195,8 @@ export default function Listings() {
               </SelectContent>
             </Select>
 
-            <div className="grid grid-cols-2 gap-3">
-              <Select
-                value={String(minPrice)}
-                onValueChange={(v) => {
-                  const n = Number(v);
-                  setMinPrice(n);
-                  applyToUrl({ minPrice: n ? String(n) : "" });
-                }}
-              >
-                <SelectTrigger className="clay-sheen h-12 rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
-                  <SelectValue placeholder="Min price" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">Min price</SelectItem>
-                  {priceSteps.map((p) => (
-                    <SelectItem key={p} value={String(p)}>
-                      {fmt(p)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={String(maxPrice)}
-                onValueChange={(v) => {
-                  const n = Number(v);
-                  setMaxPrice(n);
-                  applyToUrl({ maxPrice: n ? String(n) : "" });
-                }}
-              >
-                <SelectTrigger className="clay-sheen h-12 rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
-                  <SelectValue placeholder="Max price" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="0">Max price</SelectItem>
-                  {priceSteps.map((p) => (
-                    <SelectItem key={p} value={String(p)}>
-                      {fmt(p)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             {/* keyword row */}
-            <div className="relative sm:col-span-2">
+            <div className="relative sm:col-span-2 lg:col-span-3">
               <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={q}
@@ -272,7 +205,7 @@ export default function Listings() {
                 className="clay-input h-12 pl-10 shadow-none"
               />
             </div>
-            <div className="flex gap-3 sm:col-span-2 lg:justify-end">
+            <div className="flex gap-3 sm:col-span-2 lg:col-span-3 lg:justify-end">
               <Button
                 type="button"
                 onClick={clearFilters}
@@ -308,7 +241,7 @@ export default function Listings() {
               <h2 className="font-display mt-4 text-xl">No matching properties</h2>
               <p className="mt-2 text-sm text-muted-foreground">
                 Nothing matches this combination right now. Try widening your
-                search — fewer filters, another area, or a different budget.
+                search — fewer filters, or another area.
               </p>
               <Button
                 onClick={clearFilters}
