@@ -1,6 +1,31 @@
 import { paginationOptsValidator } from "convex/server";
 import { v } from "convex/values";
+import type { Doc } from "./_generated/dataModel";
 import { query } from "./_generated/server";
+
+/**
+ * Public shape of a listing sent to the client. Deliberately omits `price`:
+ * pricing is shared privately when a customer messages the team — it is never
+ * rendered on the site nor exposed through the API.
+ */
+function publicListing(l: Doc<"listings">) {
+  return {
+    _id: l._id,
+    _creationTime: l._creationTime,
+    slug: l.slug,
+    title: l.title,
+    description: l.description,
+    purpose: l.purpose,
+    type: l.type,
+    area: l.area,
+    bedrooms: l.bedrooms,
+    bathrooms: l.bathrooms,
+    areaSqm: l.areaSqm,
+    photos: l.photos,
+    amenities: l.amenities,
+    featured: l.featured,
+  };
+}
 
 /** Paginated browse with filters — the heart of v1. */
 export const list = query({
@@ -55,23 +80,30 @@ export const list = query({
       );
     }
 
-    return { ...page, page: results };
+    return { ...page, page: results.map(publicListing) };
   },
 });
 
 export const get = query({
   args: { slug: v.string() },
-  handler: async (ctx, args) =>
-    await ctx.db.query("listings").withIndex("by_slug", (q) => q.eq("slug", args.slug)).unique(),
+  handler: async (ctx, args) => {
+    const listing = await ctx.db
+      .query("listings")
+      .withIndex("by_slug", (q) => q.eq("slug", args.slug))
+      .unique();
+    return listing ? publicListing(listing) : null;
+  },
 });
 
 export const featured = query({
   args: {},
-  handler: async (ctx) =>
-    await ctx.db
+  handler: async (ctx) => {
+    const rows = await ctx.db
       .query("listings")
       .withIndex("by_featured", (q) => q.eq("featured", true))
-      .take(6),
+      .take(6);
+    return rows.map(publicListing);
+  },
 });
 
 export const areas = query({
@@ -112,6 +144,6 @@ export const related = query({
       .query("listings")
       .withIndex("by_area", (q) => q.eq("area", args.area))
       .collect();
-    return inArea.filter((l) => l.slug !== args.slug).slice(0, 3);
+    return inArea.filter((l) => l.slug !== args.slug).slice(0, 3).map(publicListing);
   },
 });
