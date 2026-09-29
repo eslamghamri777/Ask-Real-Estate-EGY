@@ -18,11 +18,20 @@ import { useSearchParams } from "react-router";
 
 const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
 
+const VALID_PURPOSES = new Set(["primary", "resale", "rent"]);
+
+/** Tolerate stale links like ?purpose=sale from before the primary/resale split. */
+function sanitizePurpose(value: string | null): "all" | "primary" | "resale" | "rent" {
+  return value && VALID_PURPOSES.has(value)
+    ? (value as "primary" | "resale" | "rent")
+    : "all";
+}
+
 export default function Listings() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const [purpose, setPurpose] = useState<"all" | "primary" | "resale" | "rent">(
-    (searchParams.get("purpose") as "primary" | "resale" | "rent") || "all",
+    sanitizePurpose(searchParams.get("purpose")),
   );
   const [area, setArea] = useState(searchParams.get("area") || "");
   const [type, setType] = useState(searchParams.get("type") || "");
@@ -33,9 +42,7 @@ export default function Listings() {
 
   // keep filter state in sync when the URL changes (e.g. header nav links)
   useEffect(() => {
-    setPurpose(
-      (searchParams.get("purpose") as "primary" | "resale" | "rent") || "all",
-    );
+    setPurpose(sanitizePurpose(searchParams.get("purpose")));
     setArea(searchParams.get("area") || "");
     setType(searchParams.get("type") || "");
     setBedrooms(Number(searchParams.get("bedrooms")) || 0);
