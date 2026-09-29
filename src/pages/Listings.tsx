@@ -185,12 +185,13 @@ export default function Listings() {
           </div>
 
           <form
-            className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            className="flex flex-col gap-3"
             onSubmit={(e) => {
               e.preventDefault();
               applyToUrl({ q: q.trim() });
             }}
           >
+            <div className="flex flex-wrap items-center gap-3">
             <Select
               value={area || "any-area"}
               onValueChange={(v) => {
@@ -198,7 +199,7 @@ export default function Listings() {
                 applyToUrl({ area: v === "any-area" ? "" : v });
               }}
             >
-              <SelectTrigger className="clay-sheen h-12 rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                 <SelectValue placeholder="Area" />
               </SelectTrigger>
               <SelectContent>
@@ -218,7 +219,7 @@ export default function Listings() {
                 applyToUrl({ type: v === "any-type" ? "" : v });
               }}
             >
-              <SelectTrigger className="clay-sheen h-12 rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                 <SelectValue placeholder="Property type" />
               </SelectTrigger>
               <SelectContent>
@@ -239,7 +240,7 @@ export default function Listings() {
                 applyToUrl({ bedrooms: n ? String(n) : "" });
               }}
             >
-              <SelectTrigger className="clay-sheen h-12 rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                 <SelectValue placeholder="Bedrooms" />
               </SelectTrigger>
               <SelectContent>
@@ -259,7 +260,7 @@ export default function Listings() {
                   applyToUrl({ delivery: v === "any-delivery" ? "" : v });
                 }}
               >
-                <SelectTrigger className="clay-sheen h-12 rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+                <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                   <SelectValue placeholder="Delivery time" />
                 </SelectTrigger>
                 <SelectContent>
@@ -280,7 +281,7 @@ export default function Listings() {
                 applyToUrl({ finish: v === "any-finish" ? "" : v });
               }}
             >
-              <SelectTrigger className="clay-sheen h-12 rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                 <SelectValue placeholder="Finish" />
               </SelectTrigger>
               <SelectContent>
@@ -292,9 +293,10 @@ export default function Listings() {
                 ))}
               </SelectContent>
             </Select>
+            </div>
 
             {/* keyword row */}
-            <div className="relative sm:col-span-2 lg:col-span-3">
+            <div className="relative">
               <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={q}
@@ -303,7 +305,7 @@ export default function Listings() {
                 className="clay-input h-12 pl-10 shadow-none"
               />
             </div>
-            <div className="flex gap-3 sm:col-span-2 lg:col-span-3 lg:justify-end">
+            <div className="flex gap-3 justify-end">
               <Button
                 type="button"
                 onClick={clearFilters}
