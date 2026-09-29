@@ -86,6 +86,15 @@ const schema = defineSchema(
           v.literal("4y"),
         ),
       ),
+      /** Interior finish level of the unit. */
+      finish: v.optional(
+        v.union(
+          v.literal("core-shell"),
+          v.literal("semi-finished"),
+          v.literal("fully-finished"),
+          v.literal("finished-furnished"),
+        ),
+      ),
     })
       .index("by_slug", ["slug"])
       .index("by_purpose", ["purpose"])

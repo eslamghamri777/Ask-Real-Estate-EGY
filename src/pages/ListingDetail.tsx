@@ -4,7 +4,7 @@ import {
   useSiteSocials,
   whatsappUrl,
 } from "@/components/ClayLayout";
-import { DELIVERY_LABELS, ListingCard } from "@/components/ListingCard";
+import { DELIVERY_LABELS, FINISH_LABELS, ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -24,6 +24,7 @@ import {
   MapPin,
   MessageCircle,
   MessageSquare,
+  Paintbrush,
   Pencil,
   Search,
   Send,
@@ -274,6 +275,18 @@ export default function ListingDetail() {
                   <div>
                     <p className="text-sm font-semibold">Delivery: {DELIVERY_LABELS[listing.deliveryTime] ?? listing.deliveryTime}</p>
                     <p className="text-xs text-muted-foreground">Estimated handover time</p>
+                  </div>
+                </div>
+              )}
+
+              {listing.finish && (
+                <div className="clay-well flex items-center gap-2.5 rounded-2xl px-4 py-3">
+                  <span className="clay-icon clay-sheen size-8 shrink-0 bg-card">
+                    <Paintbrush className="size-4" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold">{FINISH_LABELS[listing.finish] ?? listing.finish}</p>
+                    <p className="text-xs text-muted-foreground">Interior finish level</p>
                   </div>
                 </div>
               )}

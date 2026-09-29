@@ -43,6 +43,13 @@ const DELIVERY_OPTIONS = [
   { value: "4y", label: "4 years" },
 ] as const;
 
+const FINISH_OPTIONS = [
+  { value: "core-shell", label: "Core & Shell / Unfinished" },
+  { value: "semi-finished", label: "Semi-Finished" },
+  { value: "fully-finished", label: "Fully Finished" },
+  { value: "finished-furnished", label: "Finished-Furnished" },
+] as const;
+
 /** Photos above this size are rejected with a clear message instead of failing mid-upload. */
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024; // 8 MB
 
@@ -60,6 +67,7 @@ type CreatorPost = {
   amenities: string[];
   featured: boolean;
   deliveryTime: string | null;
+  finish: string | null;
   photos: { url: string; storageId?: Id<"_storage"> }[];
   cover: string | null;
 };
@@ -266,6 +274,7 @@ function PropertyForm({
   const [amenities, setAmenities] = useState(initial?.amenities.join(", ") ?? "");
   const [featured, setFeatured] = useState(initial?.featured ?? false);
   const [deliveryTime, setDeliveryTime] = useState(initial?.deliveryTime ?? "");
+  const [finish, setFinish] = useState(initial?.finish ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -334,6 +343,12 @@ function PropertyForm({
           | "2y"
           | "3y"
           | "4y"
+          | undefined,
+        finish: (finish || undefined) as
+          | "core-shell"
+          | "semi-finished"
+          | "fully-finished"
+          | "finished-furnished"
           | undefined,
         photoIds: pending.flatMap((p) => (p.storageId ? [p.storageId] : [])),
       };
@@ -530,22 +545,41 @@ function PropertyForm({
           className="clay-input h-11 shadow-none"
         />
 
-        <Select
-          value={deliveryTime || "any-delivery"}
-          onValueChange={(v) => setDeliveryTime(v === "any-delivery" ? "" : v)}
-        >
-          <SelectTrigger className="h-11 rounded-full border-none bg-card px-5 text-sm shadow-none">
-            <SelectValue placeholder="Delivery time" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="any-delivery">Delivery time (optional)</SelectItem>
-            {DELIVERY_OPTIONS.map((d) => (
-              <SelectItem key={d.value} value={d.value}>
-                {d.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="grid grid-cols-2 gap-3">
+          <Select
+            value={deliveryTime || "any-delivery"}
+            onValueChange={(v) => setDeliveryTime(v === "any-delivery" ? "" : v)}
+          >
+            <SelectTrigger className="h-11 rounded-full border-none bg-card px-5 text-sm shadow-none">
+              <SelectValue placeholder="Delivery time" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any-delivery">Delivery time (optional)</SelectItem>
+              {DELIVERY_OPTIONS.map((d) => (
+                <SelectItem key={d.value} value={d.value}>
+                  {d.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={finish || "any-finish"}
+            onValueChange={(v) => setFinish(v === "any-finish" ? "" : v)}
+          >
+            <SelectTrigger className="h-11 rounded-full border-none bg-card px-5 text-sm shadow-none">
+              <SelectValue placeholder="Finish" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="any-finish">Finish (optional)</SelectItem>
+              {FINISH_OPTIONS.map((f) => (
+                <SelectItem key={f.value} value={f.value}>
+                  {f.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
         <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
           <input

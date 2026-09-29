@@ -14,6 +14,7 @@ export type Listing = {
   bathrooms: number;
   areaSqm: number;
   deliveryTime?: string | null;
+  finish?: string | null;
   photos: string[];
 };
 
@@ -24,6 +25,13 @@ export const DELIVERY_LABELS: Record<string, string> = {
   "2y": "2 years",
   "3y": "3 years",
   "4y": "4 years",
+};
+
+export const FINISH_LABELS: Record<string, string> = {
+  "core-shell": "Core & Shell / Unfinished",
+  "semi-finished": "Semi-Finished",
+  "fully-finished": "Fully Finished",
+  "finished-furnished": "Finished-Furnished",
 };
 
 export function ListingCard({ listing }: { listing: Listing }) {
@@ -89,6 +97,14 @@ export function ListingCard({ listing }: { listing: Listing }) {
             <>
               <span className="text-xs text-muted-foreground">
                 Delivery: {DELIVERY_LABELS[listing.deliveryTime] ?? listing.deliveryTime}
+              </span>
+              <span className="text-xs text-muted-foreground">·</span>
+            </>
+          )}
+          {listing.finish && (
+            <>
+              <span className="text-xs text-muted-foreground">
+                {FINISH_LABELS[listing.finish] ?? listing.finish}
               </span>
               <span className="text-xs text-muted-foreground">·</span>
             </>

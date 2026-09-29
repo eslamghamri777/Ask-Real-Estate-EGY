@@ -2,7 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
-import { deliveryTimeValidator } from "./listings";
+import { deliveryTimeValidator, finishValidator } from "./listings";
 
 /**
  * Creator access.
@@ -82,6 +82,7 @@ const postFields = {
   amenities: v.array(v.string()),
   featured: v.boolean(),
   deliveryTime: v.optional(deliveryTimeValidator),
+  finish: v.optional(finishValidator),
   photoIds: v.array(v.id("_storage")),
 };
 
@@ -123,6 +124,7 @@ export const createPost = mutation({
       photos: [], // legacy field — uploads live in storage via photoIds
       price: 0, // internal only — pricing is shared privately, never published
       deliveryTime: args.deliveryTime,
+      finish: args.finish,
     });
   },
 });
@@ -146,6 +148,7 @@ export const editPost = mutation({
     amenities: v.array(v.string()),
     featured: v.boolean(),
     deliveryTime: v.optional(deliveryTimeValidator),
+    finish: v.optional(finishValidator),
     photoIds: v.array(v.id("_storage")),
   },
   returns: v.null(),
@@ -183,6 +186,7 @@ export const editPost = mutation({
       amenities: args.amenities,
       featured: args.featured,
       deliveryTime: args.deliveryTime,
+      finish: args.finish,
       photoIds: args.photoIds,
     });
     return null;
@@ -276,6 +280,7 @@ export const myPosts = query({
           amenities: post.amenities,
           featured: post.featured ?? false,
           deliveryTime: post.deliveryTime ?? null,
+          finish: post.finish ?? null,
           photos,
           cover: photos[0]?.url ?? null,
         };

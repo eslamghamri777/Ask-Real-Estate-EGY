@@ -424,6 +424,52 @@ export const stampDeliveryTimes = internalMutation({
   },
 });
 
+/**
+ * ONE-TIME MIGRATION: give the demo listings realistic finish levels so the
+ * finish filter has data. Only touches known demo slugs and only when finish
+ * is unset — creator posts are never modified. Delete after running.
+ */
+const DEMO_FINISH: Record<string, string> = {
+  "new-capital-skyline-apartment": "semi-finished",
+  "north-coast-seafront-chalet": "core-shell",
+  "ain-sokhna-sea-view-chalet": "core-shell",
+  "madinaty-townhouse-sale": "semi-finished",
+  "new-cairo-family-villa": "fully-finished",
+  "new-cairo-duplex-90th": "fully-finished",
+  "sheikh-zayed-townhouse": "fully-finished",
+  "sheikh-zayed-golf-villa": "fully-finished",
+  "heliopolis-sun-penthouse": "fully-finished",
+  "el-shorouk-garden-villa": "semi-finished",
+  "new-cairo-garden-apartment-rent": "fully-finished",
+  "new-capital-furnished-rental": "finished-furnished",
+  "north-coast-family-chalet-rent": "finished-furnished",
+  "ain-sokhna-villa-rent": "finished-furnished",
+  "madinaty-apartment-rent": "finished-furnished",
+};
+
+export const stampFinishes = internalMutation({
+  args: {},
+  returns: v.object({ updated: v.number() }),
+  handler: async (ctx) => {
+    const all = await ctx.db.query("listings").collect();
+    let updated = 0;
+    for (const l of all) {
+      if (l.finish) continue;
+      const finish = DEMO_FINISH[l.slug];
+      if (!finish) continue;
+      await ctx.db.patch(l._id, {
+        finish: finish as
+          | "core-shell"
+          | "semi-finished"
+          | "fully-finished"
+          | "finished-furnished",
+      });
+      updated += 1;
+    }
+    return { updated };
+  },
+});
+
 export const migratePurposes = internalMutation({
   args: {},
   returns: v.object({ updated: v.number() }),

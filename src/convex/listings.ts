@@ -14,6 +14,15 @@ export const deliveryTimeValidator = v.optional(
   ),
 );
 
+export const finishValidator = v.optional(
+  v.union(
+    v.literal("core-shell"),
+    v.literal("semi-finished"),
+    v.literal("fully-finished"),
+    v.literal("finished-furnished"),
+  ),
+);
+
 /**
  * Public shape of a listing sent to the client. Deliberately omits `price`:
  * pricing is shared privately when a customer messages the team — it is never
@@ -49,6 +58,7 @@ async function publicListing(ctx: QueryCtx, l: Doc<"listings">) {
     amenities: l.amenities,
     featured: l.featured,
     deliveryTime: l.deliveryTime ?? null,
+    finish: l.finish ?? null,
   };
 }
 
@@ -63,6 +73,7 @@ export const list = query({
     type: v.optional(v.string()),
     bedrooms: v.optional(v.number()),
     delivery: deliveryTimeValidator,
+    finish: finishValidator,
     q: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -99,6 +110,9 @@ export const list = query({
     }
     if (args.delivery) {
       results = results.filter((l) => l.deliveryTime === args.delivery);
+    }
+    if (args.finish) {
+      results = results.filter((l) => l.finish === args.finish);
     }
     if (args.q) {
       const q = args.q.toLowerCase();
