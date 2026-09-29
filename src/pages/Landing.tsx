@@ -1,6 +1,7 @@
 import {
   ClayFooter,
   ClayHeader,
+  SocialIconLinks,
   useSiteSocials,
   whatsappUrl,
 } from "@/components/ClayLayout";
@@ -328,7 +329,13 @@ export default function Landing() {
               <MessageCircle className="size-5" />
               Chat on WhatsApp · 0100 953 3599
             </a>
-            <p className="mt-4 text-xs text-muted-foreground/70">
+
+            <div className="mt-7">
+              <p className="eyebrow">Follow us</p>
+              <SocialIconLinks className="mt-3" />
+            </div>
+
+            <p className="mt-6 text-xs text-muted-foreground/70">
               Available Saturday–Thursday, 10am–8pm Egypt time
             </p>
           </motion.div>

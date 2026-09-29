@@ -115,6 +115,51 @@ function NavLink({ to, label }: { to: string; label: string }) {
   );
 }
 
+/**
+ * Tappable Facebook / Instagram / WhatsApp icon buttons, shown down the
+ * pages. Each one opens the profile connected in the creator studio; links
+ * not yet configured are hidden (WhatsApp always shows via its default).
+ */
+export function SocialIconLinks({ className = "" }: { className?: string }) {
+  const socials = useSiteSocials();
+
+  return (
+    <div className={`flex items-center justify-center gap-3 ${className}`}>
+      {socials.facebookUrl && (
+        <a
+          href={socials.facebookUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Ask Real Estate on Facebook"
+          className="clay-icon clay-sheen clay-squish size-12 bg-card"
+        >
+          <Facebook className="size-5 text-[#1877F2]" />
+        </a>
+      )}
+      {socials.instagramUrl && (
+        <a
+          href={socials.instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Ask Real Estate on Instagram"
+          className="clay-icon clay-sheen clay-squish size-12 bg-card"
+        >
+          <Instagram className="size-5 text-[#C13584]" />
+        </a>
+      )}
+      <a
+        href={whatsappUrl(socials.whatsappNumber)}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Chat with Ask Real Estate on WhatsApp"
+        className="clay-icon clay-sheen clay-squish size-12 bg-card"
+      >
+        <MessageCircle className="size-5 text-[#25D366]" />
+      </a>
+    </div>
+  );
+}
+
 /** 201009533599 → 0100 953 3599 for display; falls back to raw digits. */
 function formatLocalNumber(number: string): string {
   if (number.length === 12 && number.startsWith("20")) {
@@ -143,6 +188,8 @@ export function ClayFooter() {
           by our team before it goes live — so what you see is what you'll
           find when you visit.
         </p>
+        <SocialIconLinks className="mt-2" />
+
         <div className="flex flex-wrap items-center justify-center gap-2 text-sm font-medium">
           {navLinks.map((link) => (
             <Link
@@ -153,28 +200,6 @@ export function ClayFooter() {
               {link.label}
             </Link>
           ))}
-          {socials.facebookUrl && (
-            <a
-              href={socials.facebookUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            >
-              <Facebook className="size-4" />
-              Facebook
-            </a>
-          )}
-          {socials.instagramUrl && (
-            <a
-              href={socials.instagramUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            >
-              <Instagram className="size-4" />
-              Instagram
-            </a>
-          )}
           <a
             href={whatsappUrl(socials.whatsappNumber)}
             target="_blank"
