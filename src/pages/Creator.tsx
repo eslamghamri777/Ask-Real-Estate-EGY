@@ -18,19 +18,37 @@ import {
   KeyRound,
   Loader2,
   LockKeyhole,
+  Pencil,
   Plus,
   Sparkles,
   Trash2,
   X,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router";
+import { useSearchParams } from "react-router";
 import { toast } from "sonner";
 
 const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
 
 /** Photos above this size are rejected with a clear message instead of failing mid-upload. */
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024; // 8 MB
+
+type CreatorPost = {
+  _id: string;
+  slug: string;
+  title: string;
+  description: string;
+  purpose: "sale" | "rent";
+  type: string;
+  area: string;
+  bedrooms: number;
+  bathrooms: number;
+  areaSqm: number;
+  amenities: string[];
+  featured: boolean;
+  photos: { url: string; storageId?: Id<"_storage"> }[];
+  cover: string | null;
+};
 
 export default function Creator() {
   return (
@@ -45,6 +63,19 @@ export default function Creator() {
 function CreatorBody() {
   const { isLoading, isAuthenticated } = useAuth();
   const isCreator = useQuery(api.creator.isCreator);
+  const posts = useQuery(api.creator.myPosts);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [editing, setEditing] = useState<CreatorPost | null>(null);
+
+  // Support deep links like /creator?edit=<slug> — the public "Edit" buttons
+  // on listing cards and detail pages link here.
+  useEffect(() => {
+    const editSlug = searchParams.get("edit");
+    if (!editSlug || posts === undefined) return;
+    const match = posts.find((p) => p.slug === editSlug);
+    if (match) setEditing(match);
+    setSearchParams({}, { replace: true });
+  }, [searchParams, posts, setSearchParams]);
 
   if (isLoading || isCreator === undefined) {
     return (
@@ -71,55 +102,40 @@ function CreatorBody() {
       <header className="clay-card clay-md p-6 sm:p-8">
         <p className="eyebrow">Creator studio</p>
         <h1 className="font-display mt-2 text-3xl tracking-tight">
-          Publish a property
+          {editing ? "Edit a property" : "Publish a property"}
         </h1>
         <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
-          Everything you publish appears instantly in the public catalog.
-          Pricing stays internal — customers message the team for it.
+          {editing
+            ? "Update the details below — the property's web address stays the same."
+            : "Everything you publish appears instantly in the public catalog. Pricing stays internal — customers message the team for it."}
         </p>
       </header>
 
       <div className="mt-6 grid items-start gap-6 lg:grid-cols-2">
-        <PublishForm />
-        <PostManager />
+        <PropertyForm
+          key={editing?._id ?? "new"}
+          initial={editing ?? undefined}
+          onDone={() => setEditing(null)}
+        />
+        <PostManager
+          editingId={editing?._id ?? null}
+          onEdit={(post) => setEditing(post)}
+        />
       </div>
     </main>
   );
 }
 
-/* ============ Access gate ============ */
+/* ============ Access gate (creator email only) ============ */
 
 function AccessGate({ signedIn }: { signedIn: boolean }) {
-  const hasCode = useQuery(api.creator.hasAccessCode);
-  const redeem = useMutation(api.creator.redeemAccessCode);
   const ensureCreator = useMutation(api.creator.ensureCreatorForEmail);
-  const [code, setCode] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   // Signing in with the designated creator email auto-grants access on mount.
   useEffect(() => {
     if (!signedIn) return;
     void ensureCreator().catch(() => undefined);
   }, [signedIn, ensureCreator]);
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setBusy(true);
-    setError(null);
-    try {
-      const ok = await redeem({ code });
-      if (ok) {
-        toast.success("Creator access granted");
-      } else {
-        setError("That code isn't right. Check it and try again.");
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setBusy(false);
-    }
-  };
 
   return (
     <div className="clay-card clay-md px-8 py-10 text-center">
@@ -129,43 +145,14 @@ function AccessGate({ signedIn }: { signedIn: boolean }) {
       <h1 className="font-display mt-4 text-2xl">Creator access</h1>
       <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
         {signedIn
-          ? "This area is for the Ask Real Estate team. Enter the access code to unlock publishing."
-          : "Sign in first, then enter your creator access code to unlock publishing."}
+          ? "This account doesn't have creator access. Only the Ask Real Estate team account can publish and edit posts."
+          : "Sign in with the team account to publish and edit property posts."}
       </p>
 
-      {!signedIn ? (
+      {!signedIn && (
         <div className="mt-6">
           <EmailPasswordForm onSignedIn={() => undefined} />
         </div>
-      ) : hasCode === false ? (
-        <p className="clay-well mt-6 rounded-2xl px-4 py-3 text-sm text-muted-foreground">
-          No access code is configured on the server yet. Set the
-          <span className="mx-1 font-mono text-xs">CREATOR_ACCESS_CODE</span>
-          environment variable, then return here.
-        </p>
-      ) : (
-        <form onSubmit={submit} className="mt-6 flex flex-col gap-3">
-          <Input
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
-            placeholder="Access code"
-            required
-            className="clay-input h-11 text-center shadow-none"
-          />
-          {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button
-            type="submit"
-            disabled={busy}
-            className="clay-btn clay-btn-primary h-11 rounded-full"
-          >
-            {busy ? (
-              <Loader2 className="size-4 animate-spin" />
-            ) : (
-              <KeyRound className="size-4" />
-            )}
-            Unlock studio
-          </Button>
-        </form>
       )}
     </div>
   );
@@ -188,30 +175,9 @@ function EmailPasswordForm({ onSignedIn }: { onSignedIn: () => void }) {
       await signIn("password", { email, password, flow: "signIn" });
       onSignedIn();
     } catch {
-      setError(
-        "Couldn't sign in with those details. If the account doesn't exist yet, choose “Create account with password”. ",
-      );
+      setError("Couldn't sign in with those details.");
       setSubmitting(false);
     }
-  };
-
-  const signUp = async () => {
-    setSubmitting(true);
-    setError(null);
-    try {
-      await signIn("password", { email, password, flow: "signUp" });
-      onSignedIn();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Sign-up failed.";
-      setError(
-        message.includes("already exists") || message.includes("Account already exists")
-          ? "An account with this email already exists — sign in instead."
-          : message,
-      );
-      setSubmitting(false);
-      return;
-    }
-    toast.success("Welcome to the team");
   };
 
   return (
@@ -220,7 +186,7 @@ function EmailPasswordForm({ onSignedIn }: { onSignedIn: () => void }) {
         type="email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        placeholder="Creator email"
+        placeholder="Team email"
         required
         autoComplete="email"
         className="clay-input h-11 shadow-none"
@@ -242,47 +208,46 @@ function EmailPasswordForm({ onSignedIn }: { onSignedIn: () => void }) {
         className="clay-btn clay-btn-primary h-11 rounded-full"
       >
         {submitting ? <Loader2 className="size-4 animate-spin" /> : <KeyRound className="size-4" />}
-        Sign in with password
+        Sign in
       </Button>
-      <p className="text-center text-xs text-muted-foreground">
-        First time here?{" "}
-        <button
-          type="button"
-          onClick={signUp}
-          disabled={submitting}
-          className="font-semibold text-primary underline-offset-2 hover:underline"
-        >
-          Create the creator account with this email and password
-        </button>
-      </p>
     </form>
- );
+  );
 }
 
-/* ============ Publish form ============ */
+/* ============ Publish / edit form ============ */
 
-type Pending = { storageId: Id<"_storage">; url: string; name: string };
+type Pending = { storageId?: Id<"_storage">; url: string; name: string };
 
-function PublishForm() {
+function PropertyForm({
+  initial,
+  onDone,
+}: {
+  initial?: CreatorPost;
+  onDone: () => void;
+}) {
+  const isEdit = initial !== undefined;
   const areaOptions = useQuery(api.listings.areas);
   const generateUploadUrl = useMutation(api.creator.generatePhotoUploadUrl);
   const createPost = useMutation(api.creator.createPost);
+  const editPost = useMutation(api.creator.editPost);
 
   const fileRef = useRef<HTMLInputElement>(null);
-  const [pending, setPending] = useState<Pending[]>([]);
+  const [pending, setPending] = useState<Pending[]>(
+    initial?.photos.map((p) => ({ storageId: p.storageId, url: p.url, name: "" })) ?? [],
+  );
   const [uploading, setUploading] = useState(false);
 
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [purpose, setPurpose] = useState<"sale" | "rent">("sale");
-  const [type, setType] = useState("apartment");
-  const [area, setArea] = useState("");
-  const [bedrooms, setBedrooms] = useState("2");
-  const [bathrooms, setBathrooms] = useState("1");
-  const [areaSqm, setAreaSqm] = useState("");
-  const [amenities, setAmenities] = useState("");
-  const [featured, setFeatured] = useState(false);
-  const [publishing, setPublishing] = useState(false);
+  const [title, setTitle] = useState(initial?.title ?? "");
+  const [description, setDescription] = useState(initial?.description ?? "");
+  const [purpose, setPurpose] = useState<"sale" | "rent">(initial?.purpose ?? "sale");
+  const [type, setType] = useState(initial?.type ?? "apartment");
+  const [area, setArea] = useState(initial?.area ?? "");
+  const [bedrooms, setBedrooms] = useState(String(initial?.bedrooms ?? 2));
+  const [bathrooms, setBathrooms] = useState(String(initial?.bathrooms ?? 1));
+  const [areaSqm, setAreaSqm] = useState(initial ? String(initial.areaSqm) : "");
+  const [amenities, setAmenities] = useState(initial?.amenities.join(", ") ?? "");
+  const [featured, setFeatured] = useState(initial?.featured ?? false);
+  const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const pickFiles = async (files: FileList | null) => {
@@ -326,10 +291,10 @@ function PublishForm() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setPublishing(true);
+    setSaving(true);
     setError(null);
     try {
-      await createPost({
+      const fields = {
         title,
         description,
         purpose,
@@ -343,33 +308,47 @@ function PublishForm() {
           .map((a) => a.trim())
           .filter(Boolean),
         featured,
-        photoIds: pending.map((p) => p.storageId),
-      });
-      toast.success("Published", {
-        description: "The property is now live in the catalog.",
-      });
-      setTitle("");
-      setArea("");
-      setAreaSqm("");
-      setAmenities("");
-      setBedrooms("2");
-      setBathrooms("1");
-      setFeatured(false);
-      setDescription("");
-      setPending([]);
+        photoIds: pending.flatMap((p) => (p.storageId ? [p.storageId] : [])),
+      };
+      if (initial) {
+        await editPost({ id: initial._id as Id<"listings">, ...fields });
+        toast.success("Saved", {
+          description: "Your changes are live in the catalog.",
+        });
+      } else {
+        await createPost(fields);
+        toast.success("Published", {
+          description: "The property is now live in the catalog.",
+        });
+        setTitle("");
+        setArea("");
+        setAreaSqm("");
+        setAmenities("");
+        setBedrooms("2");
+        setBathrooms("1");
+        setFeatured(false);
+        setDescription("");
+        setPending([]);
+      }
+      onDone();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Publishing failed.");
+      setError(err instanceof Error ? err.message : "Saving failed.");
     } finally {
-      setPublishing(false);
+      setSaving(false);
     }
   };
 
   return (
     <section className="clay-card clay-md p-6">
       <h2 className="font-display flex items-center gap-2 text-xl">
-        <Plus className="size-5 text-primary" />
-        New post
+        {isEdit ? <Pencil className="size-5 text-primary" /> : <Plus className="size-5 text-primary" />}
+        {isEdit ? "Edit post" : "New post"}
       </h2>
+      {isEdit && (
+        <p className="mt-1.5 text-xs text-muted-foreground">
+          Editing “{initial.title}” — its web address stays the same.
+        </p>
+      )}
 
       <form onSubmit={submit} className="mt-5 flex flex-col gap-3">
         {/* Photos */}
@@ -378,7 +357,7 @@ function PublishForm() {
             <p className="text-sm font-semibold">Photos</p>
             <label className="clay-btn clay-btn-light cursor-pointer rounded-full px-4 py-2 text-xs">
               <ImagePlus className="size-4" />
-              {uploading ? "Uploading…" : "Add photos"}
+              {uploading ? "Uploading…" : isEdit ? "Add more photos" : "Add photos"}
               <input
                 ref={fileRef}
                 type="file"
@@ -391,19 +370,22 @@ function PublishForm() {
           </div>
           {pending.length > 0 ? (
             <div className="mt-3 grid grid-cols-4 gap-2">
-              {pending.map((p) => (
-                <div key={p.storageId} className="relative">
+              {pending.map((p, i) => (
+                <div key={`${p.url}-${i}`} className="relative">
                   <img
                     src={p.url}
-                    alt={p.name}
+                    alt={p.name || "Property photo"}
                     className="aspect-square w-full rounded-xl object-cover"
                   />
+                  {i === 0 && (
+                    <span className="absolute bottom-1 left-1 rounded-full bg-card/90 px-2 py-0.5 text-[10px] font-semibold">
+                      Cover
+                    </span>
+                  )}
                   <button
                     type="button"
                     aria-label="Remove photo"
-                    onClick={() =>
-                      setPending((list) => list.filter((x) => x.storageId !== p.storageId))
-                    }
+                    onClick={() => setPending((list) => list.filter((x) => x !== p))}
                     className="absolute -right-1.5 -top-1.5 flex size-6 items-center justify-center rounded-full bg-card shadow-md"
                   >
                     <X className="size-3.5" />
@@ -413,7 +395,9 @@ function PublishForm() {
             </div>
           ) : (
             <p className="mt-2 text-xs text-muted-foreground">
-              Upload one or more images — the first becomes the cover.
+              {isEdit
+                ? "Remove photos you no longer want, or add new ones."
+                : "Upload one or more images — the first becomes the cover."}
             </p>
           )}
         </div>
@@ -421,7 +405,7 @@ function PublishForm() {
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Property title — e.g. Nile-View Apartment in Zamalek"
+          placeholder="Property title — e.g. Seafront Chalet on the North Coast"
           required
           minLength={4}
           className="clay-input h-11 shadow-none"
@@ -468,7 +452,7 @@ function PublishForm() {
           <Input
             value={area}
             onChange={(e) => setArea(e.target.value)}
-            placeholder="Area — e.g. Maadi"
+            placeholder="Area — e.g. New Cairo"
             required
             list="creator-areas"
             className="clay-input h-11 shadow-none"
@@ -515,7 +499,7 @@ function PublishForm() {
         <Input
           value={amenities}
           onChange={(e) => setAmenities(e.target.value)}
-          placeholder="Amenities, comma-separated — e.g. Nile view, Elevator"
+          placeholder="Amenities, comma-separated — e.g. Sea view, Elevator"
           className="clay-input h-11 shadow-none"
         />
 
@@ -532,18 +516,38 @@ function PublishForm() {
 
         {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <Button
-          type="submit"
-          disabled={publishing || uploading || pending.length === 0}
-          className="clay-btn clay-btn-primary h-11 rounded-full"
-        >
-          {publishing ? (
-            <Loader2 className="size-4 animate-spin" />
-          ) : (
-            <Plus className="size-4" />
+        <div className="flex gap-2">
+          <Button
+            type="submit"
+            disabled={saving || uploading || pending.length === 0}
+            className="clay-btn clay-btn-primary h-11 flex-1 rounded-full"
+          >
+            {saving ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : isEdit ? (
+              <Pencil className="size-4" />
+            ) : (
+              <Plus className="size-4" />
+            )}
+            {saving
+              ? "Saving…"
+              : isEdit
+                ? "Save changes"
+                : pending.length === 0
+                  ? "Add at least one photo"
+                  : "Publish post"}
+          </Button>
+          {isEdit && (
+            <Button
+              type="button"
+              onClick={onDone}
+              disabled={saving}
+              className="clay-btn clay-btn-light h-11 rounded-full px-5"
+            >
+              Cancel
+            </Button>
           )}
-          {pending.length === 0 ? "Add at least one photo" : "Publish post"}
-        </Button>
+        </div>
       </form>
     </section>
   );
@@ -551,18 +555,13 @@ function PublishForm() {
 
 /* ============ Post manager ============ */
 
-type CreatorPost = {
-  _id: string;
-  slug: string;
-  title: string;
-  purpose: "sale" | "rent";
-  type: string;
-  area: string;
-  featured: boolean;
-  cover: string | null;
-};
-
-function PostManager() {
+function PostManager({
+  editingId,
+  onEdit,
+}: {
+  editingId: string | null;
+  onEdit: (post: CreatorPost) => void;
+}) {
   const posts = useQuery(api.creator.myPosts);
   const setFeatured = useMutation(api.creator.setFeatured);
   const deletePost = useMutation(api.creator.deletePost);
@@ -602,7 +601,9 @@ function PostManager() {
           {posts.map((post) => (
             <li
               key={post._id}
-              className="clay-well flex items-center gap-3 rounded-2xl p-3"
+              className={`clay-well flex items-center gap-3 rounded-2xl p-3 ${
+                editingId === post._id ? "ring-2 ring-primary" : ""
+              }`}
             >
               {post.cover ? (
                 <img
@@ -621,6 +622,17 @@ function PostManager() {
                   {post.area} · {post.type} · {post.purpose === "sale" ? "Sale" : "Rent"}
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  <button
+                    onClick={() => onEdit(post)}
+                    className={`rounded-full px-2.5 py-1 text-xs font-semibold transition-colors ${
+                      editingId === post._id
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-card text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <Pencil className="mr-1 inline size-3" />
+                    Edit
+                  </button>
                   <button
                     onClick={() =>
                       setFeatured({ id: post._id as Id<"listings">, featured: !post.featured })

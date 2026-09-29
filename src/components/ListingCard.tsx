@@ -1,5 +1,7 @@
-import { Bath, BedDouble, Expand, MapPin } from "lucide-react";
-import { Link } from "react-router";
+import { api } from "@/convex/_generated/api";
+import { useQuery } from "convex/react";
+import { Bath, BedDouble, Expand, MapPin, Pencil } from "lucide-react";
+import { Link, useNavigate } from "react-router";
 
 export type Listing = {
   _id: string;
@@ -15,6 +17,11 @@ export type Listing = {
 };
 
 export function ListingCard({ listing }: { listing: Listing }) {
+  // The team's Edit affordance — rendered only for the creator account;
+  // every other visitor (and guests) never see it.
+  const isCreator = useQuery(api.creator.isCreator);
+  const navigate = useNavigate();
+
   return (
     <Link
       to={`/listing/${listing.slug}`}
@@ -32,6 +39,20 @@ export function ListingCard({ listing }: { listing: Listing }) {
         <span className="clay-chip absolute left-3 top-3 bg-card/90 px-3 py-1.5 text-xs">
           {listing.purpose === "sale" ? "For sale" : "For rent"}
         </span>
+        {isCreator === true && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              navigate(`/creator?edit=${listing.slug}`);
+            }}
+            className="clay-icon clay-sheen clay-squish absolute right-3 top-3 size-9 bg-card/95 text-foreground"
+            aria-label={`Edit ${listing.title}`}
+          >
+            <Pencil className="size-4" />
+          </button>
+        )}
       </div>
 
       <div className="flex flex-col gap-3 p-5">

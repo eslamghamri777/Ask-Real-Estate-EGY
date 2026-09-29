@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
+import { useEffect } from "react";
 import { Home, MessageCircle, Search, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router";
 
@@ -20,6 +21,16 @@ export function whatsappUrl(message?: string): string {
 export function ClayHeader() {
   const { isAuthenticated } = useAuth();
   const isCreator = useQuery(api.creator.isCreator);
+  const ensureCreator = useMutation(api.creator.ensureCreatorForEmail);
+
+  // As soon as the designated creator email signs in (from anywhere), grant
+  // the admin role — the studio link and edit buttons then appear instantly.
+  // The server no-ops for every other email.
+  useEffect(() => {
+    if (isAuthenticated && isCreator === false) {
+      void ensureCreator().catch(() => undefined);
+    }
+  }, [isAuthenticated, isCreator, ensureCreator]);
 
   return (
     <header className="sticky top-0 z-40 px-4 pt-4">

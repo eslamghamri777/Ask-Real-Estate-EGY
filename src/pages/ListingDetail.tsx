@@ -18,6 +18,7 @@ import {
   MapPin,
   MessageCircle,
   MessageSquare,
+  Pencil,
   Search,
   Send,
   Sparkles,
@@ -30,6 +31,9 @@ export default function ListingDetail() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [photoIndex, setPhotoIndex] = useState(0);
+  // Edit affordance for the team account only — hidden from every other user.
+  // Returns false for guests and regular customers; undefined while loading.
+  const isCreator = useQuery(api.creator.isCreator);
 
   const listing = useQuery(api.listings.get, { slug: slug ?? "" });
   const related = useQuery(
@@ -207,6 +211,18 @@ export default function ListingDetail() {
                   Message us below for full pricing details and current offers on
                   this property.
                 </p>
+                {isCreator === true && (
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="clay-btn clay-btn-light mt-3 h-10 w-full rounded-full text-sm"
+                  >
+                    <Link to={`/creator?edit=${listing.slug}`}>
+                      <Pencil className="size-4" />
+                      Edit this property
+                    </Link>
+                  </Button>
+                )}
                 <a
                   href={whatsappUrl(
                     `Hello, I'm interested in "${listing.title}" (${listing.area}). Could you share the pricing details?`,
