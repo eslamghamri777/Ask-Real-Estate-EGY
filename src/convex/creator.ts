@@ -6,10 +6,11 @@ import { mutation, query } from "./_generated/server";
 /**
  * Creator access.
  *
- * A signed-in user becomes a "creator" by redeeming the access code stored in
- * the deployment's CREATOR_ACCESS_CODE environment variable. Creators (role
- * "admin") can publish property posts with uploaded photos from /creator.
- * The code itself is never sent to the client — only a boolean "is it set".
+ * Creator rights (role "admin") are granted ONLY to the designated creator
+ * email stored in the deployment's CREATOR_EMAIL environment variable
+ * (Eslamghamri777@gmail.com). When that account signs in, ensureCreatorForEmail
+ * promotes it automatically; every other email stays a regular customer —
+ * they never see edit controls and the server rejects any edit attempts.
  */
 
 /** Returns the user's id when they hold creator rights, otherwise null. */
@@ -32,13 +33,6 @@ export const isCreator = query({
   },
 });
 
-/** Whether a creator access code is configured (kept private from the client). */
-export const hasAccessCode = query({
-  args: {},
-  returns: v.boolean(),
-  handler: async () => Boolean(process.env.CREATOR_ACCESS_CODE),
-});
-
 /**
  * Grants creator rights automatically when the signed-in account is the
  * designated creator email (CREATOR_EMAIL env var). Called when /creator is
@@ -58,24 +52,6 @@ export const ensureCreatorForEmail = mutation({
     const expected = (process.env.CREATOR_EMAIL ?? "").trim().toLowerCase();
     if (!expected || !user.email) return false;
     if (user.email.trim().toLowerCase() !== expected) return false;
-
-    await ctx.db.patch(userId, { role: "admin" });
-    return true;
-  },
-});
-
-/** Redeem the creator access code. Returns true when the code was correct. */
-export const redeemAccessCode = mutation({
-  args: { code: v.string() },
-  returns: v.boolean(),
-  handler: async (ctx, args) => {
-    const userId = await getAuthUserId(ctx);
-    if (!userId) throw new Error("Sign in first, then enter the access code.");
-
-    const expected = process.env.CREATOR_ACCESS_CODE;
-    if (!expected) throw new Error("No access code is configured on the server.");
-
-    if (args.code.trim() !== expected) return false;
 
     await ctx.db.patch(userId, { role: "admin" });
     return true;
