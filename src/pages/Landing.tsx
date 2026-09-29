@@ -2,8 +2,6 @@ import {
   ClayFooter,
   ClayHeader,
   SocialIconLinks,
-  useSiteSocials,
-  whatsappUrl,
 } from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
@@ -44,7 +42,6 @@ const POPULAR_AREAS = [
 
 export default function Landing() {
   const navigate = useNavigate();
-  const socials = useSiteSocials();
   const [purpose, setPurpose] = useState<"sale" | "rent">("sale");
   const [area, setArea] = useState("");
   const [q, setQ] = useState("");
@@ -313,25 +310,12 @@ export default function Landing() {
               Talk to us directly
             </h2>
             <p className="mx-auto mt-3 max-w-xl leading-relaxed text-muted-foreground">
-              Questions about a home, the area, or pricing? Message us on
-              WhatsApp — a real person from the team replies, usually within
-              minutes.
+              Questions about a home, the area, or pricing? Reach us on
+              Facebook, Instagram, or WhatsApp — a real person from the team
+              replies, usually within minutes.
             </p>
-            <a
-              href={whatsappUrl(
-                socials.whatsappNumber,
-                "Hello Ask Real Estate! I have a question about a property.",
-              )}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="clay-btn clay-btn-primary mt-7 inline-flex h-12 items-center gap-2 rounded-full px-8 text-base"
-            >
-              <MessageCircle className="size-5" />
-              Chat on WhatsApp · 0100 953 3599
-            </a>
 
-            <div className="mt-7">
-              <p className="eyebrow">Follow us</p>
+            <div className="mt-8">
               <SocialIconLinks className="mt-3" />
             </div>
 
