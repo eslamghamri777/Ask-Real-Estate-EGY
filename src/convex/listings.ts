@@ -44,7 +44,9 @@ async function publicListing(ctx: QueryCtx, l: Doc<"listings">) {
 export const list = query({
   args: {
     paginationOpts: paginationOptsValidator,
-    purpose: v.optional(v.union(v.literal("sale"), v.literal("rent"))),
+    purpose: v.optional(
+      v.union(v.literal("primary"), v.literal("resale"), v.literal("rent")),
+    ),
     area: v.optional(v.string()),
     type: v.optional(v.string()),
     bedrooms: v.optional(v.number()),
@@ -147,7 +149,7 @@ export const stats = query({
     const all = await ctx.db.query("listings").collect();
     return {
       total: all.length,
-      forSale: all.filter((l) => l.purpose === "sale").length,
+      forSale: all.filter((l) => l.purpose !== "rent").length,
       forRent: all.filter((l) => l.purpose === "rent").length,
     };
   },

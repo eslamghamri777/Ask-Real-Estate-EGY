@@ -55,8 +55,12 @@ const schema = defineSchema(
       slug: v.string(),
       title: v.string(),
       description: v.string(),
-      /** "sale" for buyers, "rent" for renters */
-      purpose: v.union(v.literal("sale"), v.literal("rent")),
+      /** "primary" = direct from developer, "resale" = existing owner, "rent" */
+      purpose: v.union(
+        v.literal("primary"),
+        v.literal("resale"),
+        v.literal("rent"),
+      ),
       /** apartment | villa | penthouse | duplex | studio | townhouse */
       type: v.string(),
       area: v.string(),

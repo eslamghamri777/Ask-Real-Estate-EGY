@@ -42,7 +42,7 @@ const POPULAR_AREAS = [
 
 export default function Landing() {
   const navigate = useNavigate();
-  const [purpose, setPurpose] = useState<"sale" | "rent">("sale");
+  const [purpose, setPurpose] = useState<"primary" | "resale" | "rent">("primary");
   const [area, setArea] = useState("");
   const [q, setQ] = useState("");
 
@@ -105,11 +105,16 @@ export default function Landing() {
             transition={{ duration: 0.6, delay: 0.22 }}
             className="clay-card clay-lg mx-auto mt-10 max-w-4xl p-4 sm:p-5"
           >
-            <div className="clay-well mx-auto mb-4 flex w-fit items-center gap-1 rounded-full p-1.5">
+            <div className="clay-well mx-auto mb-4 flex w-fit flex-wrap items-center justify-center gap-1 rounded-full p-1.5">
               <PurposeTab
-                active={purpose === "sale"}
-                onClick={() => setPurpose("sale")}
-                label="Buy"
+                active={purpose === "primary"}
+                onClick={() => setPurpose("primary")}
+                label="Primary Sale"
+              />
+              <PurposeTab
+                active={purpose === "resale"}
+                onClick={() => setPurpose("resale")}
+                label="Resale"
               />
               <PurposeTab
                 active={purpose === "rent"}

@@ -21,8 +21,8 @@ const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", 
 export default function Listings() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [purpose, setPurpose] = useState<"all" | "sale" | "rent">(
-    (searchParams.get("purpose") as "sale" | "rent") || "all",
+  const [purpose, setPurpose] = useState<"all" | "primary" | "resale" | "rent">(
+    (searchParams.get("purpose") as "primary" | "resale" | "rent") || "all",
   );
   const [area, setArea] = useState(searchParams.get("area") || "");
   const [type, setType] = useState(searchParams.get("type") || "");
@@ -33,7 +33,9 @@ export default function Listings() {
 
   // keep filter state in sync when the URL changes (e.g. header nav links)
   useEffect(() => {
-    setPurpose((searchParams.get("purpose") as "sale" | "rent") || "all");
+    setPurpose(
+      (searchParams.get("purpose") as "primary" | "resale" | "rent") || "all",
+    );
     setArea(searchParams.get("area") || "");
     setType(searchParams.get("type") || "");
     setBedrooms(Number(searchParams.get("bedrooms")) || 0);
@@ -68,7 +70,7 @@ export default function Listings() {
     setSearchParams(params, { replace: true });
   };
 
-  const changePurpose = (next: "all" | "sale" | "rent") => {
+  const changePurpose = (next: "all" | "primary" | "resale" | "rent") => {
     setPurpose(next);
     applyToUrl({ purpose: next === "all" ? "" : next });
   };
@@ -108,17 +110,22 @@ export default function Listings() {
         {/* ============ Filters ============ */}
         <section className="clay-card clay-md mt-6 p-5">
           {/* purpose toggle */}
-          <div className="clay-well mb-4 flex w-fit items-center gap-1 rounded-full p-1.5">
+          <div className="clay-well mb-4 flex w-fit flex-wrap items-center gap-1 rounded-full p-1.5">
             <PurposeTab
               active={purpose === "all"}
               onClick={() => changePurpose("all")}
               label="All"
             />
             <PurposeTab
-              active={purpose === "sale"}
-              onClick={() => changePurpose("sale")}
+              active={purpose === "primary"}
+              onClick={() => changePurpose("primary")}
               icon={<Home className="size-4" />}
-              label="Buy"
+              label="Primary Sale"
+            />
+            <PurposeTab
+              active={purpose === "resale"}
+              onClick={() => changePurpose("resale")}
+              label="Resale"
             />
             <PurposeTab
               active={purpose === "rent"}

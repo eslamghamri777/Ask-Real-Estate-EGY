@@ -42,7 +42,7 @@ type CreatorPost = {
   slug: string;
   title: string;
   description: string;
-  purpose: "sale" | "rent";
+  purpose: "primary" | "resale" | "rent";
   type: string;
   area: string;
   bedrooms: number;
@@ -245,7 +245,9 @@ function PropertyForm({
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [description, setDescription] = useState(initial?.description ?? "");
-  const [purpose, setPurpose] = useState<"sale" | "rent">(initial?.purpose ?? "sale");
+  const [purpose, setPurpose] = useState<"primary" | "resale" | "rent">(
+    initial?.purpose ?? "primary",
+  );
   const [type, setType] = useState(initial?.type ?? "apartment");
   const [area, setArea] = useState(initial?.area ?? "");
   const [bedrooms, setBedrooms] = useState(String(initial?.bedrooms ?? 2));
@@ -426,17 +428,17 @@ function PropertyForm({
           className="clay-input resize-none shadow-none"
         />
 
-        <div className="clay-well flex w-fit items-center gap-1 rounded-full p-1.5">
-          {(["sale", "rent"] as const).map((p) => (
+        <div className="clay-well flex w-fit flex-wrap items-center gap-1 rounded-full p-1.5">
+          {(["primary", "resale", "rent"] as const).map((p) => (
             <button
               key={p}
               type="button"
               onClick={() => setPurpose(p)}
-              className={`rounded-full px-5 py-2 text-sm font-semibold transition-all ${
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition-all ${
                 purpose === p ? "bg-card clay-sm" : "text-muted-foreground"
               }`}
             >
-              {p === "sale" ? "For sale" : "For rent"}
+              {p === "primary" ? "Primary sale" : p === "resale" ? "Resale" : "For rent"}
             </button>
           ))}
         </div>
@@ -625,7 +627,12 @@ function PostManager({
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">{post.title}</p>
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  {post.area} · {post.type} · {post.purpose === "sale" ? "Sale" : "Rent"}
+                  {post.area} · {post.type} · {" "}
+                  {post.purpose === "rent"
+                    ? "Rent"
+                    : post.purpose === "primary"
+                      ? "Primary"
+                      : "Resale"}
                 </p>
                 <div className="mt-1.5 flex flex-wrap gap-1.5">
                   <button

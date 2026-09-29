@@ -7,7 +7,7 @@ export type Listing = {
   _id: string;
   slug: string;
   title: string;
-  purpose: "sale" | "rent";
+  purpose: "primary" | "resale" | "rent";
   type: string;
   area: string;
   bedrooms: number;
@@ -37,7 +37,11 @@ export function ListingCard({ listing }: { listing: Listing }) {
           />
         </div>
         <span className="clay-chip absolute left-3 top-3 bg-card/90 px-3 py-1.5 text-xs">
-          {listing.purpose === "sale" ? "For sale" : "For rent"}
+          {listing.purpose === "primary"
+            ? "Primary sale"
+            : listing.purpose === "resale"
+              ? "Resale"
+              : "For rent"}
         </span>
         {isCreator === true && (
           <button
@@ -72,9 +76,9 @@ export function ListingCard({ listing }: { listing: Listing }) {
           </span>
           <span className="text-xs text-muted-foreground">·</span>
           <span className="text-xs text-muted-foreground">
-            {listing.purpose === "sale"
-              ? "Pricing on request"
-              : "Rent on request"}
+            {listing.purpose === "rent"
+              ? "Rent on request"
+              : "Pricing on request"}
           </span>
         </div>
 

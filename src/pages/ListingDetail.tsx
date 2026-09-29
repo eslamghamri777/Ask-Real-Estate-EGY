@@ -186,7 +186,11 @@ export default function ListingDetail() {
             <div className="clay-card clay-md flex flex-col gap-4 p-6">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="clay-chip bg-primary px-3.5 py-1.5 text-xs text-primary-foreground">
-                  {listing.purpose === "sale" ? "For sale" : "For rent"}
+                  {listing.purpose === "primary"
+                    ? "Primary sale"
+                    : listing.purpose === "resale"
+                      ? "Resale"
+                      : "For rent"}
                 </span>
                 <span className="clay-chip bg-card px-3.5 py-1.5 text-xs capitalize">
                   {listing.type}
@@ -211,7 +215,7 @@ export default function ListingDetail() {
 
               <div className="clay-well rounded-2xl px-4 py-3">
                 <p className="text-sm font-semibold">
-                  {listing.purpose === "sale" ? "Pricing on request" : "Rent on request"}
+                  {listing.purpose === "rent" ? "Rent on request" : "Pricing on request"}
                 </p>
                 <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
                   Message us below for full pricing details and current offers on

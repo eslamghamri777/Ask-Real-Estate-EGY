@@ -72,7 +72,7 @@ export const generatePhotoUploadUrl = mutation({
 const postFields = {
   title: v.string(),
   description: v.string(),
-  purpose: v.union(v.literal("sale"), v.literal("rent")),
+  purpose: v.union(v.literal("primary"), v.literal("resale"), v.literal("rent")),
   type: v.string(),
   area: v.string(),
   bedrooms: v.number(),
@@ -134,7 +134,7 @@ export const editPost = mutation({
     id: v.id("listings"),
     title: v.string(),
     description: v.string(),
-    purpose: v.union(v.literal("sale"), v.literal("rent")),
+    purpose: v.union(v.literal("primary"), v.literal("resale"), v.literal("rent")),
     type: v.string(),
     area: v.string(),
     bedrooms: v.number(),

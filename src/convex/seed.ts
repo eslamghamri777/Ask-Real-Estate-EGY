@@ -10,7 +10,8 @@ import { internalMutation } from "./_generated/server";
 type Seed = {
   slug: string;
   title: string;
-  purpose: "sale" | "rent";
+  /** "primary" = direct from developer, "resale" = existing owner, "rent" */
+  purpose: "primary" | "resale" | "rent";
   type: string;
   area: string;
   price: number;
@@ -27,7 +28,7 @@ const Listings: Seed[] = [
   {
     slug: "new-cairo-family-villa",
     title: "Standalone Villa with Private Garden, New Cairo",
-    purpose: "sale",
+    purpose: "resale",
     type: "villa",
     area: "New Cairo",
     price: 32000000,
@@ -48,7 +49,7 @@ const Listings: Seed[] = [
   {
     slug: "new-cairo-duplex-90th",
     title: "Family Duplex off New Cairo's 90th Street",
-    purpose: "sale",
+    purpose: "resale",
     type: "duplex",
     area: "New Cairo",
     price: 17800000,
@@ -88,7 +89,7 @@ const Listings: Seed[] = [
   {
     slug: "sheikh-zayed-townhouse",
     title: "Modern Townhouse in Sheikh Zayed Compound",
-    purpose: "sale",
+    purpose: "resale",
     type: "townhouse",
     area: "Sheikh Zayed",
     price: 14500000,
@@ -109,7 +110,7 @@ const Listings: Seed[] = [
   {
     slug: "sheikh-zayed-golf-villa",
     title: "Golf-View Villa in Sheikh Zayed",
-    purpose: "sale",
+    purpose: "resale",
     type: "villa",
     area: "Sheikh Zayed",
     price: 26900000,
@@ -129,7 +130,7 @@ const Listings: Seed[] = [
   {
     slug: "new-capital-skyline-apartment",
     title: "Skyline Apartment in the New Administrative Capital",
-    purpose: "sale",
+    purpose: "primary",
     type: "apartment",
     area: "New Administrative Capital",
     price: 8500000,
@@ -170,7 +171,7 @@ const Listings: Seed[] = [
   {
     slug: "north-coast-seafront-chalet",
     title: "Seafront Chalet on the North Coast",
-    purpose: "sale",
+    purpose: "primary",
     type: "chalet",
     area: "North Coast",
     price: 12000000,
@@ -211,7 +212,7 @@ const Listings: Seed[] = [
   {
     slug: "ain-sokhna-sea-view-chalet",
     title: "Sea-View Chalet in Ain Sokhna",
-    purpose: "sale",
+    purpose: "primary",
     type: "chalet",
     area: "Ain Sokhna",
     price: 9500000,
@@ -252,7 +253,7 @@ const Listings: Seed[] = [
   {
     slug: "heliopolis-sun-penthouse",
     title: "Rooftop Penthouse with Terrace in Heliopolis",
-    purpose: "sale",
+    purpose: "resale",
     type: "penthouse",
     area: "Heliopolis",
     price: 12750000,
@@ -272,7 +273,7 @@ const Listings: Seed[] = [
   {
     slug: "el-shorouk-garden-villa",
     title: "Detached Garden Villa in El Shorouk",
-    purpose: "sale",
+    purpose: "resale",
     type: "villa",
     area: "El Shorouk",
     price: 18500000,
@@ -313,7 +314,7 @@ const Listings: Seed[] = [
   {
     slug: "madinaty-townhouse-sale",
     title: "Family Townhouse in Madinaty",
-    purpose: "sale",
+    purpose: "primary",
     type: "townhouse",
     area: "Madinaty",
     price: 13500000,
@@ -362,78 +363,31 @@ export const seedListings = internalMutation({
 });
 
 /**
- * ONE-TIME MIGRATION: replace the old Cairo-only seed with the new
- * destination catalog. Slug-precise and guarded — it only ever deletes the
- * twelve original demo listings and refuses to run once the new seed (or any
- * other listing) is present, so creator-published posts are never touched.
- * Delete this mutation after it has been run.
+ * ONE-TIME MIGRATION: convert the old "sale" purpose into "primary" or
+ * "resale" per listing (new-development style units → primary, established
+ * homes → resale). "rent" rows are untouched. Idempotent: it no-ops once no
+ * "sale" rows remain. Delete this mutation after it has been run.
  */
-const NEW_ONLY_SLUGS = new Set([
+const PRIMARY_SLUGS = new Set([
   "new-capital-skyline-apartment",
   "north-coast-seafront-chalet",
   "ain-sokhna-sea-view-chalet",
-  "el-shorouk-garden-villa",
-  "madinaty-apartment-rent",
-]);
-const OLD_SEED_SLUGS = new Set([
-  "zamalek-nile-view-apartment",
-  "new-cairo-family-villa",
-  "maadi-quiet-garden-apartment",
-  "sheikh-zayed-townhouse",
-  "heliopolis-sun-penthouse",
-  "downtown-loft-kazakhstan",
-  "new-cairo-duplex-90th",
-  "zamalek-furnished-rental",
-  "maadi-villa-for-rent",
-  "heliopolis-classic-apartment",
-  "downtown-renovated-two-bed",
-  "sheikh-zayed-golf-villa",
+  "madinaty-townhouse-sale",
 ]);
 
-export const migrateToNewDestinations = internalMutation({
+export const migratePurposes = internalMutation({
   args: {},
-  returns: v.object({ deleted: v.number(), inserted: v.number() }),
+  returns: v.object({ updated: v.number() }),
   handler: async (ctx) => {
     const all = await ctx.db.query("listings").collect();
+    let updated = 0;
     for (const l of all) {
-      if (NEW_ONLY_SLUGS.has(l.slug)) {
-        throw new Error(
-          "Migration already applied — new-destination seed listings exist. Doing nothing.",
-        );
-      }
-      if (!OLD_SEED_SLUGS.has(l.slug)) {
-        throw new Error(
-          `Refusing to run: found a non-seed listing ("${l.title}" in ${l.area}). This migration only clears the original demo data.`,
-        );
-      }
-    }
-
-    // No storage files are involved: the old seed uses legacy photo URLs.
-    const inquiries = await ctx.db.query("inquiries").collect();
-    for (const inquiry of inquiries) {
-      await ctx.db.delete(inquiry._id);
-    }
-    for (const l of all) {
-      await ctx.db.delete(l._id);
-    }
-
-    for (const l of Listings) {
-      await ctx.db.insert("listings", {
-        slug: l.slug,
-        title: l.title,
-        description: l.blurb,
-        purpose: l.purpose,
-        type: l.type,
-        area: l.area,
-        price: l.price,
-        bedrooms: l.bedrooms,
-        bathrooms: l.bathrooms,
-        areaSqm: l.areaSqm,
-        photos: l.photos,
-        amenities: l.amenities,
-        featured: l.featured,
+      if ((l.purpose as string) !== "sale") continue;
+      await ctx.db.patch(l._id, {
+        purpose: PRIMARY_SLUGS.has(l.slug) ? "primary" : "resale",
       });
+      updated += 1;
     }
-    return { deleted: all.length, inserted: Listings.length };
+    return { updated };
   },
 });

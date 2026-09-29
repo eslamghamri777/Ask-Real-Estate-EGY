@@ -7,7 +7,8 @@ import { Facebook, Home, Instagram, MessageCircle, Search, UserRound } from "luc
 import { Link, useLocation } from "react-router";
 
 const navLinks = [
-  { to: "/listings?purpose=sale", label: "Buy" },
+  { to: "/listings?purpose=primary", label: "Primary sale" },
+  { to: "/listings?purpose=resale", label: "Resale" },
   { to: "/listings?purpose=rent", label: "Rent" },
   { to: "/listings", label: "All properties" },
 ];
