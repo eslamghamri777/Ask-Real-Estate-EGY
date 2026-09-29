@@ -18,6 +18,15 @@ import { useSearchParams } from "react-router";
 
 const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
 
+const DELIVERY_OPTIONS = [
+  { value: "immediate", label: "Immediate" },
+  { value: "6m", label: "6 months" },
+  { value: "12m", label: "12 months" },
+  { value: "2y", label: "2 years" },
+  { value: "3y", label: "3 years" },
+  { value: "4y", label: "4 years" },
+] as const;
+
 const VALID_PURPOSES = new Set(["primary", "resale", "rent"]);
 
 /** Tolerate stale links like ?purpose=sale from before the primary/resale split. */
@@ -38,6 +47,7 @@ export default function Listings() {
   const [bedrooms, setBedrooms] = useState(
     Number(searchParams.get("bedrooms")) || 0,
   );
+  const [delivery, setDelivery] = useState(searchParams.get("delivery") || "");
   const [q, setQ] = useState(searchParams.get("q") || "");
 
   // keep filter state in sync when the URL changes (e.g. header nav links)
@@ -46,6 +56,7 @@ export default function Listings() {
     setArea(searchParams.get("area") || "");
     setType(searchParams.get("type") || "");
     setBedrooms(Number(searchParams.get("bedrooms")) || 0);
+    setDelivery(searchParams.get("delivery") || "");
     setQ(searchParams.get("q") || "");
   }, [searchParams]);
 
@@ -58,6 +69,14 @@ export default function Listings() {
       area: area || undefined,
       type: type || undefined,
       bedrooms: bedrooms || undefined,
+      delivery: (delivery || undefined) as
+        | "immediate"
+        | "6m"
+        | "12m"
+        | "2y"
+        | "3y"
+        | "4y"
+        | undefined,
       q: q.trim() || undefined,
     },
     { initialNumItems: 9 },
@@ -87,6 +106,7 @@ export default function Listings() {
     setArea("");
     setType("");
     setBedrooms(0);
+    setDelivery("");
     setQ("");
     setSearchParams({}, { replace: true });
   };
@@ -96,6 +116,7 @@ export default function Listings() {
     (area ? 1 : 0) +
     (type ? 1 : 0) +
     (bedrooms ? 1 : 0) +
+    (delivery ? 1 : 0) +
     (q.trim() ? 1 : 0);
 
   return (
@@ -204,6 +225,26 @@ export default function Listings() {
                 {[0, 1, 2, 3, 4, 5].map((n) => (
                   <SelectItem key={n} value={String(n)}>
                     {n === 0 ? "Any beds" : `${n}+ beds`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={delivery || "any-delivery"}
+              onValueChange={(v) => {
+                setDelivery(v === "any-delivery" ? "" : v);
+                applyToUrl({ delivery: v === "any-delivery" ? "" : v });
+              }}
+            >
+              <SelectTrigger className="clay-sheen h-12 rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+                <SelectValue placeholder="Delivery time" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any-delivery">Any delivery time</SelectItem>
+                {DELIVERY_OPTIONS.map((d) => (
+                  <SelectItem key={d.value} value={d.value}>
+                    {d.label}
                   </SelectItem>
                 ))}
               </SelectContent>

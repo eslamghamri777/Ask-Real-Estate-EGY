@@ -3,6 +3,17 @@ import { v } from "convex/values";
 import type { Doc } from "./_generated/dataModel";
 import { query, type QueryCtx } from "./_generated/server";
 
+export const deliveryTimeValidator = v.optional(
+  v.union(
+    v.literal("immediate"),
+    v.literal("6m"),
+    v.literal("12m"),
+    v.literal("2y"),
+    v.literal("3y"),
+    v.literal("4y"),
+  ),
+);
+
 /**
  * Public shape of a listing sent to the client. Deliberately omits `price`:
  * pricing is shared privately when a customer messages the team — it is never
@@ -37,6 +48,7 @@ async function publicListing(ctx: QueryCtx, l: Doc<"listings">) {
     photos,
     amenities: l.amenities,
     featured: l.featured,
+    deliveryTime: l.deliveryTime ?? null,
   };
 }
 
@@ -50,6 +62,7 @@ export const list = query({
     area: v.optional(v.string()),
     type: v.optional(v.string()),
     bedrooms: v.optional(v.number()),
+    delivery: deliveryTimeValidator,
     q: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
@@ -83,6 +96,9 @@ export const list = query({
     }
     if (args.bedrooms) {
       results = results.filter((l) => l.bedrooms >= args.bedrooms!);
+    }
+    if (args.delivery) {
+      results = results.filter((l) => l.deliveryTime === args.delivery);
     }
     if (args.q) {
       const q = args.q.toLowerCase();

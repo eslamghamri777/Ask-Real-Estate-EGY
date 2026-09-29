@@ -75,6 +75,17 @@ const schema = defineSchema(
       photoIds: v.optional(v.array(v.id("_storage"))),
       amenities: v.array(v.string()),
       featured: v.optional(v.boolean()),
+      /** When the unit is handed over — mainly for primary (off-plan) sales. */
+      deliveryTime: v.optional(
+        v.union(
+          v.literal("immediate"),
+          v.literal("6m"),
+          v.literal("12m"),
+          v.literal("2y"),
+          v.literal("3y"),
+          v.literal("4y"),
+        ),
+      ),
     })
       .index("by_slug", ["slug"])
       .index("by_purpose", ["purpose"])

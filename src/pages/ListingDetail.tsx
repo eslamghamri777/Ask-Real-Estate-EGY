@@ -4,7 +4,7 @@ import {
   useSiteSocials,
   whatsappUrl,
 } from "@/components/ClayLayout";
-import { ListingCard } from "@/components/ListingCard";
+import { DELIVERY_LABELS, ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -20,6 +20,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Expand,
+  KeyRound,
   MapPin,
   MessageCircle,
   MessageSquare,
@@ -264,6 +265,18 @@ export default function ListingDetail() {
                   label="m²"
                 />
               </div>
+
+              {listing.deliveryTime && (
+                <div className="clay-well flex items-center gap-2.5 rounded-2xl px-4 py-3">
+                  <span className="clay-icon clay-sheen size-8 shrink-0 bg-card">
+                    <KeyRound className="size-4" />
+                  </span>
+                  <div>
+                    <p className="text-sm font-semibold">Delivery: {DELIVERY_LABELS[listing.deliveryTime] ?? listing.deliveryTime}</p>
+                    <p className="text-xs text-muted-foreground">Estimated handover time</p>
+                  </div>
+                </div>
+              )}
 
               <p className="text-sm leading-relaxed text-muted-foreground">
                 Interested in this property? Send us a message below and a

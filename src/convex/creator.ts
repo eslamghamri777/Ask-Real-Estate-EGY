@@ -2,6 +2,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 import type { MutationCtx, QueryCtx } from "./_generated/server";
 import { mutation, query } from "./_generated/server";
+import { deliveryTimeValidator } from "./listings";
 
 /**
  * Creator access.
@@ -80,6 +81,7 @@ const postFields = {
   areaSqm: v.number(),
   amenities: v.array(v.string()),
   featured: v.boolean(),
+  deliveryTime: v.optional(deliveryTimeValidator),
   photoIds: v.array(v.id("_storage")),
 };
 
@@ -120,6 +122,7 @@ export const createPost = mutation({
       slug,
       photos: [], // legacy field — uploads live in storage via photoIds
       price: 0, // internal only — pricing is shared privately, never published
+      deliveryTime: args.deliveryTime,
     });
   },
 });
@@ -142,6 +145,7 @@ export const editPost = mutation({
     areaSqm: v.number(),
     amenities: v.array(v.string()),
     featured: v.boolean(),
+    deliveryTime: v.optional(deliveryTimeValidator),
     photoIds: v.array(v.id("_storage")),
   },
   returns: v.null(),
@@ -178,6 +182,7 @@ export const editPost = mutation({
       areaSqm: args.areaSqm,
       amenities: args.amenities,
       featured: args.featured,
+      deliveryTime: args.deliveryTime,
       photoIds: args.photoIds,
     });
     return null;
@@ -270,6 +275,7 @@ export const myPosts = query({
           areaSqm: post.areaSqm,
           amenities: post.amenities,
           featured: post.featured ?? false,
+          deliveryTime: post.deliveryTime ?? null,
           photos,
           cover: photos[0]?.url ?? null,
         };

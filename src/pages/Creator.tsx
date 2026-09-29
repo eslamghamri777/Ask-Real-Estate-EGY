@@ -34,6 +34,15 @@ import { toast } from "sonner";
 
 const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
 
+const DELIVERY_OPTIONS = [
+  { value: "immediate", label: "Immediate" },
+  { value: "6m", label: "6 months" },
+  { value: "12m", label: "12 months" },
+  { value: "2y", label: "2 years" },
+  { value: "3y", label: "3 years" },
+  { value: "4y", label: "4 years" },
+] as const;
+
 /** Photos above this size are rejected with a clear message instead of failing mid-upload. */
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024; // 8 MB
 
@@ -50,6 +59,7 @@ type CreatorPost = {
   areaSqm: number;
   amenities: string[];
   featured: boolean;
+  deliveryTime: string | null;
   photos: { url: string; storageId?: Id<"_storage"> }[];
   cover: string | null;
 };
@@ -255,6 +265,7 @@ function PropertyForm({
   const [areaSqm, setAreaSqm] = useState(initial ? String(initial.areaSqm) : "");
   const [amenities, setAmenities] = useState(initial?.amenities.join(", ") ?? "");
   const [featured, setFeatured] = useState(initial?.featured ?? false);
+  const [deliveryTime, setDeliveryTime] = useState(initial?.deliveryTime ?? "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -316,6 +327,14 @@ function PropertyForm({
           .map((a) => a.trim())
           .filter(Boolean),
         featured,
+        deliveryTime: (deliveryTime || undefined) as
+          | "immediate"
+          | "6m"
+          | "12m"
+          | "2y"
+          | "3y"
+          | "4y"
+          | undefined,
         photoIds: pending.flatMap((p) => (p.storageId ? [p.storageId] : [])),
       };
       if (initial) {
@@ -510,6 +529,23 @@ function PropertyForm({
           placeholder="Amenities, comma-separated — e.g. Sea view, Elevator"
           className="clay-input h-11 shadow-none"
         />
+
+        <Select
+          value={deliveryTime || "any-delivery"}
+          onValueChange={(v) => setDeliveryTime(v === "any-delivery" ? "" : v)}
+        >
+          <SelectTrigger className="h-11 rounded-full border-none bg-card px-5 text-sm shadow-none">
+            <SelectValue placeholder="Delivery time" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="any-delivery">Delivery time (optional)</SelectItem>
+            {DELIVERY_OPTIONS.map((d) => (
+              <SelectItem key={d.value} value={d.value}>
+                {d.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
         <label className="flex cursor-pointer items-center gap-2.5 text-sm font-medium">
           <input

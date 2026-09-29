@@ -13,7 +13,17 @@ export type Listing = {
   bedrooms: number;
   bathrooms: number;
   areaSqm: number;
+  deliveryTime?: string | null;
   photos: string[];
+};
+
+export const DELIVERY_LABELS: Record<string, string> = {
+  immediate: "Immediate",
+  "6m": "6 months",
+  "12m": "12 months",
+  "2y": "2 years",
+  "3y": "3 years",
+  "4y": "4 years",
 };
 
 export function ListingCard({ listing }: { listing: Listing }) {
@@ -75,6 +85,14 @@ export function ListingCard({ listing }: { listing: Listing }) {
             {listing.type}
           </span>
           <span className="text-xs text-muted-foreground">·</span>
+          {listing.deliveryTime && (
+            <>
+              <span className="text-xs text-muted-foreground">
+                Delivery: {DELIVERY_LABELS[listing.deliveryTime] ?? listing.deliveryTime}
+              </span>
+              <span className="text-xs text-muted-foreground">·</span>
+            </>
+          )}
           <span className="text-xs text-muted-foreground">
             {listing.purpose === "rent"
               ? "Rent on request"

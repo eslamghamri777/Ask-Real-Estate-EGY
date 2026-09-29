@@ -375,6 +375,55 @@ const PRIMARY_SLUGS = new Set([
   "madinaty-townhouse-sale",
 ]);
 
+/**
+ * ONE-TIME MIGRATION: give the 15 demo listings realistic delivery times so
+ * the delivery filter has data. Only touches the known demo slugs and only
+ * when deliveryTime is unset — creator posts are never modified. Delete this
+ * mutation after it has been run.
+ */
+const DEMO_DELIVERY: Record<string, string> = {
+  "new-capital-skyline-apartment": "2y",
+  "north-coast-seafront-chalet": "3y",
+  "ain-sokhna-sea-view-chalet": "12m",
+  "madinaty-townhouse-sale": "6m",
+  "new-cairo-family-villa": "immediate",
+  "new-cairo-duplex-90th": "immediate",
+  "sheikh-zayed-townhouse": "immediate",
+  "sheikh-zayed-golf-villa": "immediate",
+  "heliopolis-sun-penthouse": "immediate",
+  "el-shorouk-garden-villa": "immediate",
+  "new-cairo-garden-apartment-rent": "immediate",
+  "new-capital-furnished-rental": "immediate",
+  "north-coast-family-chalet-rent": "immediate",
+  "ain-sokhna-villa-rent": "immediate",
+  "madinaty-apartment-rent": "immediate",
+};
+
+export const stampDeliveryTimes = internalMutation({
+  args: {},
+  returns: v.object({ updated: v.number() }),
+  handler: async (ctx) => {
+    const all = await ctx.db.query("listings").collect();
+    let updated = 0;
+    for (const l of all) {
+      if (l.deliveryTime) continue;
+      const delivery = DEMO_DELIVERY[l.slug];
+      if (!delivery) continue;
+      await ctx.db.patch(l._id, {
+        deliveryTime: delivery as
+          | "immediate"
+          | "6m"
+          | "12m"
+          | "2y"
+          | "3y"
+          | "4y",
+      });
+      updated += 1;
+    }
+    return { updated };
+  },
+});
+
 export const migratePurposes = internalMutation({
   args: {},
   returns: v.object({ updated: v.number() }),
