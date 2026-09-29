@@ -40,6 +40,10 @@ export function ClayHeader() {
   const { isAuthenticated } = useAuth();
   const isCreator = useQuery(api.creator.isCreator);
   const ensureCreator = useMutation(api.creator.ensureCreatorForEmail);
+  const location = useLocation();
+  // Buy / Rent / All properties are only offered on the home page — once the
+  // customer follows one, the header stays clean and the logo returns home.
+  const onHomePage = location.pathname === "/";
 
   // As soon as the designated creator email signs in (from anywhere), grant
   // the admin role — the studio link and edit buttons then appear instantly.
@@ -63,9 +67,10 @@ export function ClayHeader() {
         </Link>
 
         <nav className="mx-auto hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <NavLink key={link.to} to={link.to} label={link.label} />
-          ))}
+          {onHomePage &&
+            navLinks.map((link) => (
+              <NavLink key={link.to} to={link.to} label={link.label} />
+            ))}
           {isCreator === true && (
             <NavLink to="/creator" label="Creator studio" />
           )}
