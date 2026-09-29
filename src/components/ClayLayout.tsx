@@ -3,7 +3,7 @@ import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect } from "react";
-import { Home, MessageCircle, Search, UserRound } from "lucide-react";
+import { Facebook, Home, Instagram, MessageCircle, Search, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router";
 
 const navLinks = [
@@ -12,10 +12,28 @@ const navLinks = [
   { to: "/listings", label: "All properties" },
 ];
 
-/** Ask Real Estate WhatsApp line — 0100 953 3599 (+20 100 953 3599 international). */
-export function whatsappUrl(message?: string): string {
-  const base = "https://wa.me/201009533599";
+/**
+ * Default Ask Real Estate WhatsApp line — 0100 953 3599 (+20 100 953 3599).
+ * Used until the creator saves a number in the studio's "Connected socials"
+ * card; the saved value takes over automatically.
+ */
+export const DEFAULT_WHATSAPP_NUMBER = "201009533599";
+
+/** Build a wa.me deep link, optionally with a pre-filled message. */
+export function whatsappUrl(number: string | null | undefined, message?: string): string {
+  const base = `https://wa.me/${number || DEFAULT_WHATSAPP_NUMBER}`;
   return message ? `${base}?text=${encodeURIComponent(message)}` : base;
+}
+
+/** Convenience hook — the configured socials with the default fallback. */
+export function useSiteSocials() {
+  const settings = useQuery(api.siteSettings.getPublic);
+  return {
+    facebookUrl: settings?.facebookUrl ?? null,
+    instagramUrl: settings?.instagramUrl ?? null,
+    whatsappNumber: settings?.whatsappNumber ?? DEFAULT_WHATSAPP_NUMBER,
+    loaded: settings !== undefined,
+  };
 }
 
 export function ClayHeader() {
@@ -97,7 +115,18 @@ function NavLink({ to, label }: { to: string; label: string }) {
   );
 }
 
+/** 201009533599 → 0100 953 3599 for display; falls back to raw digits. */
+function formatLocalNumber(number: string): string {
+  if (number.length === 12 && number.startsWith("20")) {
+    const local = `0${number.slice(2)}`;
+    return `${local.slice(0, 4)} ${local.slice(4, 7)} ${local.slice(7)}`;
+  }
+  return number;
+}
+
 export function ClayFooter() {
+  const socials = useSiteSocials();
+
   return (
     <footer className="mx-auto w-full max-w-6xl px-4 pb-8 pt-16">
       <div className="clay-card flex flex-col items-center gap-4 px-8 py-10 text-center">
@@ -124,14 +153,36 @@ export function ClayFooter() {
               {link.label}
             </Link>
           ))}
+          {socials.facebookUrl && (
+            <a
+              href={socials.facebookUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <Facebook className="size-4" />
+              Facebook
+            </a>
+          )}
+          {socials.instagramUrl && (
+            <a
+              href={socials.instagramUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              <Instagram className="size-4" />
+              Instagram
+            </a>
+          )}
           <a
-            href={whatsappUrl()}
+            href={whatsappUrl(socials.whatsappNumber)}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
             <MessageCircle className="size-4" />
-            Contact us · 0100 953 3599
+            Contact us · {formatLocalNumber(socials.whatsappNumber)}
           </a>
         </div>
         <p className="text-xs text-muted-foreground/70">

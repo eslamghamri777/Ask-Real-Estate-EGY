@@ -14,7 +14,7 @@ import { mutation, query } from "./_generated/server";
  */
 
 /** Returns the user's id when they hold creator rights, otherwise null. */
-async function requireCreator(ctx: QueryCtx | MutationCtx): Promise<string | null> {
+export async function requireCreator(ctx: QueryCtx | MutationCtx): Promise<string | null> {
   const userId = await getAuthUserId(ctx);
   if (!userId) return null;
   const user = await ctx.db.get(userId);

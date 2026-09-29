@@ -14,12 +14,16 @@ import type { Id } from "@/convex/_generated/dataModel";
 import { useAuth } from "@/hooks/use-auth";
 import { useMutation, useQuery } from "convex/react";
 import {
+  Facebook,
   ImagePlus,
+  Instagram,
   KeyRound,
   Loader2,
   LockKeyhole,
+  MessageCircle,
   Pencil,
   Plus,
+  Share2,
   Sparkles,
   Trash2,
   X,
@@ -122,6 +126,8 @@ function CreatorBody() {
           onEdit={(post) => setEditing(post)}
         />
       </div>
+
+      <SocialsCard />
     </main>
   );
 }
@@ -675,6 +681,117 @@ function PostManager({
             </li>
           ))}
         </ul>
+      )}
+    </section>
+  );
+}
+
+/* ============ Connected socials ============ */
+
+function SocialsCard() {
+  const current = useQuery(api.siteSettings.getForEdit);
+  const saveSocials = useMutation(api.siteSettings.saveSocials);
+  const [facebookUrl, setFacebookUrl] = useState("");
+  const [instagramUrl, setInstagramUrl] = useState("");
+  const [whatsappNumber, setWhatsappNumber] = useState("");
+  const [hydrated, setHydrated] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Hydrate the fields once the saved values arrive.
+  useEffect(() => {
+    if (current && !hydrated) {
+      setFacebookUrl(current.facebookUrl);
+      setInstagramUrl(current.instagramUrl);
+      setWhatsappNumber(current.whatsappNumber);
+      setHydrated(true);
+    }
+  }, [current, hydrated]);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    try {
+      await saveSocials({ facebookUrl, instagramUrl, whatsappNumber });
+      toast.success("Socials connected", {
+        description: "Your profiles now appear across the website.",
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Saving failed.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className="clay-card clay-md mt-6 p-6">
+      <h2 className="font-display flex items-center gap-2 text-xl">
+        <Share2 className="size-5 text-primary" />
+        Connected socials
+      </h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Paste your page links — they appear in the footer and the contact
+        section across the website. Leave a field empty to hide it.
+      </p>
+
+      {current === undefined ? (
+        <Skeleton className="mt-4 h-40 rounded-2xl" />
+      ) : (
+        <form onSubmit={submit} className="mt-4 flex flex-col gap-4">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <label className="flex flex-col gap-1.5 text-sm font-medium">
+              <span className="flex items-center gap-1.5">
+                <Facebook className="size-4 text-[#1877F2]" />
+                Facebook page
+              </span>
+              <Input
+                value={facebookUrl}
+                onChange={(e) => setFacebookUrl(e.target.value)}
+                placeholder="https://facebook.com/YourPage"
+                type="url"
+                className="clay-input h-11 shadow-none"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-medium">
+              <span className="flex items-center gap-1.5">
+                <Instagram className="size-4 text-[#C13584]" />
+                Instagram profile
+              </span>
+              <Input
+                value={instagramUrl}
+                onChange={(e) => setInstagramUrl(e.target.value)}
+                placeholder="https://instagram.com/YourPage"
+                type="url"
+                className="clay-input h-11 shadow-none"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-medium">
+              <span className="flex items-center gap-1.5">
+                <MessageCircle className="size-4 text-primary" />
+                WhatsApp number
+              </span>
+              <Input
+                value={whatsappNumber}
+                onChange={(e) => setWhatsappNumber(e.target.value)}
+                placeholder="0100 953 3599"
+                type="tel"
+                className="clay-input h-11 shadow-none"
+              />
+            </label>
+          </div>
+
+          {error && <p className="text-sm text-destructive">{error}</p>}
+
+          <Button
+            type="submit"
+            disabled={saving}
+            className="clay-btn clay-btn-primary h-11 w-fit rounded-full px-7"
+          >
+            {saving ? <Loader2 className="size-4 animate-spin" /> : <Share2 className="size-4" />}
+            {saving ? "Saving…" : "Save social links"}
+          </Button>
+        </form>
       )}
     </section>
   );

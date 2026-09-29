@@ -44,6 +44,13 @@ const schema = defineSchema(
       message: v.string(),
     }).index("by_listing", ["listingId"]),
 
+    /** Singleton site configuration (social links, WhatsApp). */
+    siteSettings: defineTable({
+      facebookUrl: v.optional(v.string()),
+      instagramUrl: v.optional(v.string()),
+      whatsappNumber: v.optional(v.string()),
+    }),
+
     listings: defineTable({
       slug: v.string(),
       title: v.string(),

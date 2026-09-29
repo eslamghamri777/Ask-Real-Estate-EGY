@@ -1,4 +1,9 @@
-import { ClayFooter, ClayHeader, whatsappUrl } from "@/components/ClayLayout";
+import {
+  ClayFooter,
+  ClayHeader,
+  useSiteSocials,
+  whatsappUrl,
+} from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,6 +36,7 @@ export default function ListingDetail() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [photoIndex, setPhotoIndex] = useState(0);
+  const socials = useSiteSocials();
   // Edit affordance for the team account only — hidden from every other user.
   // Returns false for guests and regular customers; undefined while loading.
   const isCreator = useQuery(api.creator.isCreator);
@@ -225,6 +231,7 @@ export default function ListingDetail() {
                 )}
                 <a
                   href={whatsappUrl(
+                    socials.whatsappNumber,
                     `Hello, I'm interested in "${listing.title}" (${listing.area}). Could you share the pricing details?`,
                   )}
                   target="_blank"
@@ -362,6 +369,7 @@ function InquiryPanel({
 }) {
   const { isLoading, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+  const socials = useSiteSocials();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -437,6 +445,7 @@ function InquiryPanel({
           </Button>
           <a
             href={whatsappUrl(
+              socials.whatsappNumber,
               `Hello, I'm interested in a property in ${listingArea} and have a few questions.`,
             )}
             target="_blank"

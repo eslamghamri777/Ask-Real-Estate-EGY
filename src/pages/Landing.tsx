@@ -1,4 +1,9 @@
-import { ClayFooter, ClayHeader, whatsappUrl } from "@/components/ClayLayout";
+import {
+  ClayFooter,
+  ClayHeader,
+  useSiteSocials,
+  whatsappUrl,
+} from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -38,6 +43,7 @@ const POPULAR_AREAS = [
 
 export default function Landing() {
   const navigate = useNavigate();
+  const socials = useSiteSocials();
   const [purpose, setPurpose] = useState<"sale" | "rent">("sale");
   const [area, setArea] = useState("");
   const [q, setQ] = useState("");
@@ -312,6 +318,7 @@ export default function Landing() {
             </p>
             <a
               href={whatsappUrl(
+                socials.whatsappNumber,
                 "Hello Ask Real Estate! I have a question about a property.",
               )}
               target="_blank"
