@@ -148,6 +148,66 @@ export const createPost = mutation({
   },
 });
 
+/**
+ * Edit an existing post. `photoIds` is the full desired list of uploaded
+ * photos — any storage file no longer referenced is deleted. The slug (web
+ * address) never changes, so shared links keep working.
+ */
+export const editPost = mutation({
+  args: {
+    id: v.id("listings"),
+    title: v.string(),
+    description: v.string(),
+    purpose: v.union(v.literal("sale"), v.literal("rent")),
+    type: v.string(),
+    area: v.string(),
+    bedrooms: v.number(),
+    bathrooms: v.number(),
+    areaSqm: v.number(),
+    amenities: v.array(v.string()),
+    featured: v.boolean(),
+    photoIds: v.array(v.id("_storage")),
+  },
+  returns: v.null(),
+  handler: async (ctx, args) => {
+    const creator = await requireCreator(ctx);
+    if (!creator) throw new Error("Creator access required.");
+
+    const post = await ctx.db.get(args.id);
+    if (!post) throw new Error("Post not found.");
+
+    if (args.photoIds.length === 0 && (post.photos?.length ?? 0) === 0) {
+      throw new Error("Add at least one photo before saving.");
+    }
+    if (args.title.trim().length < 4) {
+      throw new Error("Please give the post a longer title.");
+    }
+
+    // Delete storage files for photos the creator removed.
+    const keep = new Set(args.photoIds.map((id) => id));
+    for (const photoId of post.photoIds ?? []) {
+      if (!keep.has(photoId)) {
+        await ctx.storage.delete(photoId);
+      }
+    }
+
+    await ctx.db.patch(args.id, {
+      title: args.title.trim(),
+      description: args.description.trim(),
+      purpose: args.purpose,
+      type: args.type.trim().toLowerCase(),
+      area: args.area.trim(),
+      bedrooms: args.bedrooms,
+      bathrooms: args.bathrooms,
+      areaSqm: args.areaSqm,
+      amenities: args.amenities,
+      featured: args.featured,
+      photoIds: args.photoIds,
+    });
+    return null;
+  },
+});
+
 /** Delete a post along with its uploaded photos and its inquiries. */
 export const deletePost = mutation({
   args: { id: v.id("listings") },
@@ -202,19 +262,42 @@ export const myPosts = query({
     posts.sort((a, b) => b._creationTime - a._creationTime);
 
     return await Promise.all(
-      posts.map(async (post) => ({
-        _id: post._id,
-        _creationTime: post._creationTime,
-        slug: post.slug,
-        title: post.title,
-        purpose: post.purpose,
-        type: post.type,
-        area: post.area,
-        featured: post.featured ?? false,
-        cover: post.photoIds?.length
-          ? await ctx.storage.getUrl(post.photoIds[0])
-          : (post.photos[0] ?? null),
-      })),
+      posts.map(async (post) => {
+        const uploaded = post.photoIds?.length
+          ? await Promise.all(
+              post.photoIds.map(async (id) => ({
+                storageId: id,
+                url: await ctx.storage.getUrl(id),
+              })),
+            )
+          : [];
+        // Uploaded photos (with storage ids, editable); legacy seed posts
+        // expose their URL photos as fixed entries.
+        const photos =
+          uploaded.length > 0
+            ? uploaded.flatMap((p) =>
+                p.url ? [{ storageId: p.storageId, url: p.url }] : [],
+              )
+            : post.photos.map((url) => ({ url }));
+
+        return {
+          _id: post._id,
+          _creationTime: post._creationTime,
+          slug: post.slug,
+          title: post.title,
+          description: post.description,
+          purpose: post.purpose,
+          type: post.type,
+          area: post.area,
+          bedrooms: post.bedrooms,
+          bathrooms: post.bathrooms,
+          areaSqm: post.areaSqm,
+          amenities: post.amenities,
+          featured: post.featured ?? false,
+          photos,
+          cover: photos[0]?.url ?? null,
+        };
+      }),
     );
   },
 });
