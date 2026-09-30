@@ -68,9 +68,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
     } catch (error) {
       console.error("Email sign-in error:", error);
       setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to send verification code. Please try again.",
+        "Couldn't send the verification code. Please check the address and try again.",
       );
       setIsLoading(false);
     }
@@ -264,9 +262,10 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                     <p className="mt-4 text-center text-sm text-muted-foreground">
                       Didn't receive a code?{" "}
                       <Button
+                        type="button"
                         variant="link"
                         className="h-auto p-0"
-                        onClick={() => setStep("form")}
+ onClick={() => setStep("form")}
                       >
                         Try again
                       </Button>
