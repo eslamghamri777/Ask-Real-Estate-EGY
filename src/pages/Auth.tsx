@@ -265,7 +265,7 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                         type="button"
                         variant="link"
                         className="h-auto p-0"
- onClick={() => setStep("form")}
+                        onClick={() => setStep("form")}
                       >
                         Try again
                       </Button>
