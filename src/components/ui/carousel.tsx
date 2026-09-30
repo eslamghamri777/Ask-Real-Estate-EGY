@@ -88,11 +88,16 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api || !setApi) return
+    // Push the embla instance out to the consumer-provided setter (a prop
+    // callback, not local state).
     setApi(api)
   }, [api, setApi])
 
   React.useEffect(() => {
     if (!api) return
+    // Justified: priming scroll-state once before subscribing to the embla
+    // instance (external system) — the documented shadcn/embla wiring pattern.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     onSelect(api)
     api.on("reInit", onSelect)
     api.on("select", onSelect)

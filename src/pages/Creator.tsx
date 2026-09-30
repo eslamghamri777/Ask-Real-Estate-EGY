@@ -88,17 +88,12 @@ function CreatorBody() {
   const isCreator = useQuery(api.creator.isCreator);
   const posts = useQuery(api.creator.myPosts);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [editing, setEditing] = useState<CreatorPost | null>(null);
-
-  // Support deep links like /creator?edit=<slug> — the public "Edit" buttons
-  // on listing cards and detail pages link here.
-  useEffect(() => {
-    const editSlug = searchParams.get("edit");
-    if (!editSlug || posts === undefined) return;
-    const match = posts.find((p) => p.slug === editSlug);
-    if (match) setEditing(match);
-    setSearchParams({}, { replace: true });
-  }, [searchParams, posts, setSearchParams]);
+  // Deep links like /creator?edit=<slug> (the public "Edit" buttons on
+  // listing cards and detail pages link here) resolve by derivation — the
+  // URL is the single source of truth. All URL writes happen in event
+  // handlers (Edit click, save/cancel), so no sync effect is needed.
+  const editSlug = searchParams.get("edit");
+  const editing = posts?.find((p) => p.slug === editSlug) ?? null;
 
   if (isLoading || isCreator === undefined) {
     return (
@@ -138,11 +133,11 @@ function CreatorBody() {
         <PropertyForm
           key={editing?._id ?? "new"}
           initial={editing ?? undefined}
-          onDone={() => setEditing(null)}
+          onDone={() => setSearchParams({}, { replace: true })}
         />
         <PostManager
           editingId={editing?._id ?? null}
-          onEdit={(post) => setEditing(post)}
+          onEdit={(post) => setSearchParams({ edit: post.slug }, { replace: true })}
         />
       </div>
 
@@ -768,25 +763,69 @@ function PostManager({
 
 function SocialsCard() {
   const current = useQuery(api.siteSettings.getForEdit);
+
+  return (
+    <section className="clay-card clay-md mt-6 p-6">
+      <h2 className="font-display flex items-center gap-2 text-xl">
+        <Share2 className="size-5 text-primary" />
+        Connected socials
+      </h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Paste your page links — they appear in the footer and the contact
+        section across the website. Leave a field empty to hide it.
+      </p>
+
+      {current === undefined ? (
+        <Skeleton className="mt-4 h-40 rounded-2xl" />
+      ) : (
+        <SocialsForm
+          key={socialsFormKey(current ?? EMPTY_SOCIALS)}
+          initial={current ?? EMPTY_SOCIALS}
+        />
+      )}
+    </section>
+  );
+}
+
+const EMPTY_SOCIALS = {
+  facebookUrl: "",
+  instagramUrl: "",
+  tiktokUrl: "",
+  whatsappNumber: "",
+};
+
+/** Fingerprint of the saved values — changes when the server values change, remounting the form so it re-seeds. */
+function socialsFormKey(current: {
+  facebookUrl: string;
+  instagramUrl: string;
+  tiktokUrl: string;
+  whatsappNumber: string;
+}) {
+  return JSON.stringify([
+    current.facebookUrl,
+    current.instagramUrl,
+    current.tiktokUrl,
+    current.whatsappNumber,
+  ]);
+}
+
+function SocialsForm({
+  initial,
+}: {
+  initial: {
+    facebookUrl: string;
+    instagramUrl: string;
+    tiktokUrl: string;
+    whatsappNumber: string;
+  };
+}) {
   const saveSocials = useMutation(api.siteSettings.saveSocials);
-  const [facebookUrl, setFacebookUrl] = useState("");
-  const [instagramUrl, setInstagramUrl] = useState("");
-  const [tiktokUrl, setTiktokUrl] = useState("");
-  const [whatsappNumber, setWhatsappNumber] = useState("");
-  const [hydrated, setHydrated] = useState(false);
+  const [facebookUrl, setFacebookUrl] = useState(initial.facebookUrl);
+  const [instagramUrl, setInstagramUrl] = useState(initial.instagramUrl);
+  const [tiktokUrl, setTiktokUrl] = useState(initial.tiktokUrl);
+  const [whatsappNumber, setWhatsappNumber] = useState(initial.whatsappNumber);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  // Hydrate the fields once the saved values arrive.
-  useEffect(() => {
-    if (current && !hydrated) {
-      setFacebookUrl(current.facebookUrl);
-      setInstagramUrl(current.instagramUrl);
-      setTiktokUrl(current.tiktokUrl);
-      setWhatsappNumber(current.whatsappNumber);
-      setHydrated(true);
-    }
-  }, [current, hydrated]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -805,20 +844,7 @@ function SocialsCard() {
   };
 
   return (
-    <section className="clay-card clay-md mt-6 p-6">
-      <h2 className="font-display flex items-center gap-2 text-xl">
-        <Share2 className="size-5 text-primary" />
-        Connected socials
-      </h2>
-      <p className="mt-1 text-sm text-muted-foreground">
-        Paste your page links — they appear in the footer and the contact
-        section across the website. Leave a field empty to hide it.
-      </p>
-
-      {current === undefined ? (
-        <Skeleton className="mt-4 h-40 rounded-2xl" />
-      ) : (
-        <form onSubmit={submit} className="mt-4 flex flex-col gap-4">
+    <form onSubmit={submit} className="mt-4 flex flex-col gap-4">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="flex flex-col gap-1.5 text-sm font-medium">
               <span className="flex items-center gap-1.5">
@@ -885,7 +911,5 @@ function SocialsCard() {
             {saving ? "Saving…" : "Save social links"}
           </Button>
         </form>
-      )}
-    </section>
   );
 }

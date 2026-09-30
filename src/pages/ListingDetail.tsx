@@ -30,7 +30,7 @@ import {
   Send,
   Sparkles,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 
@@ -38,6 +38,13 @@ export default function ListingDetail() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [prevSlug, setPrevSlug] = useState(slug);
+  // Reset the gallery when moving between properties — React's documented
+  // "adjust state during render" pattern instead of a setState-in-effect.
+  if (prevSlug !== slug) {
+    setPrevSlug(slug);
+    setPhotoIndex(0);
+  }
   const socials = useSiteSocials();
   // Edit affordance for the team account only — hidden from every other user.
   // Returns false for guests and regular customers; undefined while loading.
@@ -54,10 +61,6 @@ export default function ListingDetail() {
   );
 
   // reset the gallery when moving between properties
-  useEffect(() => {
-    setPhotoIndex(0);
-  }, [slug]);
-
   if (listing === undefined) {
     return (
       <div className="flex min-h-screen flex-col">
@@ -407,10 +410,14 @@ function InquiryPanel({
   const [message, setMessage] = useState("");
   const [sending, setSending] = useState(false);
 
-  useEffect(() => {
-    if (!name && user?.name) setName(user.name);
-    if (!email && user?.email) setEmail(user.email);
-  }, [user, name, email]);
+  const [didPrefill, setDidPrefill] = useState(false);
+  // Pre-fill the visitor's name/email from their account exactly once, when
+  // the user record first arrives — render-adjust, no effect cascade.
+  if (user && !didPrefill) {
+    setDidPrefill(true);
+    if (!name && user.name) setName(user.name);
+    if (!email && user.email) setEmail(user.email);
+  }
 
   const sendInquiry = useMutation(api.inquiries.send);
 

@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { Home, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router";
 
 const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
@@ -43,31 +43,50 @@ function sanitizePurpose(value: string | null): "all" | "primary" | "resale" | "
     : "all";
 }
 
+type SearchKey =
+  | "purpose"
+  | "area"
+  | "type"
+  | "bedrooms"
+  | "delivery"
+  | "finish"
+  | "q";
+
+function readSearch(searchParams: URLSearchParams): Record<SearchKey, string> {
+  return {
+    purpose: sanitizePurpose(searchParams.get("purpose")),
+    area: searchParams.get("area") || "",
+    type: searchParams.get("type") || "",
+    bedrooms: String(Number(searchParams.get("bedrooms")) || 0),
+    delivery: searchParams.get("delivery") || "",
+    finish: searchParams.get("finish") || "",
+    q: searchParams.get("q") || "",
+  };
+}
+
 export default function Listings() {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [purpose, setPurpose] = useState<"all" | "primary" | "resale" | "rent">(
-    sanitizePurpose(searchParams.get("purpose")),
-  );
-  const [area, setArea] = useState(searchParams.get("area") || "");
-  const [type, setType] = useState(searchParams.get("type") || "");
-  const [bedrooms, setBedrooms] = useState(
-    Number(searchParams.get("bedrooms")) || 0,
-  );
-  const [delivery, setDelivery] = useState(searchParams.get("delivery") || "");
-  const [finish, setFinish] = useState(searchParams.get("finish") || "");
-  const [q, setQ] = useState(searchParams.get("q") || "");
+  // Filter state lives in one object and is seeded from the URL once; the
+  // URL is written through on every change, so no sync effect is needed.
+  // Cross-navigation (e.g. a header link to /listings?purpose=rent) always
+  // comes from another route, so this component mounts fresh and re-seeds.
+  const [filters, setFilters] = useState(readSearch(searchParams));
+  const purpose = filters.purpose as "all" | "primary" | "resale" | "rent";
+  const area = filters.area;
+  const type = filters.type;
+  const bedrooms = Number(filters.bedrooms) || 0;
+  const delivery = filters.delivery;
+  const finish = filters.finish;
+  const q = filters.q;
 
-  // keep filter state in sync when the URL changes (e.g. header nav links)
-  useEffect(() => {
-    setPurpose(sanitizePurpose(searchParams.get("purpose")));
-    setArea(searchParams.get("area") || "");
-    setType(searchParams.get("type") || "");
-    setBedrooms(Number(searchParams.get("bedrooms")) || 0);
-    setDelivery(searchParams.get("delivery") || "");
-    setFinish(searchParams.get("finish") || "");
-    setQ(searchParams.get("q") || "");
-  }, [searchParams]);
+  const setFilter = (key: SearchKey, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    const params = new URLSearchParams(searchParams);
+    if (value) params.set(key, value);
+    else params.delete(key);
+    setSearchParams(params, { replace: true });
+  };
 
   const areas = useQuery(api.listings.areas);
   const socials = useSiteSocials();
@@ -94,41 +113,17 @@ export default function Listings() {
     { initialNumItems: 9 },
   );
 
-  const applyToUrl = (next: Record<string, string>) => {
-    const params = new URLSearchParams(searchParams);
-    for (const [key, value] of Object.entries(next)) {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    }
-    // keep a typed-but-unsubmitted keyword instead of silently reverting it
-    if (!("q" in next)) {
-      if (q.trim()) params.set("q", q.trim());
-      else params.delete("q");
-    }
-    setSearchParams(params, { replace: true });
-  };
-
   const changePurpose = (next: "all" | "primary" | "resale" | "rent") => {
-    setPurpose(next);
-    const purposeParam = next === "all" ? "" : next;
+    setFilter("purpose", next === "all" ? "" : next);
     // Delivery only applies to primary (off-plan) sales — drop it when the
     // customer switches to Resale or Rent so it can't filter invisibly.
-    if (next === "primary") {
-      applyToUrl({ purpose: purposeParam });
-      return;
+    if (next !== "primary") {
+      setFilter("delivery", "");
     }
-    setDelivery("");
-    applyToUrl({ purpose: purposeParam, delivery: "" });
   };
 
   const clearFilters = () => {
-    setPurpose("all");
-    setArea("");
-    setType("");
-    setBedrooms(0);
-    setDelivery("");
-    setFinish("");
-    setQ("");
+    setFilters(readSearch(new URLSearchParams()));
     setSearchParams({}, { replace: true });
   };
 
@@ -238,16 +233,14 @@ export default function Listings() {
                 handlePrimaryRequest();
                 return;
               }
-              applyToUrl({ q: q.trim() });
+              // Search submits the typed-but-unsubmitted keyword.
+              setFilter("q", q.trim());
             }}
           >
             <div className="flex flex-wrap items-center gap-3">
             <Select
               value={area || "any-area"}
-              onValueChange={(v) => {
-                setArea(v === "any-area" ? "" : v);
-                applyToUrl({ area: v === "any-area" ? "" : v });
-              }}
+              onValueChange={(v) => setFilter("area", v === "any-area" ? "" : v)}
             >
               <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                 <SelectValue placeholder="Area" />
@@ -264,10 +257,7 @@ export default function Listings() {
 
             <Select
               value={type || "any-type"}
-              onValueChange={(v) => {
-                setType(v === "any-type" ? "" : v);
-                applyToUrl({ type: v === "any-type" ? "" : v });
-              }}
+              onValueChange={(v) => setFilter("type", v === "any-type" ? "" : v)}
             >
               <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                 <SelectValue placeholder="Property type" />
@@ -284,11 +274,7 @@ export default function Listings() {
 
             <Select
               value={String(bedrooms)}
-              onValueChange={(v) => {
-                const n = Number(v);
-                setBedrooms(n);
-                applyToUrl({ bedrooms: n ? String(n) : "" });
-              }}
+              onValueChange={(v) => setFilter("bedrooms", Number(v) ? v : "")}
             >
               <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                 <SelectValue placeholder="Bedrooms" />
@@ -305,10 +291,9 @@ export default function Listings() {
             {purpose === "primary" && (
               <Select
                 value={delivery || "any-delivery"}
-                onValueChange={(v) => {
-                  setDelivery(v === "any-delivery" ? "" : v);
-                  applyToUrl({ delivery: v === "any-delivery" ? "" : v });
-                }}
+                onValueChange={(v) =>
+                  setFilter("delivery", v === "any-delivery" ? "" : v)
+                }
               >
                 <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                   <SelectValue placeholder="Delivery time" />
@@ -326,10 +311,7 @@ export default function Listings() {
 
             <Select
               value={finish || "any-finish"}
-              onValueChange={(v) => {
-                setFinish(v === "any-finish" ? "" : v);
-                applyToUrl({ finish: v === "any-finish" ? "" : v });
-              }}
+              onValueChange={(v) => setFilter("finish", v === "any-finish" ? "" : v)}
             >
               <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
                 <SelectValue placeholder="Finish" />
@@ -350,7 +332,7 @@ export default function Listings() {
               <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
               <Input
                 value={q}
-                onChange={(e) => setQ(e.target.value)}
+                onChange={(e) => setFilter("q", e.target.value)}
                 placeholder="Keyword — e.g. Nile view, furnished…"
                 className="clay-input h-12 pl-10 shadow-none"
               />
