@@ -197,15 +197,6 @@ export function ClayFooter() {
         <SocialIconLinks className="mt-2" />
 
         <div className="flex flex-wrap items-center justify-center gap-2 text-sm font-medium">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="rounded-full px-4 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
           <a
             href={whatsappUrl(socials.whatsappNumber)}
             target="_blank"
@@ -217,7 +208,7 @@ export function ClayFooter() {
           </a>
         </div>
         <p className="text-xs text-muted-foreground/70">
-          © {new Date().getFullYear()} Ask Real Estate · Cairo, Egypt
+          © {new Date().getFullYear()} Ask Real Estate · Egypt
         </p>
       </div>
     </footer>
