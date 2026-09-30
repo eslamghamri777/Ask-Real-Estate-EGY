@@ -1,4 +1,4 @@
-import { ClayFooter, ClayHeader } from "@/components/ClayLayout";
+import { ClayFooter, ClayHeader, useSiteSocials, whatsappUrl } from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +12,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { usePaginatedQuery, useQuery } from "convex/react";
-import { Home, KeyRound, RotateCcw, Search } from "lucide-react";
+import { Home, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 
@@ -70,6 +70,7 @@ export default function Listings() {
   }, [searchParams]);
 
   const areas = useQuery(api.listings.areas);
+  const socials = useSiteSocials();
 
   const results = usePaginatedQuery(
     api.listings.list,
@@ -131,6 +132,49 @@ export default function Listings() {
     setSearchParams({}, { replace: true });
   };
 
+  /**
+   * Primary Sale is a request desk, not a catalog: submitting the filters
+   * sends the compiled request straight to the team's WhatsApp — the same
+   * number connected in the studio — and a person takes it from there.
+   */
+  const DELIVERY_LABELS: Record<string, string> = {
+    immediate: "Immediate",
+    "6m": "Within 6 months",
+    "12m": "Within 12 months",
+    "2y": "Within 2 years",
+    "3y": "Within 3 years",
+    "4y": "Within 4 years",
+  };
+  const FINISH_LABELS: Record<string, string> = {
+    "core-shell": "Core & shell",
+    "semi-finished": "Semi-finished",
+    "fully-finished": "Fully finished",
+    "finished-furnished": "Finished & furnished",
+  };
+
+  const primaryRequestMessage = () => {
+    const lines = [
+      "Hello Ask Real Estate 👋",
+      "",
+      "I'm looking for a primary-sale (direct from developer) property:",
+      `• Area: ${area || "Any"}`,
+      `• Type: ${type || "Any"}`,
+      `• Bedrooms: ${bedrooms ? `${bedrooms}+` : "Any"}`,
+      `• Delivery: ${delivery ? (DELIVERY_LABELS[delivery] ?? delivery) : "Any"}`,
+      `• Finish: ${finish ? (FINISH_LABELS[finish] ?? finish) : "Any"}`,
+    ];
+    if (q.trim()) lines.push(`• Keyword: ${q.trim()}`);
+    lines.push(
+      "",
+      "Please send me matching options with prices.",
+    );
+    return lines.join("\n");
+  };
+
+  const handlePrimaryRequest = () => {
+    window.open(whatsappUrl(socials.whatsappNumber, primaryRequestMessage()), "_blank", "noopener,noreferrer");
+  };
+
   const activeFilterCount =
     (purpose !== "all" ? 1 : 0) +
     (area ? 1 : 0) +
@@ -149,11 +193,13 @@ export default function Listings() {
           Properties across Egypt
         </h1>
         <p className="mt-2 text-muted-foreground">
-          {results.status === "LoadingFirstPage"
-            ? "Loading listings…"
-            : `Showing ${results.results.length} ${
-                results.results.length === 1 ? "property" : "properties"
-              }`}
+          {purpose === "primary"
+            ? "Primary sale — tell us what you need and we'll find it"
+            : results.status === "LoadingFirstPage"
+              ? "Loading listings…"
+              : `Showing ${results.results.length} ${
+                  results.results.length === 1 ? "property" : "properties"
+                }`}
         </p>
 
         {/* ============ Filters ============ */}
@@ -188,6 +234,10 @@ export default function Listings() {
             className="flex flex-col gap-3"
             onSubmit={(e) => {
               e.preventDefault();
+              if (purpose === "primary") {
+                handlePrimaryRequest();
+                return;
+              }
               applyToUrl({ q: q.trim() });
             }}
           >
@@ -319,15 +369,44 @@ export default function Listings() {
                 type="submit"
                 className="clay-btn clay-btn-primary h-12 rounded-full px-7"
               >
-                Search
+                {purpose === "primary" ? (
+                  <>
+                    <MessageCircle className="size-4" />
+                    Send request
+                  </>
+                ) : (
+                  "Search"
+                )}
               </Button>
             </div>
           </form>
         </section>
 
         {/* ============ Results ============ */}
+        {/* Primary Sale is a request desk: no posts are shown — submitting the
+            filters sends the request to the team's WhatsApp instead. */}
         <section className="mt-8 pb-4">
-          {results.isLoading ? (
+          {purpose === "primary" ? (
+            <div className="clay-card mx-auto max-w-lg mt-2 px-8 py-10 text-center">
+              <span className="clay-icon clay-sheen mx-auto size-14 bg-primary text-primary-foreground">
+                <MessageCircle className="size-6" />
+              </span>
+              <h2 className="font-display mt-4 text-xl">Tell us what you're looking for</h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                We don't list primary-sale units online. Set your filters above and
+                submit — your request goes straight to our team's WhatsApp, and a
+                person replies with matching options and prices.
+              </p>
+              <Button
+                type="button"
+                onClick={handlePrimaryRequest}
+                className="clay-btn clay-btn-primary mt-6 rounded-full px-7"
+              >
+                <MessageCircle className="size-4" />
+                Send request on WhatsApp
+              </Button>
+            </div>
+          ) : results.isLoading ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
                 <Skeleton key={i} className="h-96 rounded-[1.75rem]" />
