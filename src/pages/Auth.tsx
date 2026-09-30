@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/input-otp";
 
 import { useAuth } from "@/hooks/use-auth";
-import { ArrowRight, Home, Loader2, Mail, UserX } from "lucide-react";
+import askMark from "@/assets/ask-mark.svg";
+import { ArrowRight, Loader2, Mail, UserX } from "lucide-react";
 import { Suspense, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { toast } from "sonner";
@@ -116,9 +117,15 @@ function Auth({ redirectAfterAuth }: AuthProps = {}) {
                 type="button"
                 onClick={() => navigate("/")}
                 aria-label="Back to home"
-                className="clay-icon clay-sheen clay-squish size-14 bg-primary text-primary-foreground"
+                className="clay-squish flex flex-col items-center gap-1.5"
               >
-                <Home className="size-7" />
+                <img src={askMark} alt="" className="size-16" />
+                <span className="font-display text-sm tracking-tight">
+                  Ask Real Estate
+                </span>
+                <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">
+                  Heart of Cairo
+                </span>
               </button>
             </div>
 

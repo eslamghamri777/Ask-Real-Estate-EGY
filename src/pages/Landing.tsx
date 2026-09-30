@@ -3,13 +3,14 @@ import {
   ClayHeader,
   SocialIconLinks,
 } from "@/components/ClayLayout";
+import askMark from "@/assets/ask-mark.svg";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
 import { useQuery } from "convex/react";
-import { ArrowRight, MapPin, MessageCircle, Search } from "lucide-react";
+import { ArrowRight, MapPin, Search } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import { useState } from "react";
 
@@ -66,11 +67,20 @@ export default function Landing() {
         {/* ============ Hero: search first ============ */}
         <section className="mx-auto w-full max-w-6xl px-4 pt-14 sm:pt-20">
           <div className="mx-auto max-w-3xl text-center">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, ease: "easeOut" }}
+              className="flex justify-center"
+            >
+              <img src={askMark} alt="" className="size-16 sm:size-20" />
+            </motion.div>
+
             <motion.span
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="eyebrow"
+              transition={{ duration: 0.5, delay: 0.08 }}
+              className="eyebrow mt-6 block"
             >
               Property sales & lettings · Egypt
             </motion.span>
@@ -78,8 +88,8 @@ export default function Landing() {
             <motion.h1
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.06 }}
-              className="font-display clay-text mt-4 text-4xl leading-[1.12] tracking-tight sm:text-6xl"
+              transition={{ duration: 0.6, delay: 0.14 }}
+              className="font-display mt-4 text-4xl leading-[1.12] tracking-tight sm:text-6xl"
             >
               Find the right home,
               <br />
@@ -89,7 +99,7 @@ export default function Landing() {
             <motion.p
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.14 }}
+              transition={{ duration: 0.6, delay: 0.22 }}
               className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg"
             >
               Ask Real Estate lists a small, verified portfolio of homes for
@@ -102,7 +112,7 @@ export default function Landing() {
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.22 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
             className="clay-card clay-lg mx-auto mt-10 max-w-4xl p-4 sm:p-5"
           >
             <div className="clay-well mx-auto mb-4 flex w-fit flex-wrap items-center justify-center gap-1 rounded-full p-1.5">
@@ -305,12 +315,11 @@ export default function Landing() {
             </div>
           </motion.div>
         </section>
+
         {/* ============ Contact ============ */}
         <section className="mx-auto w-full max-w-6xl px-4 pt-24">
           <motion.div {...fadeUp} className="clay-card clay-md px-8 py-12 text-center sm:px-12">
-            <span className="clay-icon clay-sheen mx-auto size-14 bg-primary text-primary-foreground">
-              <MessageCircle className="size-6" />
-            </span>
+            <img src={askMark} alt="" className="mx-auto size-14" />
             <h2 className="font-display mt-5 text-3xl tracking-tight sm:text-4xl">
               Talk to us directly
             </h2>

@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
+import askMark from "@/assets/ask-mark.svg";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect } from "react";
-import { Facebook, Home, Instagram, MessageCircle, Search, UserRound } from "lucide-react";
+import { Facebook, Instagram, MessageCircle, Search, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router";
 
 const navLinks = [
@@ -74,9 +75,11 @@ export function ClayHeader() {
     <header className="sticky top-0 z-40 px-4 pt-4">
       <div className="clay-card clay-sm mx-auto flex max-w-6xl items-center gap-3 px-5 py-3">
         <Link to="/" className="clay-squish flex items-center gap-2.5">
-          <span className="clay-icon clay-sheen size-10 bg-primary text-primary-foreground">
-            <Home className="size-5" />
-          </span>
+          <img
+            src={askMark}
+            alt=""
+            className="size-10"
+          />
           <span className="hidden font-display text-lg tracking-tight sm:block">
             Ask Real Estate
           </span>
@@ -207,12 +210,13 @@ export function ClayFooter() {
   return (
     <footer className="mx-auto w-full max-w-6xl px-4 pb-8 pt-16">
       <div className="clay-card flex flex-col items-center gap-4 px-8 py-10 text-center">
-        <div className="flex items-center gap-2">
-          <span className="clay-icon clay-sheen size-9 bg-primary text-primary-foreground">
-            <Home className="size-4" />
-          </span>
+        <div className="flex flex-col items-center gap-2">
+          <img src={askMark} alt="" className="size-10" />
           <span className="font-display text-base tracking-tight">
             Ask Real Estate
+          </span>
+          <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">
+            Heart of Cairo
           </span>
         </div>
         <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
