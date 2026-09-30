@@ -183,6 +183,15 @@ export default function Landing() {
                 </button>
               ))}
             </div>
+
+            {/* 0% brokerage promise — echoes the primary request desk */}
+            <div className="mt-5 border-t border-border pt-4 text-center">
+              <p className="text-sm text-muted-foreground">
+                Expert advisory at no cost to you — enjoy{" "}
+                <span className="font-display text-lg italic text-foreground">0%</span>{" "}
+                brokerage fees on primary sales.
+              </p>
+            </div>
           </motion.div>
         </section>
 

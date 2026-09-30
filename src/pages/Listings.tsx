@@ -369,16 +369,28 @@ export default function Listings() {
             filters sends the request to the team's WhatsApp instead. */}
         <section className="mt-8 pb-4">
           {purpose === "primary" ? (
-            <div className="clay-card mx-auto max-w-lg mt-2 px-8 py-10 text-center">
-              <span className="clay-icon clay-sheen mx-auto size-14 bg-primary text-primary-foreground">
-                <MessageCircle className="size-6" />
-              </span>
-              <h2 className="font-display mt-4 text-xl">Tell us what you're looking for</h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                We don't list primary-sale units online. Set your filters above and
-                submit — your request goes straight to our team's WhatsApp, and a
-                person replies with matching options and prices.
-              </p>
+            <div className="clay-card mx-auto max-w-lg mt-2 overflow-hidden text-center">
+              {/* 0% brokerage promise — the primary desk's headline offer */}
+              <div className="bg-primary px-8 pb-8 pt-7 text-primary-foreground">
+                <span className="eyebrow text-primary-foreground/70">
+                  Expert advisory — at no cost to you
+                </span>
+                <p className="font-display mt-2 text-4xl leading-none tracking-tight">
+                  Enjoy <span className="italic">0%</span> brokerage fees
+                </p>
+                <div className="mx-auto mt-5 h-px w-12 bg-primary-foreground/40" />
+              </div>
+
+              <div className="px-8 pb-10 pt-9">
+                <span className="clay-icon clay-sheen mx-auto size-14 bg-primary text-primary-foreground">
+                  <MessageCircle className="size-6" />
+                </span>
+                <h2 className="font-display mt-4 text-xl">Tell us what you're looking for</h2>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  We don't list primary-sale units online. Set your filters above and
+                  submit — your request goes straight to our team's WhatsApp, and a
+                  person replies with matching options and prices.
+                </p>
               <Button
                 type="button"
                 onClick={handlePrimaryRequest}
@@ -387,6 +399,7 @@ export default function Listings() {
                 <MessageCircle className="size-4" />
                 Send request on WhatsApp
               </Button>
+              </div>
             </div>
           ) : results.isLoading ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
