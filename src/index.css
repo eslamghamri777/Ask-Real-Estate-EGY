@@ -218,10 +218,17 @@
 
 /* ============ Component classes ============ */
 @layer components {
+  /* NOTE ON GEOMETRY: clay-* shape classes own their border-radius with
+     !important. Legacy markup across pages adds rounded-full / rounded-2xl
+     utilities alongside them; utilities sit in a later cascade layer than
+     components, so without this the old pill shapes would win. Do not add
+     rounded-* overrides to clay-* elements in markup. */
+
   /* card: flat paper panel with a hairline frame */
   .clay-card {
-    @apply rounded-none bg-card;
+    @apply bg-card;
     border: 0.0625rem solid var(--border);
+    border-radius: 0 !important;
   }
   .clay-card-hover {
     transition:
@@ -234,13 +241,15 @@
   }
   /* pressed-in well: inset paper panel with hairline */
   .clay-well {
-    @apply rounded-none bg-secondary;
+    @apply bg-secondary;
     border: 0.0625rem solid var(--border);
+    border-radius: 0 !important;
   }
   /* button: squared, uppercase, letter-spaced — the editorial CTA */
   .clay-btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-none text-xs font-semibold uppercase tracking-[0.14em];
+    @apply inline-flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-[0.14em];
     border: 0.0625rem solid transparent;
+    border-radius: 0 !important;
     transition:
       background-color 0.25s ease,
       border-color 0.25s ease,
@@ -249,6 +258,7 @@
   .clay-btn:hover {
     background-color: var(--foreground);
     border-color: var(--foreground);
+    color: var(--background);
   }
   .clay-btn:active {
     transform: translateY(0.03125rem);
@@ -265,24 +275,27 @@
   }
   /* tonal chip: squared label */
   .clay-chip {
-    @apply inline-flex items-center gap-1.5 rounded-none text-[11px] font-semibold uppercase tracking-[0.12em];
+    @apply inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em];
     border: 0.0625rem solid var(--border);
+    border-radius: 0 !important;
   }
   /* icon holder: sharp framed square */
   .clay-icon {
-    @apply inline-flex items-center justify-center rounded-none;
+    @apply inline-flex items-center justify-center;
     border: 0.0625rem solid var(--border);
+    border-radius: 0 !important;
   }
   /* input: squared field on paper */
   .clay-input {
-    @apply w-full rounded-none bg-card px-5 py-3 text-foreground outline-none placeholder:text-muted-foreground;
+    @apply w-full bg-card px-5 py-3 text-foreground outline-none placeholder:text-muted-foreground;
     border: 0.0625rem solid var(--border);
+    border-radius: 0 !important;
   }
   .clay-input:focus-visible {
     border-color: var(--foreground);
   }
   textarea.clay-input {
-    @apply rounded-none;
+    border-radius: 0 !important;
   }
   .clay-squish {
     transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
