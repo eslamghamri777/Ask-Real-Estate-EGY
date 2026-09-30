@@ -28,6 +28,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
+import { TikTokIcon } from "@/components/ClayLayout";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router";
 import { toast } from "sonner";
@@ -770,6 +771,7 @@ function SocialsCard() {
   const saveSocials = useMutation(api.siteSettings.saveSocials);
   const [facebookUrl, setFacebookUrl] = useState("");
   const [instagramUrl, setInstagramUrl] = useState("");
+  const [tiktokUrl, setTiktokUrl] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [hydrated, setHydrated] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -780,6 +782,7 @@ function SocialsCard() {
     if (current && !hydrated) {
       setFacebookUrl(current.facebookUrl);
       setInstagramUrl(current.instagramUrl);
+      setTiktokUrl(current.tiktokUrl);
       setWhatsappNumber(current.whatsappNumber);
       setHydrated(true);
     }
@@ -790,7 +793,7 @@ function SocialsCard() {
     setSaving(true);
     setError(null);
     try {
-      await saveSocials({ facebookUrl, instagramUrl, whatsappNumber });
+      await saveSocials({ facebookUrl, instagramUrl, tiktokUrl, whatsappNumber });
       toast.success("Socials connected", {
         description: "Your profiles now appear across the website.",
       });
@@ -816,7 +819,7 @@ function SocialsCard() {
         <Skeleton className="mt-4 h-40 rounded-2xl" />
       ) : (
         <form onSubmit={submit} className="mt-4 flex flex-col gap-4">
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <label className="flex flex-col gap-1.5 text-sm font-medium">
               <span className="flex items-center gap-1.5">
                 <Facebook className="size-4 text-[#1877F2]" />
@@ -839,6 +842,19 @@ function SocialsCard() {
                 value={instagramUrl}
                 onChange={(e) => setInstagramUrl(e.target.value)}
                 placeholder="https://instagram.com/YourPage"
+                type="url"
+                className="clay-input h-11 shadow-none"
+              />
+            </label>
+            <label className="flex flex-col gap-1.5 text-sm font-medium">
+              <span className="flex items-center gap-1.5">
+                <TikTokIcon className="size-4 text-foreground" />
+                TikTok profile
+              </span>
+              <Input
+                value={tiktokUrl}
+                onChange={(e) => setTiktokUrl(e.target.value)}
+                placeholder="https://tiktok.com/@YourPage"
                 type="url"
                 className="clay-input h-11 shadow-none"
               />

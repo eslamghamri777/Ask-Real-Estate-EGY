@@ -48,6 +48,7 @@ const schema = defineSchema(
     siteSettings: defineTable({
       facebookUrl: v.optional(v.string()),
       instagramUrl: v.optional(v.string()),
+      tiktokUrl: v.optional(v.string()),
       whatsappNumber: v.optional(v.string()),
     }),
 

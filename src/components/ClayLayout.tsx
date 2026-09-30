@@ -20,6 +20,20 @@ const navLinks = [
  */
 export const DEFAULT_WHATSAPP_NUMBER = "201009533599";
 
+/** TikTok brand glyph — lucide has no TikTok icon, so we ship our own. */
+export function TikTokIcon({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
+    </svg>
+  );
+}
+
 /** Build a wa.me deep link, optionally with a pre-filled message. */
 export function whatsappUrl(number: string | null | undefined, message?: string): string {
   const base = `https://wa.me/${number || DEFAULT_WHATSAPP_NUMBER}`;
@@ -32,6 +46,7 @@ export function useSiteSocials() {
   return {
     facebookUrl: settings?.facebookUrl ?? null,
     instagramUrl: settings?.instagramUrl ?? null,
+    tiktokUrl: settings?.tiktokUrl ?? null,
     whatsappNumber: settings?.whatsappNumber ?? DEFAULT_WHATSAPP_NUMBER,
     loaded: settings !== undefined,
   };
@@ -151,6 +166,17 @@ export function SocialIconLinks({ className = "" }: { className?: string }) {
           className="clay-icon clay-sheen clay-squish size-12 bg-card"
         >
           <Instagram className="size-5 text-[#C13584]" />
+        </a>
+      )}
+      {socials.tiktokUrl && (
+        <a
+          href={socials.tiktokUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Ask Real Estate on TikTok"
+          className="clay-icon clay-sheen clay-squish size-12 bg-card"
+        >
+          <TikTokIcon className="size-5 text-foreground" />
         </a>
       )}
       <a

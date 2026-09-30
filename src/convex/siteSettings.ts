@@ -47,6 +47,7 @@ export const getPublic = query({
     return {
       facebookUrl: row?.facebookUrl ?? null,
       instagramUrl: row?.instagramUrl ?? null,
+      tiktokUrl: row?.tiktokUrl ?? null,
       whatsappNumber: row?.whatsappNumber ?? null,
     };
   },
@@ -62,6 +63,7 @@ export const getForEdit = query({
     return {
       facebookUrl: row?.facebookUrl ?? "",
       instagramUrl: row?.instagramUrl ?? "",
+      tiktokUrl: row?.tiktokUrl ?? "",
       whatsappNumber: row?.whatsappNumber ?? "",
     };
   },
@@ -72,6 +74,7 @@ export const saveSocials = mutation({
   args: {
     facebookUrl: v.string(),
     instagramUrl: v.string(),
+    tiktokUrl: v.string(),
     whatsappNumber: v.string(),
   },
   returns: v.null(),
@@ -81,10 +84,11 @@ export const saveSocials = mutation({
 
     const facebookUrl = normalizeProfileUrl(args.facebookUrl);
     const instagramUrl = normalizeProfileUrl(args.instagramUrl);
+    const tiktokUrl = normalizeProfileUrl(args.tiktokUrl);
     const whatsappNumber = normalizeWhatsAppNumber(args.whatsappNumber);
 
     const row = await ctx.db.query("siteSettings").first();
-    const patch = { facebookUrl, instagramUrl, whatsappNumber };
+    const patch = { facebookUrl, instagramUrl, tiktokUrl, whatsappNumber };
     if (row) {
       await ctx.db.patch(row._id, patch);
     } else {
