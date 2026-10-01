@@ -186,9 +186,9 @@ export default function Landing() {
 
             {/* 0% brokerage promise — echoes the primary request desk */}
             <div className="mt-5 border-t border-border pt-4 text-center">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm font-semibold text-foreground">
                 Expert advisory at no cost to you — enjoy{" "}
-                <span className="font-display text-lg italic text-foreground">0%</span>{" "}
+                <span className="font-display text-lg italic text-brand">0%</span>{" "}
                 brokerage fees on primary sales.
               </p>
             </div>
