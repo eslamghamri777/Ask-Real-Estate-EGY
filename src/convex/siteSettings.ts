@@ -21,7 +21,10 @@ function normalizeProfileUrl(url: string): string | undefined {
   if (parsed.protocol !== "https:" && parsed.protocol !== "http:") {
     throw new Error("Only http(s) web links are supported.");
   }
-  if (parsed.username || parsed.password || parsed.pathname.match(/@/)) {
+  // Block user:pass@host links by inspecting the URL userinfo. Profile URLs
+  // like tiktok.com/@YourPage have "@" in the *path* — that's not a
+  // credential, so it must be allowed.
+  if (parsed.username || parsed.password) {
     throw new Error("Links containing credentials are not allowed.");
   }
   return `${parsed.protocol}//${parsed.host}${parsed.pathname.replace(/\/+$/, "")}`;
