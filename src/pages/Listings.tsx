@@ -18,6 +18,9 @@ import { useSearchParams } from "react-router";
 
 const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
 
+/** Headline primary-sale destinations — always offered on the request desk. */
+const PRIMARY_AREAS = ["Cairo", "North Coast", "Ain Sokhna"];
+
 const DELIVERY_OPTIONS = [
   { value: "immediate", label: "Immediate" },
   { value: "6m", label: "6 months" },
@@ -91,6 +94,19 @@ export default function Listings() {
   const areas = useQuery(api.listings.areas);
   const socials = useSiteSocials();
 
+  // Primary Sale is a request desk, not a catalog: the headline destinations
+  // are offered even when no listing exists for them yet (so no count shown).
+  const dynamicAreas = areas ?? [];
+  const areaOptions: { name: string; count?: number }[] =
+    purpose === "primary"
+      ? [
+          ...PRIMARY_AREAS.map((name) => ({ name })),
+          ...dynamicAreas
+            .filter((a) => !PRIMARY_AREAS.includes(a.name))
+            .map((a) => ({ name: a.name, count: a.count })),
+        ]
+      : dynamicAreas.map((a) => ({ name: a.name, count: a.count }));
+
   const results = usePaginatedQuery(
     api.listings.list,
     {
@@ -113,13 +129,33 @@ export default function Listings() {
     { initialNumItems: 9 },
   );
 
+  // Purpose changes touch several filters at once, so they bypass setFilter:
+  // chained setFilter calls would each rebuild the URL from the same stale
+  // searchParams and clobber each other's writes.
   const changePurpose = (next: "all" | "primary" | "resale" | "rent") => {
-    setFilter("purpose", next === "all" ? "" : next);
-    // Delivery only applies to primary (off-plan) sales — drop it when the
-    // customer switches to Resale or Rent so it can't filter invisibly.
-    if (next !== "primary") {
-      setFilter("delivery", "");
-    }
+    // Delivery only applies to primary (off-plan) sales, and a primary-only
+    // area has no catalog to browse — drop both when leaving Primary so they
+    // can't filter invisibly on another tab.
+    const leavingPrimary = next !== "primary";
+    const dropArea =
+      leavingPrimary &&
+      Boolean(area) &&
+      PRIMARY_AREAS.includes(area) &&
+      !dynamicAreas.some((a) => a.name === area);
+
+    setFilters((prev) => ({
+      ...prev,
+      purpose: next === "all" ? "" : next,
+      ...(leavingPrimary ? { delivery: "" } : {}),
+      ...(dropArea ? { area: "" } : {}),
+    }));
+
+    const params = new URLSearchParams(searchParams);
+    if (next === "all") params.delete("purpose");
+    else params.set("purpose", next);
+    if (leavingPrimary) params.delete("delivery");
+    if (dropArea) params.delete("area");
+    setSearchParams(params, { replace: true });
   };
 
   const clearFilters = () => {
@@ -247,9 +283,9 @@ export default function Listings() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any-area">Any area</SelectItem>
-                {(areas ?? []).map((a) => (
+                {areaOptions.map((a) => (
                   <SelectItem key={a.name} value={a.name}>
-                    {a.name} ({a.count})
+                    {a.count ? `${a.name} (${a.count})` : a.name}
                   </SelectItem>
                 ))}
               </SelectContent>
