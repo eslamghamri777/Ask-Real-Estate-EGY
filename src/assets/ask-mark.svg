@@ -1,13 +1,40 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <circle cx="32" cy="30" r="26" fill="#141414"/>
-  <clipPath id="bust"><circle cx="32" cy="30" r="26"/></clipPath>
-  <g clip-path="url(#bust)">
-    <circle cx="26" cy="21.5" r="8.5" fill="#fff"/>
-    <rect x="23" y="28.5" width="6" height="5" fill="#fff"/>
-    <path d="M10 62c0-16 6.5-25 16-25s16 9 16 25v4H10v-4z" fill="#fff"/>
-    <path d="M23 40.5 26 47l3-6.5" stroke="#141414" stroke-width="2.2" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
-    <path d="M26 47v8" stroke="#141414" stroke-width="1.5" stroke-linecap="round"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <clipPath id="askBust">
+      <circle cx="41" cy="50" r="31"/>
+    </clipPath>
+    <linearGradient id="askHair" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#6b6b6b"/>
+      <stop offset="1" stop-color="#3a3a3a"/>
+    </linearGradient>
+    <linearGradient id="askSuit" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8d8d8d"/>
+      <stop offset="1" stop-color="#4f4f4f"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Black blob: main circle merged with the rounded top-right corner shape -->
+  <g fill="#141414">
+    <circle cx="41" cy="50" r="31"/>
+    <path d="M52 0 H84 Q100 0 100 16 V30 H62 Q53 30 52 20 Z"/>
   </g>
-  <path d="M39 20c0-5.5 4-7.5 7-6.5 3.5 1.1 4.5 5 2.5 8-1.5 2.2-4 3.3-4.2 6.3v2.7" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/>
-  <circle cx="44.3" cy="36.5" r="2.5" fill="#fff"/>
+
+  <g clip-path="url(#askBust)">
+    <!-- neck -->
+    <rect x="36" y="49" width="7" height="9" fill="#f2f2f2"/>
+    <!-- shoulders / suit -->
+    <path d="M4 90 C6 68 17 59.5 30 58 L36 56.5 L39 59.5 L42 56.5 L48 58 C61 59.5 72 68 74 90 Z" fill="url(#askSuit)"/>
+    <!-- shirt collar -->
+    <path d="M34.5 56.5 L39 59.5 L43.5 56.5 L45 61.5 L39 65 L33 61.5 Z" fill="#f2f2f2"/>
+    <!-- tie -->
+    <path d="M39 60.5 L41.6 63.2 L40.3 73.5 L39 75.5 L37.7 73.5 L36.4 63.2 Z" fill="#262626"/>
+    <!-- face -->
+    <circle cx="39" cy="41" r="11.5" fill="#f2f2f2"/>
+    <!-- hair -->
+    <path d="M27.5 45.5 V40 A11.5 11.5 0 0 1 50.5 40 V45.5 H45.5 Q47.5 37.5 40.5 37 Q33 37.5 33.5 45.5 Z" fill="url(#askHair)"/>
+  </g>
+
+  <!-- question mark -->
+  <path d="M52.5 30.5 C52 24.5 56.5 21.5 60.5 22.5 C64.8 23.6 66.8 27.5 64.8 31 C63.5 33.3 61.3 34.3 60 36.3 C59.4 37.3 59.2 38.3 59.2 39.8" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="59.2" cy="46.5" r="3" fill="#fff"/>
 </svg>
