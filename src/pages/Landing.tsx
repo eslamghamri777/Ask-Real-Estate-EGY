@@ -9,10 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { motion } from "framer-motion";
-import { useQuery } from "convex/react";
-import { ArrowRight, MapPin, Search } from "lucide-react";
+import { usePaginatedQuery, useQuery } from "convex/react";
+import { ArrowRight } from "lucide-react";
 import { Link, useNavigate } from "react-router";
-import { useState } from "react";
 
 const areaTones = [
   "bg-clay-butter",
@@ -30,41 +29,37 @@ const fadeUp = {
   transition: { duration: 0.6, ease: "easeOut" as const },
 };
 
-const POPULAR_AREAS = [
-  "New Cairo",
-  "Sheikh Zayed",
-  "New Administrative Capital",
-  "North Coast",
-  "Ain Sokhna",
-  "Heliopolis",
-  "El Shorouk",
-  "Madinaty",
-];
-
 export default function Landing() {
   const navigate = useNavigate();
-  const [purpose, setPurpose] = useState<"primary" | "resale" | "rent">("primary");
-  const [area, setArea] = useState("");
-  const [q, setQ] = useState("");
 
   const featured = useQuery(api.listings.featured);
   const areas = useQuery(api.listings.areas);
   const stats = useQuery(api.listings.stats);
 
-  const handleSearch = () => {
-    const params = new URLSearchParams();
-    params.set("purpose", purpose);
-    if (area) params.set("area", area);
-    if (q.trim()) params.set("q", q.trim());
-    navigate(`/listings?${params.toString()}`);
-  };
+  // Hero showcase — an ad built from the portfolio itself: primary launches
+  // first, falling back to any photographed listing while primary is empty.
+  const primaryList = usePaginatedQuery(
+    api.listings.list,
+    { purpose: "primary" },
+    { initialNumItems: 9 },
+  );
+  const primaryWithPhotos = primaryList.results.filter((l) => l.photos.length > 0);
+  const showcaseTiles =
+    primaryWithPhotos.length > 0
+      ? primaryWithPhotos.slice(0, 3)
+      : (featured ?? []).filter((l) => l.photos.length > 0).slice(0, 3);
+  const showcaseLoading = primaryList.status === "LoadingFirstPage";
+  // If primary has no photos yet, wait for the featured fallback instead of
+  // flashing the empty-state banner.
+  const waitingOnShowcase =
+    showcaseLoading || (showcaseTiles.length === 0 && featured === undefined);
 
   return (
     <div className="flex min-h-screen flex-col">
       <ClayHeader />
 
       <main className="flex-1">
-        {/* ============ Hero: search first ============ */}
+        {/* ============ Hero: showcase first ============ */}
         <section className="mx-auto w-full max-w-6xl px-4 pt-14 sm:pt-20">
           <div className="mx-auto max-w-3xl text-center">
             <motion.div
@@ -108,89 +103,98 @@ export default function Landing() {
             </motion.p>
           </div>
 
-          {/* Search panel */}
+          {/* Primary projects showcase — an ad built from the portfolio */}
           <motion.div
             initial={{ opacity: 0, y: 22 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="clay-card clay-lg mx-auto mt-10 max-w-4xl p-4 sm:p-5"
+            className="clay-card clay-lg mx-auto mt-10 max-w-4xl overflow-hidden"
           >
-            <div className="clay-well mx-auto mb-4 flex w-fit flex-wrap items-center justify-center gap-1 rounded-full p-1.5">
-              <PurposeTab
-                active={purpose === "primary"}
-                onClick={() => setPurpose("primary")}
-                label="Primary Sale"
-              />
-              <PurposeTab
-                active={purpose === "resale"}
-                onClick={() => setPurpose("resale")}
-                label="Resale"
-              />
-              <PurposeTab
-                active={purpose === "rent"}
-                onClick={() => setPurpose("rent")}
-                label="Rent"
-              />
+            <div className="grid gap-2 p-2 sm:grid-cols-5 sm:p-3">
+              {waitingOnShowcase ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    className={
+                      i === 0
+                        ? "h-72 rounded-[1.25rem] sm:col-span-3 sm:row-span-2 sm:h-full"
+                        : "h-40 rounded-[1.25rem] sm:col-span-2"
+                    }
+                  />
+                ))
+              ) : showcaseTiles.length === 0 ? (
+                <div className="col-span-full flex h-44 items-center justify-center rounded-[1.25rem] bg-secondary px-6 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    New primary launches are added regularly — message us for
+                    what's coming next.
+                  </p>
+                </div>
+              ) : (
+                showcaseTiles.map((l, i) => (
+                  <motion.button
+                    key={l._id}
+                    type="button"
+                    onClick={() =>
+                      navigate(
+                        `/listings?purpose=primary&area=${encodeURIComponent(l.area)}`,
+                      )
+                    }
+                    aria-label={`Primary properties in ${l.area}`}
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: 0.4 + i * 0.08 }}
+                    className={
+                      "group relative overflow-hidden rounded-[1.25rem] text-left " +
+                      (i === 0
+                        ? "h-72 sm:col-span-3 sm:row-span-2 sm:h-full"
+                        : "h-40 sm:col-span-2")
+                    }
+                  >
+                    <img
+                      src={l.photos[0]}
+                      alt={l.title}
+                      loading={i === 0 ? "eager" : "lazy"}
+                      className="absolute inset-0 size-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                    {i === 0 && (
+                      <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-foreground shadow-sm">
+                        Direct from the developer
+                      </span>
+                    )}
+                    <div className="absolute inset-x-4 bottom-3">
+                      <p className="font-display text-lg text-white">{l.area}</p>
+                      <p className="text-xs font-medium capitalize text-white/80">
+                        {l.type} · primary sale
+                      </p>
+                    </div>
+                  </motion.button>
+                ))
+              )}
             </div>
 
-            <form
-              className="flex flex-col gap-3 sm:flex-row"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSearch();
-              }}
-            >
-              <div className="relative flex-1">
-                <MapPin className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  value={area}
-                  onChange={(e) => setArea(e.target.value)}
-                  placeholder="Area — New Cairo, North Coast, Ain Sokhna…"
-                  className="clay-input pl-10"
-                  aria-label="Area"
-                />
-              </div>
-              <div className="relative flex-1">
-                <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  value={q}
-                  onChange={(e) => setQ(e.target.value)}
-                  placeholder="Keyword — villa, penthouse, Nile view…"
-                  className="clay-input pl-10"
-                  aria-label="Keyword"
-                />
+            <div className="flex flex-col items-center gap-4 border-t border-border px-6 py-5 text-center sm:flex-row sm:justify-between sm:gap-6 sm:text-left">
+              <div>
+                <p className="font-display text-lg tracking-tight">
+                  Egypt's next addresses — direct from the developers
+                </p>
+                <p className="mt-0.5 text-sm font-semibold text-foreground">
+                  Expert advisory at no cost to you — enjoy{" "}
+                  <span className="font-display text-lg italic text-brand">
+                    0%
+                  </span>{" "}
+                  brokerage fees on primary sales.
+                </p>
               </div>
               <Button
-                type="submit"
-                className="clay-btn clay-btn-primary h-12 shrink-0 rounded-full px-7 text-base"
+                asChild
+                className="clay-btn clay-btn-primary h-11 shrink-0 rounded-full px-6"
               >
-                Search
-                <ArrowRight className="size-4" />
+                <Link to="/listings?purpose=primary">
+                  Explore projects
+                  <ArrowRight className="size-4" />
+                </Link>
               </Button>
-            </form>
-
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-sm text-muted-foreground">Popular:</span>
-              {POPULAR_AREAS.map((name) => (
-                <button
-                  key={name}
-                  onClick={() =>
-                    navigate(`/listings?area=${encodeURIComponent(name)}`)
-                  }
-                  className="rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-                >
-                  {name}
-                </button>
-              ))}
-            </div>
-
-            {/* 0% brokerage promise — echoes the primary request desk */}
-            <div className="mt-5 border-t border-border pt-4 text-center">
-              <p className="text-sm font-semibold text-foreground">
-                Expert advisory at no cost to you — enjoy{" "}
-                <span className="font-display text-lg italic text-brand">0%</span>{" "}
-                brokerage fees on primary sales.
-              </p>
             </div>
           </motion.div>
         </section>
@@ -351,28 +355,6 @@ export default function Landing() {
 
       <ClayFooter />
     </div>
-  );
-}
-
-function PurposeTab({
-  active,
-  onClick,
-  label,
-}: {
-  active: boolean;
-  onClick: () => void;
-  label: string;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-6 py-2.5 text-sm font-semibold transition-all ${
-        active ? "bg-card clay-sm" : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      {label}
-    </button>
   );
 }
 
