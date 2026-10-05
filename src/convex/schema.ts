@@ -44,6 +44,54 @@ const schema = defineSchema(
       message: v.string(),
     }).index("by_listing", ["listingId"]),
 
+    /**
+     * Primary-sale requests from the request desk.
+     *
+     * The customer picks their requirements on /listings, then adds a first
+     * name, last name and WhatsApp number on /request. The row is stored here
+     * and the `submitRequest` action (requestDelivery.ts) pushes the compiled
+     * text to the team's WhatsApp, so the customer never has to send anything
+     * from their own WhatsApp.
+     */
+    propertyRequests: defineTable({
+      firstName: v.string(),
+      lastName: v.string(),
+      /** Customer's WhatsApp number, international digits (20…). */
+      phone: v.string(),
+      area: v.optional(v.string()),
+      type: v.optional(v.string()),
+      bedrooms: v.optional(v.number()),
+      delivery: v.optional(
+        v.union(
+          v.literal("immediate"),
+          v.literal("6m"),
+          v.literal("12m"),
+          v.literal("2y"),
+          v.literal("3y"),
+          v.literal("4y"),
+        ),
+      ),
+      developer: v.optional(v.string()),
+      finish: v.optional(
+        v.union(
+          v.literal("core-shell"),
+          v.literal("semi-finished"),
+          v.literal("fully-finished"),
+          v.literal("finished-furnished"),
+        ),
+      ),
+      keyword: v.optional(v.string()),
+      /** The exact text handed to the team — kept for the studio's fallback list. */
+      message: v.string(),
+      /** WhatsApp handoff: "pending" until the send is attempted. */
+      deliveryStatus: v.union(
+        v.literal("pending"),
+        v.literal("sent"),
+        v.literal("failed"),
+      ),
+      deliveryError: v.optional(v.string()),
+    }).index("by_phone", ["phone"]),
+
     /** Singleton site configuration (social links, WhatsApp). */
     siteSettings: defineTable({
       facebookUrl: v.optional(v.string()),

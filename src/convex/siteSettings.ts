@@ -1,6 +1,7 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { requireCreator } from "./creator";
+import { normalizeEgyptianPhone } from "./phone";
 
 /**
  * Site-wide settings singleton (social links). Editable only by the creator
@@ -30,16 +31,15 @@ function normalizeProfileUrl(url: string): string | undefined {
   return `${parsed.protocol}//${parsed.host}${parsed.pathname.replace(/\/+$/, "")}`;
 }
 
-/** Keep digits only; Egyptian numbers stored in international form (20…). */
+/** Egyptian numbers are stored in international form (20…) — same rule the
+ *  request desk applies to the customer's own WhatsApp number. */
 function normalizeWhatsAppNumber(number: string): string | undefined {
-  const digits = number.replace(/\D/g, "");
-  if (!digits) return undefined;
-  if (digits.length < 10 || digits.length > 15) {
+  if (!number.trim()) return undefined;
+  const normalized = normalizeEgyptianPhone(number);
+  if (!normalized) {
     throw new Error("That phone number doesn't look right — include the country code.");
   }
-  // 01xxxxxxxxx → 201xxxxxxxxx
-  if (digits.length === 11 && digits.startsWith("01")) return `20${digits}`;
-  return digits;
+  return normalized;
 }
 
 /** Public read — safe fields only; never throws. */

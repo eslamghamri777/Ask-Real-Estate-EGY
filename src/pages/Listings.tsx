@@ -1,4 +1,4 @@
-import { ClayFooter, ClayHeader, useSiteSocials, whatsappUrl } from "@/components/ClayLayout";
+import { ClayFooter, ClayHeader } from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { api } from "@/convex/_generated/api";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { Home, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
 import { useState } from "react";
-import { useSearchParams } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
 
@@ -100,6 +100,7 @@ function readSearch(searchParams: URLSearchParams): Record<SearchKey, string> {
 
 export default function Listings() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // Filter state lives in one object and is seeded from the URL once; the
   // URL is written through on every change, so no sync effect is needed.
@@ -124,7 +125,6 @@ export default function Listings() {
   };
 
   const areas = useQuery(api.listings.areas);
-  const socials = useSiteSocials();
 
   // Only the destinations we cover are offered, across every tab, with live
   // counts where we have them. Primary Sale is a request desk, so a destination
@@ -193,47 +193,21 @@ export default function Listings() {
   };
 
   /**
-   * Primary Sale is a request desk, not a catalog: submitting the filters
-   * sends the compiled request straight to the team's WhatsApp — the same
-   * number connected in the studio — and a person takes it from there.
+   * Primary Sale is a request desk, not a catalog: the requirements picked
+   * here travel to /request, where the customer adds their name and WhatsApp
+   * number. The server then hands the request to the team's WhatsApp, so
+   * nothing opens on the customer's side.
    */
-  const DELIVERY_LABELS: Record<string, string> = {
-    immediate: "Immediate",
-    "6m": "Within 6 months",
-    "12m": "Within 12 months",
-    "2y": "Within 2 years",
-    "3y": "Within 3 years",
-    "4y": "Within 4 years",
-  };
-  const FINISH_LABELS: Record<string, string> = {
-    "core-shell": "Core & shell",
-    "semi-finished": "Semi-finished",
-    "fully-finished": "Fully finished",
-    "finished-furnished": "Finished & furnished",
-  };
-
-  const primaryRequestMessage = () => {
-    const lines = [
-      "Hello Ask Real Estate 👋",
-      "",
-      "I'm looking for a primary-sale (direct from developer) property:",
-      `• Area: ${area || "Any"}`,
-      `• Type: ${type || "Any"}`,
-      `• Bedrooms: ${bedrooms ? `${bedrooms}+` : "Any"}`,
-      `• Delivery: ${delivery ? (DELIVERY_LABELS[delivery] ?? delivery) : "Any"}`,
-      `• Developer: ${developer || "Any"}`,
-      `• Finish: ${finish ? (FINISH_LABELS[finish] ?? finish) : "Any"}`,
-    ];
-    if (q.trim()) lines.push(`• Keyword: ${q.trim()}`);
-    lines.push(
-      "",
-      "Please send me matching options with prices.",
-    );
-    return lines.join("\n");
-  };
-
-  const handlePrimaryRequest = () => {
-    window.open(whatsappUrl(socials.whatsappNumber, primaryRequestMessage()), "_blank", "noopener,noreferrer");
+  const goToRequest = () => {
+    const params = new URLSearchParams({ purpose: "primary" });
+    if (area) params.set("area", area);
+    if (type) params.set("type", type);
+    if (bedrooms) params.set("bedrooms", String(bedrooms));
+    if (delivery) params.set("delivery", delivery);
+    if (developer) params.set("developer", developer);
+    if (finish) params.set("finish", finish);
+    if (q.trim()) params.set("q", q.trim());
+    navigate(`/request?${params.toString()}`);
   };
 
   const activeFilterCount =
@@ -297,7 +271,7 @@ export default function Listings() {
             onSubmit={(e) => {
               e.preventDefault();
               if (purpose === "primary") {
-                handlePrimaryRequest();
+                goToRequest();
                 return;
               }
               // Search submits the typed-but-unsubmitted keyword.
@@ -442,7 +416,7 @@ export default function Listings() {
                 {purpose === "primary" ? (
                   <>
                     <MessageCircle className="size-4" />
-                    Send request
+                    Continue
                   </>
                 ) : (
                   "Search"
@@ -475,17 +449,18 @@ export default function Listings() {
                 </span>
                 <h2 className="font-display mt-4 text-xl">Tell us what you're looking for</h2>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  We don't list primary-sale units online. Set your filters above and
-                  submit — your request goes straight to our team's WhatsApp, and a
-                  person replies with matching options and prices.
+                  We don't list primary-sale units online. Set your filters above,
+                  then add your name and WhatsApp number — your request reaches
+                  our team's WhatsApp directly, and a person replies with matching
+                  options and prices.
                 </p>
               <Button
                 type="button"
-                onClick={handlePrimaryRequest}
+                onClick={goToRequest}
                 className="clay-btn clay-btn-primary mt-6 rounded-full px-7"
               >
                 <MessageCircle className="size-4" />
-                Send request on WhatsApp
+                Continue to your details
               </Button>
               </div>
             </div>

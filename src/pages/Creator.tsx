@@ -11,7 +11,14 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import type { Id } from "@/convex/_generated/dataModel";
+import { formatPhoneForDisplay } from "@/convex/phone";
 import { useAuth } from "@/hooks/use-auth";
+import {
+  asDelivery,
+  asFinish,
+  requestSummary,
+  type RequestFilters,
+} from "@/lib/primaryRequest";
 import { useMutation, useQuery } from "convex/react";
 import {
   Facebook,
@@ -142,6 +149,7 @@ function CreatorBody() {
       </div>
 
       <SocialsCard />
+      <RequestsCard />
     </main>
   );
 }
@@ -756,6 +764,136 @@ function PostManager({
         </ul>
       )}
     </section>
+  );
+}
+
+/* ============ Primary-sale requests ============ */
+
+/** The record behind the WhatsApp handoff — and the manual fallback if a send
+ *  ever fails (missing keys, Twilio outage). */
+function RequestsCard() {
+  const requests = useQuery(api.requests.recent);
+
+  return (
+    <section className="clay-card clay-md mt-6 p-6">
+      <h2 className="font-display flex items-center gap-2 text-xl">
+        <MessageCircle className="size-5 text-primary" />
+        Primary-sale requests
+      </h2>
+      <p className="mt-1 text-sm text-muted-foreground">
+        Every request sent from the desk also goes to your WhatsApp. This is the
+        record behind it — send any undelivered one by hand from here.
+      </p>
+
+      {requests === undefined ? (
+        <Skeleton className="mt-4 h-40 rounded-2xl" />
+      ) : requests.length === 0 ? (
+        <p className="mt-4 rounded-2xl bg-secondary px-4 py-6 text-center text-sm text-muted-foreground">
+          No requests yet. They appear here the moment a customer sends their
+          requirements from the Primary sale desk.
+        </p>
+      ) : (
+        <ul className="mt-4 space-y-3">
+          {requests.map((request) => (
+            <RequestRow key={request._id} request={request} />
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function RequestRow({
+  request,
+}: {
+  request: {
+    _id: Id<"propertyRequests">;
+    _creationTime: number;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    area?: string;
+    type?: string;
+    bedrooms?: number;
+    delivery?: "immediate" | "6m" | "12m" | "2y" | "3y" | "4y";
+    developer?: string;
+    finish?:
+      | "core-shell"
+      | "semi-finished"
+      | "fully-finished"
+      | "finished-furnished";
+    keyword?: string;
+    message: string;
+    deliveryStatus: "pending" | "sent" | "failed";
+    deliveryError?: string;
+  };
+}) {
+  const filters: RequestFilters = {
+    area: request.area ?? "",
+    type: request.type ?? "",
+    bedrooms: request.bedrooms ?? 0,
+    delivery: asDelivery(request.delivery ?? ""),
+    developer: request.developer ?? "",
+    finish: asFinish(request.finish ?? ""),
+    keyword: request.keyword ?? "",
+  };
+  const picked = requestSummary(filters)
+    .filter((row) => row.value !== "Any")
+    .map((row) => `${row.label}: ${row.value}`);
+
+  const status =
+    request.deliveryStatus === "sent"
+      ? { label: "Delivered to WhatsApp", tone: "bg-primary/10 text-primary" }
+      : request.deliveryStatus === "pending"
+        ? { label: "Sending…", tone: "bg-secondary text-muted-foreground" }
+        : { label: "Not delivered — send manually", tone: "bg-destructive/10 text-destructive" };
+
+  return (
+    <li className="rounded-2xl bg-secondary px-4 py-3">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+        <p className="font-semibold">
+          {request.firstName} {request.lastName}
+        </p>
+        <a
+          href={`https://wa.me/${request.phone}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
+        >
+          {formatPhoneForDisplay(request.phone)}
+        </a>
+      </div>
+
+      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+        {picked.length ? picked.join(" · ") : "No requirements selected"}
+      </p>
+
+      <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
+        <span className={`rounded-full px-2.5 py-1 font-semibold ${status.tone}`}>
+          {status.label}
+        </span>
+        <span className="text-muted-foreground">
+          {new Date(request._creationTime).toLocaleString("en-GB", {
+            day: "numeric",
+            month: "short",
+            hour: "2-digit",
+            minute: "2-digit",
+          })}
+        </span>
+        {request.deliveryError && (
+          <span className="text-destructive">{request.deliveryError}</span>
+        )}
+      </div>
+
+      <details className="mt-2">
+        <summary className="cursor-pointer text-xs font-semibold text-muted-foreground">
+          View the message
+        </summary>
+        <pre className="mt-2 overflow-x-auto whitespace-pre-wrap rounded-xl bg-card px-3 py-2 text-xs leading-relaxed">
+          {request.message}
+        </pre>
+      </details>
+    </li>
   );
 }
 
