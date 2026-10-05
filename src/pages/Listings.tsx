@@ -18,8 +18,8 @@ import { useSearchParams } from "react-router";
 
 const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
 
-/** Headline primary-sale destinations — always offered on the request desk. */
-const PRIMARY_AREAS = ["Cairo", "North Coast", "Ain Sokhna"];
+/** The destinations we cover — the only areas offered in the filter. */
+const AREAS = ["New Cairo", "Ain Sokhna", "North Coast", "6th October"];
 
 /** Primary-sale developers the desk can forward a request to. */
 const PRIMARY_DEVELOPERS = [
@@ -126,18 +126,19 @@ export default function Listings() {
   const areas = useQuery(api.listings.areas);
   const socials = useSiteSocials();
 
-  // Primary Sale is a request desk, not a catalog: the headline destinations
-  // are offered even when no listing exists for them yet (so no count shown).
-  const dynamicAreas = areas ?? [];
-  const areaOptions: { name: string; count?: number }[] =
-    purpose === "primary"
-      ? [
-          ...PRIMARY_AREAS.map((name) => ({ name })),
-          ...dynamicAreas
-            .filter((a) => !PRIMARY_AREAS.includes(a.name))
-            .map((a) => ({ name: a.name, count: a.count })),
-        ]
-      : dynamicAreas.map((a) => ({ name: a.name, count: a.count }));
+  // Only the destinations we cover are offered, across every tab, with live
+  // counts where we have them. Primary Sale is a request desk, so a destination
+  // with no listing yet is still offered (just without a count).
+  const catalogAreas = areas ?? [];
+  const areaOptions: { name: string; count?: number }[] = [
+    ...AREAS.map((name) => ({
+      name,
+      count: catalogAreas.find((a) => a.name === name)?.count,
+    })),
+    // A deep link (e.g. a landing-page area tile) can still carry an area we no
+    // longer offer — keep it selectable so the trigger shows it and can clear it.
+    ...(area && !AREAS.includes(area) ? [{ name: area }] : []),
+  ];
 
   const results = usePaginatedQuery(
     api.listings.list,
@@ -165,21 +166,15 @@ export default function Listings() {
   // chained setFilter calls would each rebuild the URL from the same stale
   // searchParams and clobber each other's writes.
   const changePurpose = (next: "all" | "primary" | "resale" | "rent") => {
-    // Delivery and developer only apply to primary (off-plan) sales, and a
-    // primary-only area has no catalog to browse — drop all three when leaving
-    // Primary so they can't filter invisibly on another tab.
+    // Delivery and developer only apply to primary (off-plan) sales — drop both
+    // when leaving Primary so they can't filter invisibly on another tab. Area
+    // now applies to every tab, so it survives the switch.
     const leavingPrimary = next !== "primary";
-    const dropArea =
-      leavingPrimary &&
-      Boolean(area) &&
-      PRIMARY_AREAS.includes(area) &&
-      !dynamicAreas.some((a) => a.name === area);
 
     setFilters((prev) => ({
       ...prev,
       purpose: next === "all" ? "" : next,
       ...(leavingPrimary ? { delivery: "", developer: "" } : {}),
-      ...(dropArea ? { area: "" } : {}),
     }));
 
     const params = new URLSearchParams(searchParams);
@@ -189,7 +184,6 @@ export default function Listings() {
       params.delete("delivery");
       params.delete("developer");
     }
-    if (dropArea) params.delete("area");
     setSearchParams(params, { replace: true });
   };
 
