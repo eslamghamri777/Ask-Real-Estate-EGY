@@ -311,6 +311,27 @@ export default function Listings() {
             }}
           >
             <div className="flex flex-wrap items-center gap-3">
+            {purpose === "primary" && (
+              <Select
+                value={developer || "any-developer"}
+                onValueChange={(v) =>
+                  setFilter("developer", v === "any-developer" ? "" : v)
+                }
+              >
+                <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+                  <SelectValue placeholder="Developer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any-developer">Any developer</SelectItem>
+                  {PRIMARY_DEVELOPERS.map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
             <Select
               value={area || "any-area"}
               onValueChange={(v) => setFilter("area", v === "any-area" ? "" : v)}
@@ -376,27 +397,6 @@ export default function Listings() {
                   {DELIVERY_OPTIONS.map((d) => (
                     <SelectItem key={d.value} value={d.value}>
                       {d.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
-            {purpose === "primary" && (
-              <Select
-                value={developer || "any-developer"}
-                onValueChange={(v) =>
-                  setFilter("developer", v === "any-developer" ? "" : v)
-                }
-              >
-                <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
-                  <SelectValue placeholder="Developer" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="any-developer">Any developer</SelectItem>
-                  {PRIMARY_DEVELOPERS.map((d) => (
-                    <SelectItem key={d} value={d}>
-                      {d}
                     </SelectItem>
                   ))}
                 </SelectContent>
