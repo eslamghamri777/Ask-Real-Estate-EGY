@@ -21,6 +21,35 @@ const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", 
 /** Headline primary-sale destinations — always offered on the request desk. */
 const PRIMARY_AREAS = ["Cairo", "North Coast", "Ain Sokhna"];
 
+/** Primary-sale developers the desk can forward a request to. */
+const PRIMARY_DEVELOPERS = [
+  "Mountain View",
+  "Palm Hills Developments",
+  "SODIC",
+  "Emaar Misr",
+  "La Vista Developments",
+  "Madinet Masr",
+  "City Edge Developments",
+  "Tatweer Misr",
+  "Lake View",
+  "ORA Developers",
+  "Saada",
+  "PRE Developments",
+  "Modon Developments",
+  "Hassan Allam Properties",
+  "Katameya",
+  "Nouvara",
+  "Garana",
+  "Marakez",
+  "The Waterway Developments",
+  "Azad (Tameer)",
+  "Il Cazar",
+  "Mayan",
+  "Sky AD Developments",
+  "Al Ahly Sabbour",
+  "Landmark (LMD)",
+];
+
 const DELIVERY_OPTIONS = [
   { value: "immediate", label: "Immediate" },
   { value: "6m", label: "6 months" },
@@ -52,6 +81,7 @@ type SearchKey =
   | "type"
   | "bedrooms"
   | "delivery"
+  | "developer"
   | "finish"
   | "q";
 
@@ -62,6 +92,7 @@ function readSearch(searchParams: URLSearchParams): Record<SearchKey, string> {
     type: searchParams.get("type") || "",
     bedrooms: String(Number(searchParams.get("bedrooms")) || 0),
     delivery: searchParams.get("delivery") || "",
+    developer: searchParams.get("developer") || "",
     finish: searchParams.get("finish") || "",
     q: searchParams.get("q") || "",
   };
@@ -80,6 +111,7 @@ export default function Listings() {
   const type = filters.type;
   const bedrooms = Number(filters.bedrooms) || 0;
   const delivery = filters.delivery;
+  const developer = filters.developer;
   const finish = filters.finish;
   const q = filters.q;
 
@@ -133,9 +165,9 @@ export default function Listings() {
   // chained setFilter calls would each rebuild the URL from the same stale
   // searchParams and clobber each other's writes.
   const changePurpose = (next: "all" | "primary" | "resale" | "rent") => {
-    // Delivery only applies to primary (off-plan) sales, and a primary-only
-    // area has no catalog to browse — drop both when leaving Primary so they
-    // can't filter invisibly on another tab.
+    // Delivery and developer only apply to primary (off-plan) sales, and a
+    // primary-only area has no catalog to browse — drop all three when leaving
+    // Primary so they can't filter invisibly on another tab.
     const leavingPrimary = next !== "primary";
     const dropArea =
       leavingPrimary &&
@@ -146,14 +178,17 @@ export default function Listings() {
     setFilters((prev) => ({
       ...prev,
       purpose: next === "all" ? "" : next,
-      ...(leavingPrimary ? { delivery: "" } : {}),
+      ...(leavingPrimary ? { delivery: "", developer: "" } : {}),
       ...(dropArea ? { area: "" } : {}),
     }));
 
     const params = new URLSearchParams(searchParams);
     if (next === "all") params.delete("purpose");
     else params.set("purpose", next);
-    if (leavingPrimary) params.delete("delivery");
+    if (leavingPrimary) {
+      params.delete("delivery");
+      params.delete("developer");
+    }
     if (dropArea) params.delete("area");
     setSearchParams(params, { replace: true });
   };
@@ -192,6 +227,7 @@ export default function Listings() {
       `• Type: ${type || "Any"}`,
       `• Bedrooms: ${bedrooms ? `${bedrooms}+` : "Any"}`,
       `• Delivery: ${delivery ? (DELIVERY_LABELS[delivery] ?? delivery) : "Any"}`,
+      `• Developer: ${developer || "Any"}`,
       `• Finish: ${finish ? (FINISH_LABELS[finish] ?? finish) : "Any"}`,
     ];
     if (q.trim()) lines.push(`• Keyword: ${q.trim()}`);
@@ -212,6 +248,7 @@ export default function Listings() {
     (type ? 1 : 0) +
     (bedrooms ? 1 : 0) +
     (purpose === "primary" && delivery ? 1 : 0) +
+    (purpose === "primary" && developer ? 1 : 0) +
     (finish ? 1 : 0) +
     (q.trim() ? 1 : 0);
 
@@ -339,6 +376,27 @@ export default function Listings() {
                   {DELIVERY_OPTIONS.map((d) => (
                     <SelectItem key={d.value} value={d.value}>
                       {d.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {purpose === "primary" && (
+              <Select
+                value={developer || "any-developer"}
+                onValueChange={(v) =>
+                  setFilter("developer", v === "any-developer" ? "" : v)
+                }
+              >
+                <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+                  <SelectValue placeholder="Developer" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="any-developer">Any developer</SelectItem>
+                  {PRIMARY_DEVELOPERS.map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}
                     </SelectItem>
                   ))}
                 </SelectContent>
