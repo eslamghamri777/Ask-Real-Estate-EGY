@@ -374,8 +374,6 @@ export function ClayHeader() {
           </span>
         </Link>
 
-        {/* Home-page nav removed — the header's search button is the entry point. */}
-
         <div className="ml-auto flex items-center gap-2 md:ml-0">
           <HeaderSearch />
           <Button
@@ -390,6 +388,8 @@ export function ClayHeader() {
             </Link>
           </Button>
         </div>
+
+        {/* Right-side actions now sit next to the search button, not the logo. */}
       </div>
     </header>
   );
