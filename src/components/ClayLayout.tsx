@@ -128,11 +128,10 @@ function HeaderSearch() {
         type="button"
         onClick={openDialog}
         aria-label="Search properties"
-        className="clay-squish"
+        className="clay-squish flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-md ring-2 ring-primary/30 transition-colors hover:bg-primary/90"
       >
-        <span className="clay-icon clay-sheen size-10 bg-card text-foreground">
-          <Search className="size-5" />
-        </span>
+        <Search className="size-4" />
+        Search Properties
       </button>
 
       <DialogContent className="clay-card clay-lg max-h-[calc(100svh-2rem)] overflow-y-auto rounded-[1.75rem] border-none shadow-none sm:max-w-lg">
