@@ -374,6 +374,7 @@ export function ClayHeader() {
           </span>
         </Link>
 
+        {/* Right-side actions: Search Properties next to Sign in, on the right edge of the page. */}
         <div className="ml-auto flex items-center gap-2 md:ml-0">
           <HeaderSearch />
           <Button
@@ -388,8 +389,6 @@ export function ClayHeader() {
             </Link>
           </Button>
         </div>
-
-        {/* Right-side actions now sit next to the search button, not the logo. */}
       </div>
     </header>
   );
