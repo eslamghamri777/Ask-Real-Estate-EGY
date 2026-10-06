@@ -171,9 +171,13 @@ export default function Listings() {
     // now applies to every tab, so it survives the switch.
     const leavingPrimary = next !== "primary";
 
+    // Store the literal "all" (not "") so the state stays in sync with
+    // readSearch/sanitizePurpose: the query arg below keys off `purpose ===
+    // "all"`, and an empty string would be sent to the validator (which only
+    // accepts "primary" | "resale" | "rent") and error the page.
     setFilters((prev) => ({
       ...prev,
-      purpose: next === "all" ? "" : next,
+      purpose: next,
       ...(leavingPrimary ? { delivery: "", developer: "" } : {}),
     }));
 
