@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import askMark from "@/assets/ask-mark.svg";
 import { useMutation, useQuery } from "convex/react";
 import { useEffect } from "react";
-import { Facebook, Instagram, MessageCircle, Search, UserRound } from "lucide-react";
+import { Facebook, Instagram, MessageCircle, Phone, Search, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router";
 
 const navLinks = [
@@ -233,7 +233,7 @@ export function ClayFooter() {
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 rounded-full px-4 py-1.5 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
           >
-            <MessageCircle className="size-4" />
+            <Phone className="size-4" />
             Contact us · {formatLocalNumber(socials.whatsappNumber)}
           </a>
         </div>
