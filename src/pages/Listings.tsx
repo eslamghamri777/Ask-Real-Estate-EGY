@@ -13,58 +13,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { usePaginatedQuery, useQuery } from "convex/react";
 import { Home, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
-import { useState } from "react";
+import {
+  AREAS,
+  DELIVERY_OPTIONS,
+  FINISH_OPTIONS,
+  PRIMARY_DEVELOPERS,
+  TYPES,
+} from "@/lib/filters";
+import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
-
-const TYPES = ["apartment", "villa", "chalet", "penthouse", "duplex", "studio", "townhouse"];
-
-/** The destinations we cover — the only areas offered in the filter. */
-const AREAS = ["New Cairo", "Ain Sokhna", "North Coast", "6th October"];
-
-/** Primary-sale developers the desk can forward a request to. */
-const PRIMARY_DEVELOPERS = [
-  "Mountain View",
-  "Palm Hills Developments",
-  "SODIC",
-  "Emaar Misr",
-  "La Vista Developments",
-  "Madinet Masr",
-  "City Edge Developments",
-  "Tatweer Misr",
-  "Lake View",
-  "ORA Developers",
-  "Saada",
-  "PRE Developments",
-  "Modon Developments",
-  "Hassan Allam Properties",
-  "Katameya",
-  "Nouvara",
-  "Garana",
-  "Marakez",
-  "The Waterway Developments",
-  "Azad (Tameer)",
-  "Il Cazar",
-  "Mayan",
-  "Sky AD Developments",
-  "Al Ahly Sabbour",
-  "Landmark (LMD)",
-];
-
-const DELIVERY_OPTIONS = [
-  { value: "immediate", label: "Immediate" },
-  { value: "6m", label: "6 months" },
-  { value: "12m", label: "12 months" },
-  { value: "2y", label: "2 years" },
-  { value: "3y", label: "3 years" },
-  { value: "4y", label: "4 years" },
-] as const;
-
-const FINISH_OPTIONS = [
-  { value: "core-shell", label: "Core & Shell / Unfinished" },
-  { value: "semi-finished", label: "Semi-Finished" },
-  { value: "fully-finished", label: "Fully Finished" },
-  { value: "finished-furnished", label: "Finished-Furnished" },
-] as const;
 
 const VALID_PURPOSES = new Set(["primary", "resale", "rent"]);
 
@@ -115,6 +72,20 @@ export default function Listings() {
   const developer = filters.developer;
   const finish = filters.finish;
   const q = filters.q;
+
+  // The header's search dialog can change the URL while this component is
+  // already mounted (same-route navigation). Re-seed local filter state from
+  // the URL whenever it changes; internal writes keep both sides in sync, so
+  // the equality check below makes those a no-op.
+  useEffect(() => {
+    const fromUrl = readSearch(searchParams);
+    setFilters((prev) => {
+      const differs = (Object.keys(fromUrl) as SearchKey[]).some(
+        (key) => fromUrl[key] !== prev[key],
+      );
+      return differs ? fromUrl : prev;
+    });
+  }, [searchParams]);
 
   const setFilter = (key: SearchKey, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
