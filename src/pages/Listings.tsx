@@ -59,10 +59,10 @@ export default function Listings() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  // Filter state lives in one object and is seeded from the URL once; the
-  // URL is written through on every change, so no sync effect is needed.
-  // Cross-navigation (e.g. a header link to /listings?purpose=rent) always
-  // comes from another route, so this component mounts fresh and re-seeds.
+  // Filter state lives in one object and is seeded from the URL, and the URL
+  // is written through on every change. The effect below also re-seeds when
+  // the URL changes out-of-band (e.g. the header's search dialog on this
+  // same route), while internal writes are no-ops because they match the URL.
   const [filters, setFilters] = useState(readSearch(searchParams));
   const purpose = filters.purpose as "all" | "primary" | "resale" | "rent";
   const area = filters.area;
