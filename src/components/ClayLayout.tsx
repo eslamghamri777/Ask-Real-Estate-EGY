@@ -124,21 +124,26 @@ function HeaderSearch() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <button
-        type="button"
-        onClick={openDialog}
-        aria-label="Search properties"
-        className="clay-squish"
-      >
-        <span className="clay-icon clay-sheen size-10 bg-card text-foreground">
-          <Search className="size-5" />
+      <div className="flex items-center gap-2">
+        <span className="hidden sm:inline text-[10px] leading-none text-foreground/60 sm:hidden">
+          Search properties
         </span>
-      </button>
+        <button
+          type="button"
+          onClick={openDialog}
+          aria-label="Search properties"
+          className="clay-squish"
+        >
+          <span className="clay-icon clay-sheen size-10 bg-card text-foreground">
+            <Search className="size-5" />
+          </span>
+        </button>
+      </div>
 
       <DialogContent className="clay-card clay-lg max-h-[calc(100svh-2rem)] overflow-y-auto rounded-[1.75rem] border-none shadow-none sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl tracking-tight">
-            Search properties
+            Search & filter
           </DialogTitle>
           <DialogDescription>
             Pick any combination of filters — or just type a keyword. You can
