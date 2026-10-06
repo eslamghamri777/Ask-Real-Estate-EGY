@@ -30,13 +30,6 @@ import { Search, UserRound, MessageCircle, Phone, Facebook, Instagram } from "lu
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 
-const navLinks = [
-  { to: "/listings?purpose=primary", label: "Primary sale" },
-  { to: "/listings?purpose=resale", label: "Resale" },
-  { to: "/listings?purpose=rent", label: "Rent" },
-  { to: "/listings", label: "All properties" },
-];
-
 // ---------- Header search: every filter in one place ----------
 
 /** All filterable fields the header's search dialog can set. */
@@ -381,15 +374,7 @@ export function ClayHeader() {
           </span>
         </Link>
 
-        <nav className="mx-auto hidden items-center gap-1 md:flex">
-          {onHomePage &&
-            navLinks.map((link) => (
-              <NavLink key={link.to} to={link.to} label={link.label} />
-            ))}
-          {isCreator === true && (
-            <NavLink to="/creator" label="Creator studio" />
-          )}
-        </nav>
+        {/* Home-page nav removed — the header's search button is the entry point. */}
 
         <div className="ml-auto flex items-center gap-2 md:ml-0">
           <HeaderSearch />
@@ -407,27 +392,6 @@ export function ClayHeader() {
         </div>
       </div>
     </header>
-  );
-}
-
-function NavLink({ to, label }: { to: string; label: string }) {
-  const location = useLocation();
-  const [path, query] = to.split("?");
-  const isActive =
-    location.pathname === path &&
-    location.search === (query ? `?${query}` : "");
-
-  return (
-    <Link
-      to={to}
-      className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-        isActive
-          ? "bg-secondary text-foreground"
-          : "text-muted-foreground hover:text-foreground"
-      }`}
-    >
-      {label}
-    </Link>
   );
 }
 
