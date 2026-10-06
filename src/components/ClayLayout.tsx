@@ -122,18 +122,33 @@ function HeaderSearch() {
     navigate(query ? `/listings?${query}` : "/listings");
   };
 
+  // On the home page the nav links share the header row from md up, so the
+  // sign only fits from lg; other pages show it from sm.
+  const signClass =
+    location.pathname === "/"
+      ? "hidden lg:inline-flex"
+      : "hidden sm:inline-flex";
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <button
-        type="button"
-        onClick={openDialog}
-        aria-label="Search properties"
-        className="clay-squish"
-      >
-        <span className="clay-icon clay-sheen size-10 bg-card text-foreground">
-          <Search className="size-5" />
+      <div className="flex items-center gap-2">
+        <span
+          aria-hidden="true"
+          className={`${signClass} rounded-full bg-secondary px-3 py-1.5 text-xs font-semibold text-foreground whitespace-nowrap`}
+        >
+          Search properties here
         </span>
-      </button>
+        <button
+          type="button"
+          onClick={openDialog}
+          aria-label="Search properties"
+          className="clay-squish"
+        >
+          <span className="clay-icon clay-sheen size-10 bg-card text-foreground">
+            <Search className="size-5" />
+          </span>
+        </button>
+      </div>
 
       <DialogContent className="clay-card clay-lg max-h-[calc(100svh-2rem)] overflow-y-auto rounded-[1.75rem] border-none shadow-none sm:max-w-lg">
         <DialogHeader>

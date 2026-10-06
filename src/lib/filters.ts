@@ -16,8 +16,21 @@ export const TYPES = [
   "townhouse",
 ];
 
-/** The destinations we cover — the only areas offered in the filter. */
-export const AREAS = ["New Cairo", "Ain Sokhna", "North Coast", "6th October"];
+/**
+ * The destinations we cover — the only areas offered in the filter. Off-plan
+ * (primary-sale) destinations are offered even before a unit is listed: a
+ * destination with no listing yet shows without a count and routes primary
+ * searches to the request desk.
+ */
+export const AREAS = [
+  "New Cairo",
+  "Ain Sokhna",
+  "North Coast",
+  "6th October",
+  "New Heliopolis",
+  "The New Capital",
+  "Mostakbal City",
+];
 
 /** Primary-sale developers the desk can forward a request to. */
 export const PRIMARY_DEVELOPERS = [
