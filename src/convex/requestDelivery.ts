@@ -62,6 +62,10 @@ const FINISH_LABELS: Record<string, string> = {
 /** A repeat submit from the same number inside this window is not sent twice. */
 const DOUBLE_SUBMIT_WINDOW_MS = 60_000;
 
+/** The site's default WhatsApp line (0100 953 3599 in international digits).
+ *  Used when the editor hasn't saved their own number in the studio yet. */
+const DEFAULT_TEAM_WHATSAPP = "201009533599";
+
 function capitalize(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value;
 }
@@ -195,10 +199,14 @@ export const submitRequest = action({
       );
     }
 
+    // The recipient is the WhatsApp number the site editor connected in the
+    // studio's "Connected socials" card. Until they save one, fall back to the
+    // site's default line so requests still reach the team.
     const settings = await ctx.runQuery(api.siteSettings.getPublic);
-    const teamNumber = settings.whatsappNumber
-      ? normalizeEgyptianPhone(settings.whatsappNumber)
-      : undefined;
+    const teamNumber =
+      (settings.whatsappNumber &&
+        normalizeEgyptianPhone(settings.whatsappNumber)) ||
+      normalizeEgyptianPhone(DEFAULT_TEAM_WHATSAPP);
     if (!teamNumber) {
       return await finishFailed(
         "No team WhatsApp number is saved in the studio yet.",
