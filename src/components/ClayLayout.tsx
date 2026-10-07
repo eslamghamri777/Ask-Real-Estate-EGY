@@ -121,10 +121,10 @@ function HeaderSearch() {
         type="button"
         onClick={openDialog}
         aria-label="Search properties"
-        className="clay-squish flex items-center gap-2 rounded-full bg-primary px-5 py-3 text-sm font-bold text-primary-foreground shadow-md ring-2 ring-primary/30 transition-colors hover:bg-primary/90"
+        className="clay-btn clay-btn-primary h-10 shrink-0 rounded-full px-5"
       >
         <Search className="size-4" />
-        Search Properties
+        <span className="hidden sm:inline">Search Properties</span>
       </button>
 
       <DialogContent className="clay-card clay-lg max-h-[calc(100svh-2rem)] overflow-y-auto rounded-[1.75rem] border-none shadow-none sm:max-w-lg">
@@ -375,7 +375,7 @@ export function ClayHeader() {
         </Link>
 
         {/* Right-side actions: Search Properties next to Sign in, on the right edge of the page. */}
-        <div className="ml-auto flex items-center gap-2 md:ml-0">
+        <div className="ml-auto flex items-center gap-2">
           <HeaderSearch />
           <Button
             asChild
