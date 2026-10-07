@@ -52,6 +52,18 @@ export default function PropertyRequest() {
   const [manualReason, setManualReason] = useState<string | null>(null);
   const socials = useSiteSocials();
 
+  // Pre-filled text for the WhatsApp handoff, mirroring what the server would
+  // have sent: the customer's details plus the requirements they picked.
+  const manualMessage = [
+    "New primary-sale request — Ask Real Estate",
+    "",
+    `Name: ${`${firstName} ${lastName}`.trim() || "(not given)"}`,
+    `My WhatsApp: ${normalizeEgyptianPhone(phone) || phone}`,
+    "",
+    ...rows.map((row) => `${row.label}: ${row.value}`),
+  ].join("\n");
+  const manualUrl = whatsappUrl(socials.whatsappNumber, manualMessage);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (pending) return;
@@ -85,8 +97,15 @@ export default function PropertyRequest() {
       });
       setSentTo(normalized);
       // Delivery is attempted server-side. When it fails, the customer still
-      // sees the confirmation, plus a one-tap way to hand it over themselves.
-      setManualReason(result.delivered ? null : result.reason ?? "delivery-failed");
+      // sees the confirmation, plus a one-tap way to hand it over themselves —
+      // and we open WhatsApp for them straight away so the request actually
+      // reaches the team even with no sending credentials connected.
+      if (result.delivered) {
+        setManualReason(null);
+      } else {
+        setManualReason(result.reason ?? "delivery-failed");
+        window.open(manualUrl, "_blank", "noopener,noreferrer");
+      }
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -97,18 +116,6 @@ export default function PropertyRequest() {
       setPending(false);
     }
   };
-
-  // Pre-filled text for the one-tap manual fallback, mirroring what the
-  // server would have sent: the customer's details plus their requirements.
-  const manualMessage = [
-    "New primary-sale request — Ask Real Estate",
-    "",
-    `Name: ${`${firstName} ${lastName}`.trim() || "(not given)"}`,
-    `My WhatsApp: ${normalizeEgyptianPhone(phone) || phone}`,
-    "",
-    ...rows.map((row) => `${row.label}: ${row.value}`),
-  ].join("\n");
-  const manualUrl = whatsappUrl(socials.whatsappNumber, manualMessage);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -219,9 +226,9 @@ export default function PropertyRequest() {
                         One tap to be sure
                       </p>
                       <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                        Your request is saved on our side. Send it straight to
-                        our WhatsApp below — the message opens already filled in,
-                        so nothing is lost.
+                        Your request is saved on our side. We opened WhatsApp
+                        with your request already filled in — just press send.
+                        If it didn't open, use the button below.
                       </p>
                       <Button
                         asChild
@@ -341,8 +348,9 @@ export default function PropertyRequest() {
                   </Button>
 
                   <p className="text-center text-xs text-muted-foreground">
-                    Sending happens from our side — WhatsApp won't open on your
-                    device.
+                    We send it from our side. If our WhatsApp line isn't
+                    connected yet, it opens on your device already filled in and
+                    you just press send.
                   </p>
                 </form>
               )}
