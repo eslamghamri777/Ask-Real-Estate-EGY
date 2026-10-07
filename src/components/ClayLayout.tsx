@@ -3,7 +3,7 @@ import { api } from "@/convex/_generated/api";
 import { useAuth } from "@/hooks/use-auth";
 import askMark from "@/assets/ask-mark.svg";
 import { useMutation, useQuery } from "convex/react";
-import { Search, UserRound, MessageCircle, Phone, Facebook, Instagram } from "lucide-react";
+import { Search, UserRound, MessageCircle, Phone, Facebook, Instagram, Sparkles } from "lucide-react";
 import { useEffect } from "react";
 import { Link } from "react-router";
 
@@ -95,6 +95,19 @@ export function ClayHeader() {
         {/* Right-side actions: Search Properties next to Sign in, on the right edge of the page. */}
         <div className="ml-auto flex items-center gap-2">
           <HeaderSearch />
+          {/* The studio editor: only the designated creator email (the site
+              editor) sees this option after signing in. */}
+          {isCreator && (
+            <Button
+              asChild
+              className="clay-btn clay-btn-light h-10 shrink-0 rounded-full px-5 has-[>svg]:px-5 py-0 font-semibold"
+            >
+              <Link to="/creator">
+                <Sparkles className="size-4" />
+                <span className="hidden sm:inline">Studio</span>
+              </Link>
+            </Button>
+          )}
           <Button
             asChild
             className="clay-btn clay-btn-primary h-10 shrink-0 rounded-full px-5 has-[>svg]:px-5 py-0 font-semibold"
