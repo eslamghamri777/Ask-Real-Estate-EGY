@@ -96,16 +96,11 @@ export default function PropertyRequest() {
         keyword: filters.keyword || undefined,
       });
       setSentTo(normalized);
-      // Delivery is attempted server-side. When it fails, the customer still
-      // sees the confirmation, plus a one-tap way to hand it over themselves —
-      // and we open WhatsApp for them straight away so the request actually
-      // reaches the team even with no sending credentials connected.
-      if (result.delivered) {
-        setManualReason(null);
-      } else {
-        setManualReason(result.reason ?? "delivery-failed");
-        window.open(manualUrl, "_blank", "noopener,noreferrer");
-      }
+      if (!result.delivered) setManualReason(result.reason ?? "delivery-failed");
+      // Take the customer straight to WhatsApp with their request already
+      // filled in, so they confirm the send themselves. Same-tab navigation
+      // (not a pop-up) is never blocked by the browser.
+      window.location.href = manualUrl;
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -226,7 +221,7 @@ export default function PropertyRequest() {
                         One tap to be sure
                       </p>
                       <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
-                        Your request is saved on our side. We opened WhatsApp
+                        Your request is saved on our side. WhatsApp should open
                         with your request already filled in — just press send.
                         If it didn't open, use the button below.
                       </p>
@@ -348,9 +343,8 @@ export default function PropertyRequest() {
                   </Button>
 
                   <p className="text-center text-xs text-muted-foreground">
-                    We send it from our side. If our WhatsApp line isn't
-                    connected yet, it opens on your device already filled in and
-                    you just press send.
+                    After you submit, WhatsApp opens with your request already
+                    filled in — all you do is press send.
                   </p>
                 </form>
               )}
