@@ -1,4 +1,9 @@
-import { ClayFooter, ClayHeader } from "@/components/ClayLayout";
+import {
+  ClayFooter,
+  ClayHeader,
+  useSiteSocials,
+  whatsappUrl,
+} from "@/components/ClayLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,6 +47,10 @@ export default function PropertyRequest() {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
+  // Set when the server-side WhatsApp handoff fails: the lead is stored, but
+  // the team only gets it if we offer the customer a one-tap manual send.
+  const [manualReason, setManualReason] = useState<string | null>(null);
+  const socials = useSiteSocials();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,7 +71,7 @@ export default function PropertyRequest() {
     setError(null);
     setPending(true);
     try {
-      await submitRequest({
+      const result = await submitRequest({
         firstName: first,
         lastName: last,
         phone: normalized,
@@ -75,6 +84,9 @@ export default function PropertyRequest() {
         keyword: filters.keyword || undefined,
       });
       setSentTo(normalized);
+      // Delivery is attempted server-side. When it fails, the customer still
+      // sees the confirmation, plus a one-tap way to hand it over themselves.
+      setManualReason(result.delivered ? null : result.reason ?? "delivery-failed");
     } catch (submitError) {
       setError(
         submitError instanceof Error
@@ -85,6 +97,18 @@ export default function PropertyRequest() {
       setPending(false);
     }
   };
+
+  // Pre-filled text for the one-tap manual fallback, mirroring what the
+  // server would have sent: the customer's details plus their requirements.
+  const manualMessage = [
+    "New primary-sale request — Ask Real Estate",
+    "",
+    `Name: ${`${firstName} ${lastName}`.trim() || "(not given)"}`,
+    `My WhatsApp: ${normalizeEgyptianPhone(phone) || phone}`,
+    "",
+    ...rows.map((row) => `${row.label}: ${row.value}`),
+  ].join("\n");
+  const manualUrl = whatsappUrl(socials.whatsappNumber, manualMessage);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -189,6 +213,32 @@ export default function PropertyRequest() {
                     </span>
                     . Nothing else is needed from you.
                   </p>
+                  {manualReason && (
+                    <div className="mt-6 rounded-2xl bg-secondary px-5 py-4 text-left">
+                      <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        One tap to be sure
+                      </p>
+                      <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
+                        Your request is saved on our side. Send it straight to
+                        our WhatsApp below — the message opens already filled in,
+                        so nothing is lost.
+                      </p>
+                      <Button
+                        asChild
+                        className="clay-btn clay-btn-primary mt-3 w-full rounded-full px-6"
+                      >
+                        <a
+                          href={manualUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <MessageCircle className="size-4" />
+                          Send it on WhatsApp
+                        </a>
+                      </Button>
+                    </div>
+                  )}
+
                   <div className="mt-6 flex flex-wrap justify-center gap-3">
                     <Button
                       asChild

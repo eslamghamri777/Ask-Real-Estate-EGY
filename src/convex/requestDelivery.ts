@@ -62,9 +62,9 @@ const FINISH_LABELS: Record<string, string> = {
 /** A repeat submit from the same number inside this window is not sent twice. */
 const DOUBLE_SUBMIT_WINDOW_MS = 60_000;
 
-/** The site's default WhatsApp line (0100 953 3599 in international digits).
- *  Used when the editor hasn't saved their own number in the studio yet. */
-const DEFAULT_TEAM_WHATSAPP = "201009533599";
+/** The team's WhatsApp line (0115 236 6255 in international digits). Requests
+ *  go here; a number saved in the studio's "Connected socials" card overrides it. */
+const DEFAULT_TEAM_WHATSAPP = "201152366255";
 
 function capitalize(value: string): string {
   return value ? value[0].toUpperCase() + value.slice(1) : value;

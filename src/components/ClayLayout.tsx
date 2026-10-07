@@ -26,11 +26,11 @@ function HeaderSearch() {
 }
 
 /**
- * Default Ask Real Estate WhatsApp line — 0100 953 3599 (+20 100 953 3599).
+ * Ask Real Estate WhatsApp line — 0115 236 6255 (+20 115 236 6255).
  * Used until the creator saves a number in the studio's "Connected socials"
  * card; the saved value takes over automatically.
  */
-export const DEFAULT_WHATSAPP_NUMBER = "201009533599";
+export const DEFAULT_WHATSAPP_NUMBER = "201152366255";
 
 /** TikTok brand glyph — lucide has no TikTok icon, so we ship our own. */
 export function TikTokIcon({ className = "" }: { className?: string }) {
@@ -181,7 +181,7 @@ export function SocialIconLinks({ className = "" }: { className?: string }) {
   );
 }
 
-/** 201009533599 → 0100 953 3599 for display; falls back to raw digits. */
+/** 201152366255 → 0115 236 6255 for display; falls back to raw digits. */
 function formatLocalNumber(number: string): string {
   if (number.length === 12 && number.startsWith("20")) {
     const local = `0${number.slice(2)}`;
