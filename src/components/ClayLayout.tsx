@@ -346,10 +346,6 @@ export function ClayHeader() {
   const { isAuthenticated } = useAuth();
   const isCreator = useQuery(api.creator.isCreator);
   const ensureCreator = useMutation(api.creator.ensureCreatorForEmail);
-  const location = useLocation();
-  // Buy / Rent / All properties are only offered on the home page — once the
-  // customer follows one, the header stays clean and the logo returns home.
-  const onHomePage = location.pathname === "/";
 
   // As soon as the designated creator email signs in (from anywhere), grant
   // the admin role — the studio link and edit buttons then appear instantly.
@@ -379,7 +375,7 @@ export function ClayHeader() {
           <HeaderSearch />
           <Button
             asChild
-            className="clay-btn clay-btn-primary h-10 rounded-full px-5"
+            className="clay-btn clay-btn-primary h-10 shrink-0 rounded-full px-5 has-[>svg]:px-5 py-0 font-semibold"
           >
             <Link to={isAuthenticated ? "/dashboard" : "/auth"}>
               <UserRound className="size-4" />
