@@ -86,11 +86,9 @@ function HeaderSearch() {
   const [state, setState] = useState<SearchState>(EMPTY_SEARCH);
 
   const openDialog = () => {
-    setState(
-      location.pathname === "/listings"
-        ? searchStateFromParams(new URLSearchParams(location.search))
-        : EMPTY_SEARCH,
-    );
+    // Prefill from wherever the user currently is (home or listings), so the
+    // search bar arrives ready rather than starting from scratch each time.
+    setState(searchStateFromParams(new URLSearchParams(location.search)));
     setOpen(true);
   };
 
@@ -111,8 +109,16 @@ function HeaderSearch() {
     if (state.finish) params.set("finish", state.finish);
     if (state.q.trim()) params.set("q", state.q.trim());
     const query = params.toString();
+
+    // If the dialog was opened on /listings, just close it (the page already
+    // shows the current filters). From anywhere else, go straight to
+    // /listings?... so the user lands on a new page with the search bar ready.
+    if (location.pathname === "/listings") {
+      setOpen(false);
+      return;
+    }
     setOpen(false);
-    navigate(query ? `/listings?${query}` : "/listings");
+    navigate(query ? `/listings?${query}` : "/listings", { replace: true });
   };
 
   return (
