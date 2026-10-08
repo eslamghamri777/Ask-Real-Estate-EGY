@@ -322,26 +322,10 @@ export default function Listings() {
             }}
           >
             <div className="flex flex-wrap items-center gap-3">
-            {purpose === "primary" && (
-              <Select
-                value={developer || "any-developer"}
-                onValueChange={(v) =>
-                  setFilter("developer", v === "any-developer" ? "" : v)
-                }
-              >
-                <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
-                  <SelectValue placeholder="Developer" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="any-developer">Any developer</SelectItem>
-                  {PRIMARY_DEVELOPERS.map((d) => (
-                    <SelectItem key={d} value={d}>
-                      {d}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
+            {/* Developer is chosen in the top bar (Primary Sale menu →
+               developer page), so the panel has no developer select. An
+               explicit ?developer= deep link (e.g. from /request "edit") is
+               still honored by the query and the WhatsApp request. */}
 
             <Select
               value={area || "any-area"}
