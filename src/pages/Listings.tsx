@@ -190,6 +190,9 @@ export default function Listings() {
     const lines = [
       "New primary-sale request — Ask Real Estate",
       "",
+      "First name:",
+      "Last name:",
+      "",
       `Area: ${area || "Any"}`,
       `Type: ${type ? cap(type) : "Any"}`,
       `Bedrooms: ${bedrooms ? `${bedrooms}+` : "Any"}`,
@@ -200,7 +203,7 @@ export default function Listings() {
     if (q.trim()) lines.push(`Keyword: ${q.trim()}`);
     lines.push(
       "",
-      "(Sent from the request desk — I'll confirm the details in this chat.)",
+      "Fill in your first and last name above, then press send — we'll reply with matching options and prices.",
     );
     // Same-tab navigation to wa.me is never blocked, unlike a pop-up.
     window.location.href = whatsappUrl(socials.whatsappNumber, lines.join("\n"));
