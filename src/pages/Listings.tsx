@@ -1,4 +1,9 @@
-import { ClayFooter, ClayHeader } from "@/components/ClayLayout";
+import {
+  ClayFooter,
+  ClayHeader,
+  useSiteSocials,
+  whatsappUrl,
+} from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +25,8 @@ import {
   PRIMARY_DEVELOPERS,
   TYPES,
 } from "@/lib/filters";
-import { useEffect, useState } from "react";
+import { DELIVERY_LABELS, FINISH_LABELS } from "@/lib/primaryRequest";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
 const VALID_PURPOSES = new Set(["primary", "resale", "rent"]);
@@ -76,16 +82,14 @@ export default function Listings() {
   // The header's search dialog can change the URL while this component is
   // already mounted (same-route navigation). Re-seed local filter state from
   // the URL whenever it changes; internal writes keep both sides in sync, so
-  // the equality check below makes those a no-op.
-  useEffect(() => {
-    const fromUrl = readSearch(searchParams);
-    setFilters((prev) => {
-      const differs = (Object.keys(fromUrl) as SearchKey[]).some(
-        (key) => fromUrl[key] !== prev[key],
-      );
-      return differs ? fromUrl : prev;
-    });
-  }, [searchParams]);
+  // internal writes re-set the same values and are no-ops. Adjusting state
+  // during render (React's documented pattern for "state that depends on
+  // props") avoids the setState-in-effect cascading-render problem.
+  const [prevParams, setPrevParams] = useState(searchParams);
+  if (prevParams !== searchParams) {
+    setPrevParams(searchParams);
+    setFilters(readSearch(searchParams));
+  }
 
   const setFilter = (key: SearchKey, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -169,10 +173,38 @@ export default function Listings() {
 
   /**
    * Primary Sale is a request desk, not a catalog: the requirements picked
-   * here travel to /request, where the customer adds their name and WhatsApp
-   * number. The server then hands the request to the team's WhatsApp, so
-   * nothing opens on the customer's side.
+   * here open WhatsApp with the request pre-filled, so the customer confirms
+   * the send themselves. The details page (/request) stays available as an
+   * alternative for customers who'd rather fill a form.
    */
+  const socials = useSiteSocials();
+
+  const openWhatsAppRequest = () => {
+    const cap = (value: string) =>
+      value ? value[0].toUpperCase() + value.slice(1) : "";
+    // The label maps are keyed by their value unions; the desk state holds
+    // plain strings, so index through a string-keyed view.
+    const deliveryLabel =
+      (DELIVERY_LABELS as Record<string, string>)[delivery] ?? delivery;
+    const finishLabel = (FINISH_LABELS as Record<string, string>)[finish] ?? finish;
+    const lines = [
+      "New primary-sale request — Ask Real Estate",
+      "",
+      `Area: ${area || "Any"}`,
+      `Type: ${type ? cap(type) : "Any"}`,
+      `Bedrooms: ${bedrooms ? `${bedrooms}+` : "Any"}`,
+      `Delivery: ${delivery ? deliveryLabel : "Any"}`,
+      `Developer: ${developer || "Any"}`,
+      `Finish: ${finish ? finishLabel : "Any"}`,
+    ];
+    if (q.trim()) lines.push(`Keyword: ${q.trim()}`);
+    lines.push(
+      "",
+      "(Sent from the request desk — I'll confirm the details in this chat.)",
+    );
+    // Same-tab navigation to wa.me is never blocked, unlike a pop-up.
+    window.location.href = whatsappUrl(socials.whatsappNumber, lines.join("\n"));
+  };
   const goToRequest = () => {
     const params = new URLSearchParams({ purpose: "primary" });
     if (area) params.set("area", area);
@@ -246,7 +278,7 @@ export default function Listings() {
             onSubmit={(e) => {
               e.preventDefault();
               if (purpose === "primary") {
-                goToRequest();
+                openWhatsAppRequest();
                 return;
               }
               // Search submits the typed-but-unsubmitted keyword.
@@ -424,18 +456,19 @@ export default function Listings() {
                 </span>
                 <h2 className="font-display mt-4 text-xl">Tell us what you're looking for</h2>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  We don't list primary-sale units online. Set your filters above,
-                  then add your name and WhatsApp number — your request reaches
-                  our team's WhatsApp directly, and a person replies with matching
-                  options and prices.
+                  We don't list primary-sale units online. Set your filters above
+                  and tap Continue — WhatsApp opens with your request already
+                  filled in, so you just press send. A person replies with
+                  matching options and prices.
                 </p>
               <Button
                 type="button"
                 onClick={goToRequest}
-                className="clay-btn clay-btn-primary mt-6 rounded-full px-7"
+                variant="ghost"
+                className="clay-btn clay-btn-light mt-6 rounded-full px-7"
               >
                 <MessageCircle className="size-4" />
-                Continue to your details
+                Prefer a form? Add your details
               </Button>
               </div>
             </div>
