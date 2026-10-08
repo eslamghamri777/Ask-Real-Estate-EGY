@@ -1,10 +1,11 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import {
   developerBrand,
   developerSeed,
   type DeveloperMotif,
 } from "@/lib/developerBrand";
+import { developerPhoto } from "@/lib/developerPhotos";
 import { cn } from "@/lib/utils";
 
 /**
@@ -109,15 +110,24 @@ function palm(x: number, baseY: number, scale: number, fill: string, key: string
 export function DeveloperScene({
   name,
   variant,
+  badge = false,
   className,
 }: {
   name: string;
   variant?: SceneVariant;
+  /** Label the generated artwork as an impression (used on the page hero). */
+  badge?: boolean;
   className?: string;
 }) {
   const { hue, motif } = developerBrand(name);
   const scene = variant ?? VARIANT_BY_MOTIF[motif];
   const random = rng(developerSeed(name));
+
+  // A real photo takes over when one is configured; if it fails to load we
+  // fall straight back to the generated artwork rather than a broken frame.
+  const photo = developerPhoto(name);
+  const [photoBroken, setPhotoBroken] = useState(false);
+  const showPhoto = Boolean(photo) && !photoBroken;
 
   const ink = (lightness: number, saturation = 44) =>
     `hsl(${hue} ${saturation}% ${lightness}%)`;
@@ -138,26 +148,24 @@ export function DeveloperScene({
   let art: ReactNode;
 
   if (scene === "peaks") {
-    const farRidge = `0 ${H} L 0 ${250 + random() * 40}`;
-    const nearRidge = `0 ${H} L 0 ${330 + random() * 20}`;
-    let fx = 0;
-    let nx = 0;
-    let farPoints = farRidge;
-    let nearPoints = nearRidge;
-    while (fx < W) {
-      fx += 140 + random() * 120;
-      farPoints += ` L ${Math.round(fx)} ${Math.round(150 + random() * 90)}`;
-    }
-    while (nx < W) {
-      nx += 170 + random() * 150;
-      nearPoints += ` L ${Math.round(nx)} ${Math.round(250 + random() * 70)}`;
-    }
+    // A ridge line drawn as path data — `<polygon points>` only accepts
+    // coordinate pairs, so command letters there silently drop the shape.
+    const ridge = (startY: number, low: number, high: number, step: number) => {
+      let x = 0;
+      let d = `M 0 ${H} L 0 ${Math.round(startY)}`;
+      while (x < W) {
+        x += step * (1 + random() * 0.9);
+        d += ` L ${Math.round(x)} ${Math.round(low + random() * (high - low))}`;
+      }
+      return `${d} L ${W} ${H} Z`;
+    };
+
     art = (
       <>
-        <polygon points={`${farPoints} L ${W} ${H} Z`} fill={far} />
-        <polygon points={`${nearPoints} L ${W} ${H} Z`} fill={near} />
-        <polygon
-          points={`0 ${H} L 0 352 L ${W} 342 L ${W} ${H} Z`}
+        <path d={ridge(250, 150, 245, 140)} fill={far} />
+        <path d={ridge(330, 250, 325, 170)} fill={near} />
+        <path
+          d={`M 0 ${H} L 0 352 L ${W} 342 L ${W} ${H} Z`}
           fill={mid}
           opacity="0.85"
         />
@@ -215,6 +223,21 @@ export function DeveloperScene({
     );
   }
 
+  if (showPhoto) {
+    return (
+      <div className={cn("relative overflow-hidden", className)}>
+        <img
+          src={photo ?? undefined}
+          alt={`${name} development`}
+          loading="lazy"
+          decoding="async"
+          onError={() => setPhotoBroken(true)}
+          className="absolute inset-0 size-full object-cover"
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn("relative overflow-hidden", className)}
@@ -232,6 +255,11 @@ export function DeveloperScene({
         <circle cx={sunX} cy={sunY} r="46" fill="#fff" opacity="0.7" />
         {art}
       </svg>
+      {badge && (
+        <span className="absolute top-3 right-3 rounded-full bg-card/80 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-sm">
+          Artist's impression
+        </span>
+      )}
     </div>
   );
 }

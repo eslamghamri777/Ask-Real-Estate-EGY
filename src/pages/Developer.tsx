@@ -122,15 +122,11 @@ function DeveloperDesk({ developer }: { developer: string }) {
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-10">
       {/* ============ Developer details ============ */}
       <section className="clay-card clay-md overflow-hidden">
-        <div className="relative">
-          <DeveloperScene
-            name={developer}
-            className="h-40 w-full sm:h-56"
-          />
-          <span className="absolute top-3 right-3 rounded-full bg-card/80 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-sm">
-            Artist's impression
-          </span>
-        </div>
+        <DeveloperScene
+          name={developer}
+          badge
+          className="h-40 w-full sm:h-56"
+        />
         <div className="px-6 pb-6 sm:px-8 sm:pb-8">
           <div className="-mt-12 flex flex-wrap items-end gap-4">
             <DeveloperLogo
