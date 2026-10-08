@@ -69,8 +69,11 @@ const MOTIFS: DeveloperMotif[] = [
   "diamond",
 ];
 
-/** Stable hash so an unmapped developer always gets the same mark. */
-function hash(value: string): number {
+/**
+ * Stable per-developer seed — the same name always gets the same mark and the
+ * same generated scene, so pages don't shuffle between renders.
+ */
+export function developerSeed(value: string): number {
   let h = 0;
   for (let i = 0; i < value.length; i += 1) {
     h = (h * 31 + value.charCodeAt(i)) % 100000;
@@ -93,7 +96,7 @@ export type DeveloperBrand = BrandMark & { from: string; to: string };
 
 /** The mark for a developer, including the tile gradient endpoints. */
 export function developerBrand(name: string): DeveloperBrand {
-  const seed = hash(name);
+  const seed = developerSeed(name);
   const mark: BrandMark = BRANDS[name] ?? {
     initials: initialsFor(name),
     hue: seed % 360,
@@ -105,10 +108,4 @@ export function developerBrand(name: string): DeveloperBrand {
     from: `hsl(${mark.hue} 62% 29%)`,
     to: `hsl(${mark.hue} 70% 46%)`,
   };
-}
-
-/** A soft brand wash for hero backdrops (same hue as the logo tile). */
-export function developerWash(name: string): string {
-  const { hue } = developerBrand(name);
-  return `radial-gradient(120% 130% at 0% 0%, hsl(${hue} 70% 48% / 0.18), transparent 68%)`;
 }

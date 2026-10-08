@@ -5,6 +5,7 @@ import {
   whatsappUrl,
 } from "@/components/ClayLayout";
 import { DeveloperLogo } from "@/components/DeveloperLogo";
+import { DeveloperScene } from "@/components/DeveloperScene";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -20,7 +21,6 @@ import {
   developerFromSlug,
   developerSlug,
 } from "@/lib/filters";
-import { developerWash } from "@/lib/developerBrand";
 import { DELIVERY_LABELS, FINISH_LABELS } from "@/lib/primaryRequest";
 import { Building2, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router";
@@ -121,35 +121,43 @@ function DeveloperDesk({ developer }: { developer: string }) {
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-10">
       {/* ============ Developer details ============ */}
-      <section className="clay-card clay-md relative overflow-hidden p-6 sm:p-8">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
-          style={{ backgroundImage: developerWash(developer) }}
-        />
-        <div className="relative flex flex-wrap items-start gap-5">
-          <DeveloperLogo name={developer} size="xl" className="clay-md" />
-          <div className="min-w-0 flex-1">
-            <p className="eyebrow">Primary sale · Developer</p>
-            <h1 className="font-display mt-2 text-3xl tracking-tight sm:text-4xl">
-              {developer}
-            </h1>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-              Off-plan and new-launch units from {developer} across Egypt. Pick
-              your requirements below and send them to our team — we'll come back
-              with matching {developer} projects, prices and payment plans.
-            </p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
-                Off-plan & new launches
-              </span>
-              <span className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
-                Prices shared on request
-              </span>
-              <span className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
-                Reply on WhatsApp
-              </span>
-            </div>
+      <section className="clay-card clay-md overflow-hidden">
+        <div className="relative">
+          <DeveloperScene
+            name={developer}
+            className="h-40 w-full sm:h-56"
+          />
+          <span className="absolute top-3 right-3 rounded-full bg-card/80 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-sm">
+            Artist's impression
+          </span>
+        </div>
+        <div className="px-6 pb-6 sm:px-8 sm:pb-8">
+          <div className="-mt-12 flex flex-wrap items-end gap-4">
+            <DeveloperLogo
+              name={developer}
+              size="xl"
+              className="ring-4 ring-card"
+            />
+          </div>
+          <p className="eyebrow mt-5">Primary sale · Developer</p>
+          <h1 className="font-display mt-2 text-3xl tracking-tight sm:text-4xl">
+            {developer}
+          </h1>
+          <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            Off-plan and new-launch units from {developer} across Egypt. Pick
+            your requirements below and send them to our team — we'll come back
+            with matching {developer} projects, prices and payment plans.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
+              Off-plan & new launches
+            </span>
+            <span className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
+              Prices shared on request
+            </span>
+            <span className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
+              Reply on WhatsApp
+            </span>
           </div>
         </div>
       </section>
@@ -324,10 +332,13 @@ function DeveloperStrip({ current }: { current: string }) {
           <Link
             key={d}
             to={`/developer/${developerSlug(d)}`}
-            className="clay-card clay-card-hover flex w-40 shrink-0 flex-col gap-3 p-3"
+            className="clay-card clay-card-hover w-44 shrink-0 overflow-hidden"
           >
-            <DeveloperLogo name={d} size="lg" />
-            <span className="text-xs font-semibold leading-snug">{d}</span>
+            <DeveloperScene name={d} className="h-24 w-full" />
+            <div className="flex items-center gap-2.5 p-3">
+              <DeveloperLogo name={d} size="sm" />
+              <span className="text-xs font-semibold leading-snug">{d}</span>
+            </div>
           </Link>
         ))}
       </div>
