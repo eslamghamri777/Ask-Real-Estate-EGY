@@ -12,8 +12,7 @@
  * "Artist's impression" label so nobody mistakes it for a photograph of a real
  * building. Only list images we may publish.
  *
- * A developer can carry several images; DeveloperScene then cycles between
- * them (or the page picks deterministically) instead of one static banner.
+ * Currently empty: the page shows generated artwork for every developer.
  */
 
 export type DeveloperPhoto = {
@@ -21,33 +20,11 @@ export type DeveloperPhoto = {
   kind: "photograph" | "rendering";
 };
 
-/** Official Mountain View 1.1 marketing renders, served from their own site. */
-const MOUNTAIN_VIEW: DeveloperPhoto[] = [
-  { url: "/developers/mountain-view-1.webp", kind: "rendering" },
-  { url: "/developers/mountain-view-2.webp", kind: "rendering" },
-  { url: "/developers/mountain-view-3.webp", kind: "rendering" },
-  { url: "/developers/mountain-view-4.webp", kind: "rendering" },
-];
+const PHOTOS: Record<string, DeveloperPhoto> = {};
 
-const PHOTOS: Record<string, DeveloperPhoto[]> = {
-  "Mountain View": MOUNTAIN_VIEW,
-};
-
-/** Every image available for a developer (first is the default). */
-export function developerPhotos(name: string): DeveloperPhoto[] {
-  return PHOTOS[name] ?? [];
-}
-
-/** The default image for a developer, or null when we only have artwork. */
+/** The image for a developer, or null when we only have generated artwork. */
 export function developerPhoto(name: string): DeveloperPhoto | null {
-  return developerPhotos(name)[0] ?? null;
-}
-
-/** The nth image for a developer, wrapping to the first when out of range. */
-export function developerPhotoAt(name: string, n: number): DeveloperPhoto | null {
-  const set = developerPhotos(name);
-  if (set.length === 0) return null;
-  return set[((n % set.length) + set.length) % set.length];
+  return PHOTOS[name] ?? null;
 }
 
 /** Whether an image is configured (before any load failure). */

@@ -21,9 +21,8 @@ import {
   developerFromSlug,
   developerSlug,
 } from "@/lib/filters";
-import { developerPhotos } from "@/lib/developerPhotos";
 import { DELIVERY_LABELS, FINISH_LABELS } from "@/lib/primaryRequest";
-import { ChevronLeft, ChevronRight, Building2, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
+import { Building2, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router";
 import { useState } from "react";
 
@@ -70,7 +69,6 @@ function DeveloperDesk({ developer }: { developer: string }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const socials = useSiteSocials();
-  const [photoIndex, setPhotoIndex] = useState(0);
 
   // Requirements come in from the URL (e.g. /request → desk links), then live
   // in local state; the developer itself is fixed by the page.
@@ -124,18 +122,11 @@ function DeveloperDesk({ developer }: { developer: string }) {
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-10">
       {/* ============ Developer details ============ */}
       <section className="clay-card clay-md overflow-hidden">
-        <div className="relative">
-          <DeveloperScene
-            name={developer}
-            badge
-            photoIndex={photoIndex}
-            className="h-40 w-full sm:h-56"
-          />
-          <GalleryPager
-            value={photoIndex}
-            onChange={setPhotoIndex}
-          />
-        </div>
+        <DeveloperScene
+          name={developer}
+          badge
+          className="h-40 w-full sm:h-56"
+        />
         <div className="px-6 pb-6 sm:px-8 sm:pb-8">
           <div className="-mt-12 flex flex-wrap items-end gap-4">
             <DeveloperLogo
@@ -333,13 +324,13 @@ function DeveloperStrip({ current }: { current: string }) {
         </span>
       </div>
       <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
-        {others.map((d, i) => (
+        {others.map((d) => (
           <Link
             key={d}
             to={`/developer/${developerSlug(d)}`}
             className="clay-card clay-card-hover w-44 shrink-0 overflow-hidden"
           >
-            <DeveloperScene name={d} photoIndex={i + 1} className="h-24 w-full" />
+            <DeveloperScene name={d} className="h-24 w-full" />
             <div className="flex items-center gap-2.5 p-3">
               <DeveloperLogo name={d} size="sm" />
               <span className="text-xs font-semibold leading-snug">{d}</span>
@@ -348,45 +339,5 @@ function DeveloperStrip({ current }: { current: string }) {
         ))}
       </div>
     </section>
-  );
-}
-
-/**
- * Prev/next controls over the developer's image set, shown over the hero.
- * Renders nothing when the developer only carries one image — there is
- * nothing to page through then.
- */
-function GalleryPager({
-  value,
-  onChange,
-}: {
-  value: number;
-  onChange: (n: number) => void;
-}) {
-  const count = developerPhotos(developerFromSlug(useParams().slug ?? "")).length;
-  if (count < 2) return null;
-
-  return (
-    <div className="absolute inset-x-0 bottom-0 flex items-center justify-center gap-3 pb-2">
-      <button
-        type="button"
-        aria-label="Previous image"
-        onClick={() => onChange(value - 1)}
-        className="rounded-full bg-card/85 p-1.5 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-card"
-      >
-        <ChevronLeft className="size-4" />
-      </button>
-      <span className="rounded-full bg-card/85 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-sm">
-        {(((value % count) + count) % count) + 1} / {count}
-      </span>
-      <button
-        type="button"
-        aria-label="Next image"
-        onClick={() => onChange(value + 1)}
-        className="rounded-full bg-card/85 p-1.5 text-foreground shadow-sm backdrop-blur-sm transition hover:bg-card"
-      >
-        <ChevronRight className="size-4" />
-      </button>
-    </div>
   );
 }
