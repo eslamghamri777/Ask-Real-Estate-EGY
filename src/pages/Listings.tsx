@@ -350,10 +350,12 @@ export default function Listings() {
             }}
           >
             <div className="flex flex-wrap items-center gap-3">
-            {/* Developer is chosen in the top bar (Primary Sale menu →
-               developer page), so the panel has no developer select. An
-               explicit ?developer= deep link (e.g. from /request "edit") is
-               still honored by the query and the WhatsApp request. */}
+            {/* Developer: on md+ screens it's chosen in the top bar (Primary
+               Sale menu → developer page). That toggle is hidden on small
+               screens, so the panel carries its own developer select there
+               (see below, next to Delivery time). An explicit ?developer=
+               deep link (e.g. from /request "edit") is still honored by the
+               WhatsApp request. */}
 
             <Select
               value={area || "any-area"}
@@ -420,6 +422,35 @@ export default function Listings() {
                   {DELIVERY_OPTIONS.map((d) => (
                     <SelectItem key={d.value} value={d.value}>
                       {d.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+
+            {/* On md+ screens the developer is picked from the top bar's
+                Primary Sale menu; that toggle is hidden on small screens, so
+                offer the same choice here — mobile only, primary only. */}
+            {purpose === "primary" && (
+              <Select
+                value={developer || "any-developer"}
+                onValueChange={(v) =>
+                  setFilter("developer", v === "any-developer" ? "" : v)
+                }
+              >
+                <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none md:hidden">
+                  {/* Carries its own label: a closed Radix SelectValue renders
+                      nothing until its menu has been opened once, and this
+                      control has to read clearly the moment the page loads. */}
+                  <SelectValue placeholder="Developer">
+                    {developer || "Any developer"}
+                  </SelectValue>
+                </SelectTrigger>
+                <SelectContent className="max-h-[22rem]">
+                  <SelectItem value="any-developer">Any developer</SelectItem>
+                  {PRIMARY_DEVELOPERS.map((d) => (
+                    <SelectItem key={d} value={d}>
+                      {d}
                     </SelectItem>
                   ))}
                 </SelectContent>
