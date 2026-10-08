@@ -22,12 +22,15 @@
 export type DeveloperPhoto = {
   url: string;
   kind: "photograph" | "rendering";
+  /** Optional mark image; it replaces the generated monogram tile. */
+  logoUrl?: string;
 };
 
 const PHOTOS: Record<string, DeveloperPhoto> = {
   "Mountain View": {
     url: "/developers/mountain-view.jpg",
     kind: "rendering",
+    logoUrl: "/developers/mountain-view-logo.jpg",
   },
 };
 

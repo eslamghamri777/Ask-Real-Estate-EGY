@@ -1,6 +1,7 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 
 import { developerBrand, type DeveloperMotif } from "@/lib/developerBrand";
+import { developerPhoto } from "@/lib/developerPhotos";
 import { cn } from "@/lib/utils";
 
 /**
@@ -90,6 +91,29 @@ export function DeveloperLogo({
   className?: string;
 }) {
   const brand = developerBrand(name);
+
+  // A developer with a supplied mark shows the real logo image instead of the
+  // generated monogram tile; if that image fails to load, the monogram returns
+  // (the <img> swaps out on error, never a broken icon in its place).
+  const logoUrl = developerPhoto(name)?.logoUrl;
+  const [logoBroken, setLogoBroken] = useState(false);
+  const showLogoImage = Boolean(logoUrl) && !logoBroken;
+
+  if (showLogoImage) {
+    return (
+      <img
+        src={logoUrl ?? undefined}
+        alt={`${name} logo`}
+        title={name}
+        onError={() => setLogoBroken(true)}
+        className={cn(
+          "shrink-0 rounded-[1.35rem] object-cover ring-1 ring-black/10",
+          SIZES[size],
+          className,
+        )}
+      />
+    );
+  }
 
   return (
     <span
