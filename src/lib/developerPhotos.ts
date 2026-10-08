@@ -1,25 +1,46 @@
 /**
- * Real project photography, keyed by developer name.
+ * Real imagery per developer, keyed by developer name.
  *
  * Files live in `public/developers/` and are referenced by URL, so adding a
- * photo is a two-line change: drop `public/developers/<slug>.jpg` in and add
- * the developer here. Anything not listed keeps the generated artwork from
- * DeveloperScene, and a listed photo that fails to load falls back to that
- * artwork too — a missing file can never leave a broken image on the page.
+ * picture is a two-line change: drop the file in, add the developer here.
+ * Anything not listed keeps the generated artwork from DeveloperScene, and a
+ * listed image that fails to load falls back to that artwork too — a missing
+ * file can never leave a broken frame on the page.
  *
- * Only list photos we actually have the right to publish: developer-provided
- * renders or our own photography.
+ * `kind` matters for honesty: a photograph is published as the project's own
+ * picture, while a rendering (CGI or AI-generated) keeps the
+ * "Artist's impression" label so nobody mistakes it for a photograph of a real
+ * building. Only list images we may publish.
  */
-const PHOTOS: Record<string, string> = {
-  "Mountain View": "/developers/mountain-view.jpg",
+
+export type DeveloperPhoto = {
+  url: string;
+  kind: "photograph" | "rendering";
 };
 
-/** The photo for a developer, or null when we only have generated artwork. */
-export function developerPhoto(name: string): string | null {
+const PHOTOS: Record<string, DeveloperPhoto> = {
+  "Mountain View": { url: "/developers/mountain-view.jpg", kind: "rendering" },
+};
+
+/** The image for a developer, or null when we only have generated artwork. */
+export function developerPhoto(name: string): DeveloperPhoto | null {
   return PHOTOS[name] ?? null;
 }
 
-/** Whether a real photo is configured (before any load failure). */
+/** Whether an image is configured (before any load failure). */
 export function hasDeveloperPhoto(name: string): boolean {
   return Boolean(PHOTOS[name]);
+}
+
+/**
+ * Whether a picture still needs the "Artist's impression" label. Only a real
+ * photograph, actually on screen, speaks for itself — artwork and renderings
+ * (and an image that failed to load, leaving artwork in its place) stay
+ * labelled.
+ */
+export function needsImpressionLabel(
+  photo: DeveloperPhoto | null,
+  showingImage: boolean,
+): boolean {
+  return !(showingImage && photo?.kind === "photograph");
 }

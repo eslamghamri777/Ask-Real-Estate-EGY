@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from "react";
 
 import { developerBrand, developerSeed } from "@/lib/developerBrand";
-import { developerPhoto } from "@/lib/developerPhotos";
+import { developerPhoto, needsImpressionLabel } from "@/lib/developerPhotos";
 import { developerSceneVariant, type SceneVariant } from "@/lib/developerScenes";
 import { cn } from "@/lib/utils";
 
@@ -299,6 +299,15 @@ function compoundArt(random: () => number): ReactNode {
   );
 }
 
+/** The "this is not a photograph" pill, shown over artwork and renderings. */
+function SceneBadge() {
+  return (
+    <span className="absolute top-3 right-3 rounded-full bg-card/85 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-sm">
+      Artist's impression
+    </span>
+  );
+}
+
 export function DeveloperScene({
   name,
   variant,
@@ -315,11 +324,13 @@ export function DeveloperScene({
   const scene = developerSceneVariant(name, variant);
   const random = rng(developerSeed(name));
 
-  // A real photo takes over when one is configured; if it fails to load we
+  // A configured image takes over when one is present; if it fails to load we
   // fall straight back to the generated artwork rather than a broken frame.
   const photo = developerPhoto(name);
+  const photoUrl = photo?.url ?? null;
   const [photoBroken, setPhotoBroken] = useState(false);
-  const showPhoto = Boolean(photo) && !photoBroken;
+  const showPhoto = Boolean(photoUrl) && !photoBroken;
+  const labelled = badge && needsImpressionLabel(photo, showPhoto);
 
   const ink = (lightness: number, saturation = 44) =>
     `hsl(${hue} ${saturation}% ${lightness}%)`;
@@ -425,13 +436,14 @@ export function DeveloperScene({
     return (
       <div className={cn("relative overflow-hidden", className)}>
         <img
-          src={photo ?? undefined}
+          src={photoUrl ?? undefined}
           alt={`${name} development`}
           loading="lazy"
           decoding="async"
           onError={() => setPhotoBroken(true)}
           className="absolute inset-0 size-full object-cover"
         />
+        {labelled && <SceneBadge />}
       </div>
     );
   }
@@ -459,11 +471,7 @@ export function DeveloperScene({
         )}
         {art}
       </svg>
-      {badge && (
-        <span className="absolute top-3 right-3 rounded-full bg-card/80 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground backdrop-blur-sm">
-          Artist's impression
-        </span>
-      )}
+      {labelled && <SceneBadge />}
     </div>
   );
 }
