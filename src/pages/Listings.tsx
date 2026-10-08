@@ -32,10 +32,11 @@ import { useNavigate, useSearchParams } from "react-router";
 const VALID_PURPOSES = new Set(["primary", "resale", "rent"]);
 
 /** Tolerate stale links like ?purpose=sale from before the primary/resale split. */
-function sanitizePurpose(value: string | null): "all" | "primary" | "resale" | "rent" {
+function sanitizePurpose(value: string | null): "primary" | "resale" | "rent" {
   return value && VALID_PURPOSES.has(value)
     ? (value as "primary" | "resale" | "rent")
-    : "all";
+    : // No (or invalid) purpose in the URL — the catalog opens on Primary Sale.
+      "primary";
 }
 
 type SearchKey =
@@ -70,7 +71,7 @@ export default function Listings() {
   // the URL changes out-of-band (e.g. the header's search dialog on this
   // same route), while internal writes are no-ops because they match the URL.
   const [filters, setFilters] = useState(readSearch(searchParams));
-  const purpose = filters.purpose as "all" | "primary" | "resale" | "rent";
+  const purpose = filters.purpose as "primary" | "resale" | "rent";
   const area = filters.area;
   const type = filters.type;
   const bedrooms = Number(filters.bedrooms) || 0;
@@ -118,7 +119,7 @@ export default function Listings() {
   const results = usePaginatedQuery(
     api.listings.list,
     {
-      purpose: purpose === "all" ? undefined : purpose,
+      purpose,
       area: area || undefined,
       type: type || undefined,
       bedrooms: bedrooms || undefined,
@@ -140,16 +141,12 @@ export default function Listings() {
   // Purpose changes touch several filters at once, so they bypass setFilter:
   // chained setFilter calls would each rebuild the URL from the same stale
   // searchParams and clobber each other's writes.
-  const changePurpose = (next: "all" | "primary" | "resale" | "rent") => {
+  const changePurpose = (next: "primary" | "resale" | "rent") => {
     // Delivery and developer only apply to primary (off-plan) sales — drop both
     // when leaving Primary so they can't filter invisibly on another tab. Area
     // now applies to every tab, so it survives the switch.
     const leavingPrimary = next !== "primary";
 
-    // Store the literal "all" (not "") so the state stays in sync with
-    // readSearch/sanitizePurpose: the query arg below keys off `purpose ===
-    // "all"`, and an empty string would be sent to the validator (which only
-    // accepts "primary" | "resale" | "rent") and error the page.
     setFilters((prev) => ({
       ...prev,
       purpose: next,
@@ -157,8 +154,7 @@ export default function Listings() {
     }));
 
     const params = new URLSearchParams(searchParams);
-    if (next === "all") params.delete("purpose");
-    else params.set("purpose", next);
+    params.set("purpose", next);
     if (leavingPrimary) {
       params.delete("delivery");
       params.delete("developer");
@@ -220,8 +216,9 @@ export default function Listings() {
     navigate(`/request?${params.toString()}`);
   };
 
+  // Purpose is the tab itself now (no "All" baseline), so it isn't counted as
+  // an active filter — only the choices within a tab are.
   const activeFilterCount =
-    (purpose !== "all" ? 1 : 0) +
     (area ? 1 : 0) +
     (type ? 1 : 0) +
     (bedrooms ? 1 : 0) +
@@ -252,11 +249,6 @@ export default function Listings() {
         <section className="clay-card clay-md mt-6 p-5">
           {/* purpose toggle */}
           <div className="clay-well mb-4 flex w-fit flex-wrap items-center gap-1 rounded-full p-1.5">
-            <PurposeTab
-              active={purpose === "all"}
-              onClick={() => changePurpose("all")}
-              label="All"
-            />
             <PurposeTab
               active={purpose === "primary"}
               onClick={() => changePurpose("primary")}

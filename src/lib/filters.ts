@@ -77,5 +77,9 @@ export const FINISH_OPTIONS = [
   { value: "finished-furnished", label: "Finished-Furnished" },
 ] as const;
 
-/** The purpose toggle: "all" is the UI default; the API omits it. */
-export type Purpose = "all" | "primary" | "resale" | "rent";
+/**
+ * The purpose toggle on /listings: Primary Sale, Resale and Rent — Primary
+ * Sale is the default when the URL carries no purpose. Mirrors the Convex
+ * listings.purpose union.
+ */
+export type Purpose = "primary" | "resale" | "rent";
