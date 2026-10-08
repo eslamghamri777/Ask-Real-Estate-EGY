@@ -4,7 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import askMark from "@/assets/ask-mark.svg";
 import { useMutation, useQuery } from "convex/react";
 import { Search, UserRound, MessageCircle, Phone, Facebook, Instagram, Sparkles } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { Link } from "react-router";
 
 /**
@@ -64,7 +64,12 @@ export function useSiteSocials() {
   };
 }
 
-export function ClayHeader() {
+/**
+ * Optional page-specific content rendered in the middle of the top bar —
+ * between the Ask Real Estate brand and the right-side actions (e.g. the
+ * listings page puts its Primary/Resale/Rent purpose toggle here).
+ */
+export function ClayHeader({ middle }: { middle?: ReactNode }) {
   const { isAuthenticated } = useAuth();
   const isCreator = useQuery(api.creator.isCreator);
   const ensureCreator = useMutation(api.creator.ensureCreatorForEmail);
@@ -91,6 +96,8 @@ export function ClayHeader() {
             Ask Real Estate
           </span>
         </Link>
+
+        {middle}
 
         {/* Right-side actions: Search Properties next to Sign in, on the right edge of the page. */}
         <div className="ml-auto flex items-center gap-2">

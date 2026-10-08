@@ -227,9 +227,37 @@ export default function Listings() {
     (finish ? 1 : 0) +
     (q.trim() ? 1 : 0);
 
+  // The purpose toggle lives in the top bar (between the brand and the
+  // Search Properties button) on md+ screens; it's hidden on small screens
+  // where the header can't fit it without overflowing.
+  const purposeToggle = (
+    <div
+      aria-label="Property purpose"
+      className="clay-well mx-auto hidden w-fit items-center gap-1 rounded-full p-1.5 md:flex"
+    >
+      <PurposeTab
+        active={purpose === "primary"}
+        onClick={() => changePurpose("primary")}
+        icon={<Home className="size-4" />}
+        label="Primary Sale"
+      />
+      <PurposeTab
+        active={purpose === "resale"}
+        onClick={() => changePurpose("resale")}
+        label="Resale"
+      />
+      <PurposeTab
+        active={purpose === "rent"}
+        onClick={() => changePurpose("rent")}
+        icon={<KeyRound className="size-4" />}
+        label="Rent"
+      />
+    </div>
+  );
+
   return (
     <div className="flex min-h-screen flex-col">
-      <ClayHeader />
+      <ClayHeader middle={purposeToggle} />
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 pt-10">
         <h1 className="font-display text-3xl tracking-tight sm:text-4xl">
@@ -247,27 +275,6 @@ export default function Listings() {
 
         {/* ============ Filters ============ */}
         <section className="clay-card clay-md mt-6 p-5">
-          {/* purpose toggle */}
-          <div className="clay-well mb-4 flex w-fit flex-wrap items-center gap-1 rounded-full p-1.5">
-            <PurposeTab
-              active={purpose === "primary"}
-              onClick={() => changePurpose("primary")}
-              icon={<Home className="size-4" />}
-              label="Primary Sale"
-            />
-            <PurposeTab
-              active={purpose === "resale"}
-              onClick={() => changePurpose("resale")}
-              label="Resale"
-            />
-            <PurposeTab
-              active={purpose === "rent"}
-              onClick={() => changePurpose("rent")}
-              icon={<KeyRound className="size-4" />}
-              label="Rent"
-            />
-          </div>
-
           <form
             className="flex flex-col gap-3"
             onSubmit={(e) => {
