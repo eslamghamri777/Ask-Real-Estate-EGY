@@ -12,7 +12,11 @@
  * "Artist's impression" label so nobody mistakes it for a photograph of a real
  * building. Only list images we may publish.
  *
- * Currently empty: the page shows generated artwork for every developer.
+ * Currently the pool has one image: Mountain View's marketing render of a
+ * villa (supplied by the developer). The moment its file lands at
+ * `public/developers/mountain-view.jpg` the page hero shows it; until then
+ * the generated artwork covers the frame and the hero falls back
+ * automatically — a missing file can never leave a broken frame.
  */
 
 export type DeveloperPhoto = {
@@ -20,7 +24,12 @@ export type DeveloperPhoto = {
   kind: "photograph" | "rendering";
 };
 
-const PHOTOS: Record<string, DeveloperPhoto> = {};
+const PHOTOS: Record<string, DeveloperPhoto> = {
+  "Mountain View": {
+    url: "/developers/mountain-view.jpg",
+    kind: "rendering",
+  },
+};
 
 /** The image for a developer, or null when we only have generated artwork. */
 export function developerPhoto(name: string): DeveloperPhoto | null {
