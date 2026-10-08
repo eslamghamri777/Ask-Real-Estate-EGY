@@ -1,7 +1,12 @@
 import { useState, type ReactNode } from "react";
 
 import { developerBrand, developerSeed } from "@/lib/developerBrand";
-import { developerPhoto, needsImpressionLabel } from "@/lib/developerPhotos";
+import {
+  developerPhoto,
+  developerPhotoAt,
+  developerPhotos,
+  needsImpressionLabel,
+} from "@/lib/developerPhotos";
 import { developerSceneVariant, type SceneVariant } from "@/lib/developerScenes";
 import { cn } from "@/lib/utils";
 
@@ -312,24 +317,35 @@ export function DeveloperScene({
   name,
   variant,
   badge = false,
+  photoIndex,
+  onPhotoBroken,
   className,
 }: {
   name: string;
   variant?: SceneVariant;
   /** Label the generated artwork as an impression (used on the page hero). */
   badge?: boolean;
+  /** Which of the developer's images to show (wraps); default the first. */
+  photoIndex?: number;
+  /** Notified when a configured image fails so the caller can react. */
+  onPhotoBroken?: () => void;
   className?: string;
 }) {
   const { hue } = developerBrand(name);
   const scene = developerSceneVariant(name, variant);
   const random = rng(developerSeed(name));
 
-  // A configured image takes over when one is present; if it fails to load we
-  // fall straight back to the generated artwork rather than a broken frame.
-  const photo = developerPhoto(name);
+  // A configured image takes over; a developer with several images cycles
+  // between them via the photoIndex prop, and any failure falls straight back
+  // to the generated artwork.
+  const allPhotos = developerPhotos(name);
+  const photo = (photoIndex !== undefined ? developerPhotoAt(name, photoIndex) : developerPhoto(name)) ?? allPhotos[0] ?? null;
   const photoUrl = photo?.url ?? null;
-  const [photoBroken, setPhotoBroken] = useState(false);
-  const showPhoto = Boolean(photoUrl) && !photoBroken;
+  // Track the failed URL rather than a boolean, so paging to a healthy image
+  // recovers — a boolean would permanently hide the whole gallery after one
+  // bad file.
+  const [brokenUrl, setBrokenUrl] = useState<string | null>(null);
+  const showPhoto = Boolean(photoUrl) && brokenUrl !== photoUrl;
   const labelled = badge && needsImpressionLabel(photo, showPhoto);
 
   const ink = (lightness: number, saturation = 44) =>
@@ -440,7 +456,10 @@ export function DeveloperScene({
           alt={`${name} development`}
           loading="lazy"
           decoding="async"
-          onError={() => setPhotoBroken(true)}
+          onError={() => {
+            setBrokenUrl(photoUrl);
+            onPhotoBroken?.();
+          }}
           className="absolute inset-0 size-full object-cover"
         />
         {labelled && <SceneBadge />}
