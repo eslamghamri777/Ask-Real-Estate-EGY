@@ -4,6 +4,7 @@ import {
   useSiteSocials,
   whatsappUrl,
 } from "@/components/ClayLayout";
+import { DeveloperLogo } from "@/components/DeveloperLogo";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +26,16 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { usePaginatedQuery, useQuery } from "convex/react";
-import { Home, KeyRound, ChevronDown, MessageCircle, RotateCcw, Search } from "lucide-react";
+import {
+  Home,
+  KeyRound,
+  ChevronDown,
+  ChevronRight,
+  LayoutGrid,
+  MessageCircle,
+  RotateCcw,
+  Search,
+} from "lucide-react";
 import {
   AREAS,
   DELIVERY_OPTIONS,
@@ -259,18 +269,36 @@ export default function Listings() {
             <ChevronDown className="size-3.5 opacity-60" />
           </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="start" className="max-h-80 overflow-y-auto rounded-2xl">
-          <DropdownMenuLabel>Choose a developer</DropdownMenuLabel>
+        <DropdownMenuContent
+          align="start"
+          className="max-h-[26rem] w-72 overflow-y-auto rounded-2xl p-1.5"
+        >
+          <DropdownMenuLabel className="flex items-center justify-between gap-2 px-2 pt-2 pb-1 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+            Choose a developer
+            <span className="text-[10px] tabular-nums opacity-60">
+              {PRIMARY_DEVELOPERS.length}
+            </span>
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onSelect={() => changePurpose("primary")}>
-            All developers
+          <DropdownMenuItem
+            onSelect={() => changePurpose("primary")}
+            className="gap-3 rounded-xl py-2.5"
+          >
+            <span className="clay-sheen inline-flex size-8 shrink-0 items-center justify-center rounded-[0.6rem] bg-primary text-primary-foreground">
+              <LayoutGrid className="size-4" />
+            </span>
+            <span className="text-sm font-semibold">All developers</span>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
           {PRIMARY_DEVELOPERS.map((d) => (
             <DropdownMenuItem
               key={d}
               onSelect={() => navigate(`/developer/${developerSlug(d)}`)}
+              className="group/item gap-3 rounded-xl py-2"
             >
-              {d}
+              <DeveloperLogo name={d} size="sm" />
+              <span className="truncate text-sm font-medium">{d}</span>
+              <ChevronRight className="ml-auto size-3.5 text-muted-foreground opacity-0 transition-opacity group-focus/item:opacity-100" />
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

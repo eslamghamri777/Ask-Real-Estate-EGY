@@ -4,6 +4,7 @@ import {
   useSiteSocials,
   whatsappUrl,
 } from "@/components/ClayLayout";
+import { DeveloperLogo } from "@/components/DeveloperLogo";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -12,7 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AREAS, TYPES, developerFromSlug } from "@/lib/filters";
+import {
+  AREAS,
+  PRIMARY_DEVELOPERS,
+  TYPES,
+  developerFromSlug,
+  developerSlug,
+} from "@/lib/filters";
+import { developerWash } from "@/lib/developerBrand";
 import { DELIVERY_LABELS, FINISH_LABELS } from "@/lib/primaryRequest";
 import { Building2, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router";
@@ -113,16 +121,37 @@ function DeveloperDesk({ developer }: { developer: string }) {
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-10">
       {/* ============ Developer details ============ */}
-      <section className="clay-card clay-md p-6 sm:p-8">
-        <p className="eyebrow">Primary sale · Developer</p>
-        <h1 className="font-display mt-2 text-3xl tracking-tight sm:text-4xl">
-          {developer}
-        </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
-          Off-plan and new-launch units from {developer} across Egypt. Pick
-          your requirements below and send them to our team — we'll come back
-          with matching {developer} projects, prices and payment plans.
-        </p>
+      <section className="clay-card clay-md relative overflow-hidden p-6 sm:p-8">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0"
+          style={{ backgroundImage: developerWash(developer) }}
+        />
+        <div className="relative flex flex-wrap items-start gap-5">
+          <DeveloperLogo name={developer} size="xl" className="clay-md" />
+          <div className="min-w-0 flex-1">
+            <p className="eyebrow">Primary sale · Developer</p>
+            <h1 className="font-display mt-2 text-3xl tracking-tight sm:text-4xl">
+              {developer}
+            </h1>
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              Off-plan and new-launch units from {developer} across Egypt. Pick
+              your requirements below and send them to our team — we'll come back
+              with matching {developer} projects, prices and payment plans.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <span className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
+                Off-plan & new launches
+              </span>
+              <span className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
+                Prices shared on request
+              </span>
+              <span className="rounded-full border border-border bg-card/70 px-3 py-1.5 text-[11px] font-semibold text-muted-foreground">
+                Reply on WhatsApp
+              </span>
+            </div>
+          </div>
+        </div>
       </section>
 
       {/* ============ Requirements ============ */}
@@ -254,6 +283,9 @@ function DeveloperDesk({ developer }: { developer: string }) {
         </form>
       </section>
 
+      {/* ============ Other developers ============ */}
+      <DeveloperStrip current={developer} />
+
       <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
         <Search className="size-3.5" />
         Prices stay private — the team replies on WhatsApp with matching {developer} options.
@@ -263,5 +295,42 @@ function DeveloperDesk({ developer }: { developer: string }) {
         Looking at other developers? Use the Primary Sale menu in the top bar.
       </p>
     </main>
+  );
+}
+
+/**
+ * The rest of the primary-sale roster, as a swipeable row of brand marks —
+ * the same marks the top-bar menu shows, so a customer can hop between
+ * developers without going back to the listings desk.
+ */
+function DeveloperStrip({ current }: { current: string }) {
+  const others = PRIMARY_DEVELOPERS.filter((d) => d !== current);
+
+  return (
+    <section className="mt-8">
+      <div className="flex items-end justify-between gap-3">
+        <div>
+          <p className="eyebrow">Other developers</p>
+          <h2 className="font-display mt-1 text-xl tracking-tight">
+            Ask about another developer
+          </h2>
+        </div>
+        <span className="hidden text-xs text-muted-foreground sm:block">
+          {others.length} more
+        </span>
+      </div>
+      <div className="mt-4 flex gap-3 overflow-x-auto pb-2">
+        {others.map((d) => (
+          <Link
+            key={d}
+            to={`/developer/${developerSlug(d)}`}
+            className="clay-card clay-card-hover flex w-40 shrink-0 flex-col gap-3 p-3"
+          >
+            <DeveloperLogo name={d} size="lg" />
+            <span className="text-xs font-semibold leading-snug">{d}</span>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }
