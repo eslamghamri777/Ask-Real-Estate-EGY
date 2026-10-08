@@ -1,0 +1,267 @@
+import {
+  ClayFooter,
+  ClayHeader,
+  useSiteSocials,
+  whatsappUrl,
+} from "@/components/ClayLayout";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { AREAS, TYPES, developerFromSlug } from "@/lib/filters";
+import { DELIVERY_LABELS, FINISH_LABELS } from "@/lib/primaryRequest";
+import { Building2, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router";
+import { useState } from "react";
+
+/**
+ * Developer landing page — opened from the Primary Sale dropdown on the
+ * listings desk. Shows the developer's details and a requirements panel
+ * (area, type, beds, delivery time, finish); submitting opens WhatsApp with
+ * the request pre-filled for this developer, same flow as the desk.
+ */
+export default function Developer() {
+  const { slug = "" } = useParams();
+  const developer = developerFromSlug(slug);
+
+  return (
+    <div className="flex min-h-screen flex-col">
+      <ClayHeader />
+
+      {developer ? (
+        <DeveloperDesk developer={developer} />
+      ) : (
+        <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-16">
+          <div className="clay-card clay-md px-8 py-12 text-center">
+            <span className="clay-icon clay-sheen mx-auto size-14 bg-primary text-primary-foreground">
+              <Building2 className="size-6" />
+            </span>
+            <h1 className="font-display mt-4 text-2xl">Developer not found</h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              We don't have a page for that developer yet — but we still source
+              their units. Browse the primary-sale desk instead.
+            </p>
+            <Button asChild className="clay-btn clay-btn-primary mt-6 h-11 rounded-full px-6">
+              <Link to="/listings?purpose=primary">Go to Primary Sale</Link>
+            </Button>
+          </div>
+        </main>
+      )}
+
+      <ClayFooter />
+    </div>
+  );
+}
+
+function DeveloperDesk({ developer }: { developer: string }) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const socials = useSiteSocials();
+
+  // Requirements come in from the URL (e.g. /request → desk links), then live
+  // in local state; the developer itself is fixed by the page.
+  const [area, setArea] = useState(searchParams.get("area") ?? "");
+  const [type, setType] = useState(searchParams.get("type") ?? "");
+  const [bedrooms, setBedrooms] = useState(Number(searchParams.get("bedrooms")) || 0);
+  const [delivery, setDelivery] = useState(searchParams.get("delivery") ?? "");
+  const [finish, setFinish] = useState(searchParams.get("finish") ?? "");
+
+  const clearFilters = () => {
+    setArea("");
+    setType("");
+    setBedrooms(0);
+    setDelivery("");
+    setFinish("");
+  };
+
+  /** WhatsApp request pinned to this developer, same text as the desk sends. */
+  const openWhatsAppRequest = () => {
+    const deliveryLabel = (DELIVERY_LABELS as Record<string, string>)[delivery] ?? delivery;
+    const finishLabel = (FINISH_LABELS as Record<string, string>)[finish] ?? finish;
+    const lines = [
+      "New primary-sale request — Ask Real Estate",
+      "",
+      "First name:",
+      "Last name:",
+      "",
+      `Area: ${area || "Any"}`,
+      `Type: ${type ? type[0].toUpperCase() + type.slice(1) : "Any"}`,
+      `Bedrooms: ${bedrooms ? `${bedrooms}+` : "Any"}`,
+      `Delivery: ${delivery ? deliveryLabel : "Any"}`,
+      `Developer: ${developer}`,
+      `Finish: ${finish ? finishLabel : "Any"}`,
+      "",
+      "Fill in your first and last name above, then press send — we'll reply with matching options and prices.",
+    ];
+    window.location.href = whatsappUrl(socials.whatsappNumber, lines.join("\n"));
+  };
+
+  const goToRequest = () => {
+    const params = new URLSearchParams({ purpose: "primary", developer });
+    if (area) params.set("area", area);
+    if (type) params.set("type", type);
+    if (bedrooms) params.set("bedrooms", String(bedrooms));
+    if (delivery) params.set("delivery", delivery);
+    if (finish) params.set("finish", finish);
+    navigate(`/request?${params.toString()}`);
+  };
+
+  return (
+    <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-10">
+      {/* ============ Developer details ============ */}
+      <section className="clay-card clay-md p-6 sm:p-8">
+        <p className="eyebrow">Primary sale · Developer</p>
+        <h1 className="font-display mt-2 text-3xl tracking-tight sm:text-4xl">
+          {developer}
+        </h1>
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+          Off-plan and new-launch units from {developer} across Egypt. Pick
+          your requirements below and send them to our team — we'll come back
+          with matching {developer} projects, prices and payment plans.
+        </p>
+      </section>
+
+      {/* ============ Requirements ============ */}
+      <section className="clay-card clay-md mt-6 p-5">
+        <form
+          className="flex flex-col gap-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            openWhatsAppRequest();
+          }}
+        >
+          <div className="flex flex-wrap items-center gap-3">
+            <Select
+              value={area || "any-area"}
+              onValueChange={(v) => setArea(v === "any-area" ? "" : v)}
+            >
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+                <SelectValue placeholder="Area" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any-area">Any area</SelectItem>
+                {AREAS.map((a) => (
+                  <SelectItem key={a} value={a}>
+                    {a}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={type || "any-type"}
+              onValueChange={(v) => setType(v === "any-type" ? "" : v)}
+            >
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+                <SelectValue placeholder="Property type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any-type">Any type</SelectItem>
+                {TYPES.map((t) => (
+                  <SelectItem key={t} value={t} className="capitalize">
+                    {t}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={String(bedrooms)}
+              onValueChange={(v) => setBedrooms(Number(v) ? Number(v) : 0)}
+            >
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+                <SelectValue placeholder="Bedrooms" />
+              </SelectTrigger>
+              <SelectContent>
+                {[0, 1, 2, 3, 4, 5].map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n === 0 ? "Any beds" : `${n}+ beds`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={delivery || "any-delivery"}
+              onValueChange={(v) => setDelivery(v === "any-delivery" ? "" : v)}
+            >
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+                <SelectValue placeholder="Delivery time" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any-delivery">Any delivery time</SelectItem>
+                {(Object.entries(DELIVERY_LABELS) as [string, string][]).map(
+                  ([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ),
+                )}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={finish || "any-finish"}
+              onValueChange={(v) => setFinish(v === "any-finish" ? "" : v)}
+            >
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
+                <SelectValue placeholder="Finish" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="any-finish">Any finish</SelectItem>
+                {(Object.entries(FINISH_LABELS) as [string, string][]).map(
+                  ([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ),
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <Button
+              type="button"
+              onClick={clearFilters}
+              variant="ghost"
+              className="clay-btn clay-btn-light h-12 rounded-full px-5 text-sm"
+            >
+              <RotateCcw className="size-4" />
+              Reset
+            </Button>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={goToRequest}
+                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+              >
+                Prefer a form? Add your details
+              </button>
+              <Button
+                type="submit"
+                className="clay-btn clay-btn-primary h-12 rounded-full px-6"
+              >
+                <MessageCircle className="size-4" />
+                Continue on WhatsApp
+              </Button>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <p className="mt-4 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+        <Search className="size-3.5" />
+        Prices stay private — the team replies on WhatsApp with matching {developer} options.
+      </p>
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        <KeyRound className="mr-1.5 inline size-4" />
+        Looking at other developers? Use the Primary Sale menu in the top bar.
+      </p>
+    </main>
+  );
+}

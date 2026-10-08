@@ -14,6 +14,7 @@ const Landing = lazy(() => import("./pages/Landing.tsx"));
 const AuthPage = lazy(() => import("./pages/Auth.tsx"));
 const Dashboard = lazy(() => import("./pages/Dashboard.tsx"));
 const Listings = lazy(() => import("./pages/Listings.tsx"));
+const Developer = lazy(() => import("./pages/Developer.tsx"));
 const PropertyRequest = lazy(() => import("./pages/PropertyRequest.tsx"));
 const ListingDetail = lazy(() => import("./pages/ListingDetail.tsx"));
 const Creator = lazy(() => import("./pages/Creator.tsx"));
@@ -125,6 +126,7 @@ createRoot(document.getElementById("root")!).render(
             <Routes>
               <Route path="/" element={<Landing />} />
               <Route path="/listings" element={<Listings />} />
+              <Route path="/developer/:slug" element={<Developer />} />
               <Route path="/request" element={<PropertyRequest />} />
               <Route path="/listing/:slug" element={<ListingDetail />} />
               <Route path="/creator" element={<Creator />} />

@@ -6,6 +6,14 @@ import {
 } from "@/components/ClayLayout";
 import { ListingCard } from "@/components/ListingCard";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -17,7 +25,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { api } from "@/convex/_generated/api";
 import { usePaginatedQuery, useQuery } from "convex/react";
-import { Home, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
+import { Home, KeyRound, ChevronDown, MessageCircle, RotateCcw, Search } from "lucide-react";
 import {
   AREAS,
   DELIVERY_OPTIONS,
@@ -26,6 +34,7 @@ import {
   TYPES,
 } from "@/lib/filters";
 import { DELIVERY_LABELS, FINISH_LABELS } from "@/lib/primaryRequest";
+import { developerSlug } from "@/lib/filters";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 
@@ -235,12 +244,37 @@ export default function Listings() {
       aria-label="Property purpose"
       className="clay-well mx-auto hidden w-fit items-center gap-1 rounded-full p-1.5 md:flex"
     >
-      <PurposeTab
-        active={purpose === "primary"}
-        onClick={() => changePurpose("primary")}
-        icon={<Home className="size-4" />}
-        label="Primary Sale"
-      />
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button
+            type="button"
+            className={`clay-squish flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-bold transition-all ${
+              purpose === "primary"
+                ? "clay-sheen bg-card clay-sm"
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Home className="size-4" />
+            Primary Sale
+            <ChevronDown className="size-3.5 opacity-60" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="start" className="max-h-80 overflow-y-auto rounded-2xl">
+          <DropdownMenuLabel>Choose a developer</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onSelect={() => changePurpose("primary")}>
+            All developers
+          </DropdownMenuItem>
+          {PRIMARY_DEVELOPERS.map((d) => (
+            <DropdownMenuItem
+              key={d}
+              onSelect={() => navigate(`/developer/${developerSlug(d)}`)}
+            >
+              {d}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
       <PurposeTab
         active={purpose === "resale"}
         onClick={() => changePurpose("resale")}

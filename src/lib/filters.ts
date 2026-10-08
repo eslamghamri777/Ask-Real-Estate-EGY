@@ -83,3 +83,16 @@ export const FINISH_OPTIONS = [
  * listings.purpose union.
  */
 export type Purpose = "primary" | "resale" | "rent";
+
+/** "Emaar Misr" → "emaar-misr" — the URL form for /developer/{slug} pages. */
+export function developerSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+/** Reverse lookup: slug → developer name, or "" when no developer matches. */
+export function developerFromSlug(slug: string): string {
+  return PRIMARY_DEVELOPERS.find((d) => developerSlug(d) === slug) ?? "";
+}
