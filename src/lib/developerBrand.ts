@@ -45,7 +45,7 @@ const BRANDS: Record<string, BrandMark> = {
   "PRE Developments": { initials: "PRE", hue: 244, motif: "peak" },
   "Modon Developments": { initials: "MD", hue: 206, motif: "tower" },
   "Hassan Allam Properties": { initials: "HA", hue: 158, motif: "arch" },
-  Katameya: { initials: "KA", hue: 292, motif: "leaf" },
+  Kattameya: { initials: "KA", hue: 292, motif: "leaf" },
   Nouvara: { initials: "NO", hue: 330, motif: "sun" },
   Garana: { initials: "GA", hue: 6, motif: "leaf" },
   Marakez: { initials: "MA", hue: 34, motif: "palm" },

@@ -48,7 +48,7 @@ export const PRIMARY_DEVELOPERS = [
   "PRE Developments",
   "Modon Developments",
   "Hassan Allam Properties",
-  "Katameya",
+  "Kattameya",
   "Nouvara",
   "Garana",
   "Marakez",
