@@ -442,6 +442,7 @@ export function DeveloperScene({
           decoding="async"
           onError={() => setPhotoBroken(true)}
           className="absolute inset-0 size-full object-cover"
+          style={{ objectPosition: "center 65%" }}
         />
         {labelled && <SceneBadge />}
       </div>
