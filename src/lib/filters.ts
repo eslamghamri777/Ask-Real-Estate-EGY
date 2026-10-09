@@ -46,7 +46,7 @@ export const PRIMARY_DEVELOPERS = [
   "ORA Developers",
   "Saada",
   "PRE Developments",
-  "  Modon Developments",
+  "Modon Developments",
   "Hassan Allam Properties",
   "Kattameya",
   "Nouvara",
