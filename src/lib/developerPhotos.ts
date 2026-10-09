@@ -14,7 +14,7 @@
  *
  * Currently the pool covers Mountain View, Palm Hills, SODIC, Emaar Misr,
  * La Vista Developments, Madinet Masr, City Edge Developments, Tatweer
- * Misr and Lake View; the rest of the developers still use the generated
+ * Misr, Lake View and ORA Developers; the rest of the developers still use the generated
  * artwork until their media lands here. The moment a configured file is
  * missing from `public/developers/` the generated artwork covers the frame
  * and the hero falls back automatically — a missing file can never leave a
@@ -73,6 +73,11 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     url: "/developers/lake-view.jpg",
     kind: "rendering",
     logoUrl: "/developers/lake-view-logo.jpg",
+  },
+  "ORA Developers": {
+    url: "/developers/ora.jpg",
+    kind: "rendering",
+    logoUrl: "/developers/ora-logo.jpg",
   },
 };
 
