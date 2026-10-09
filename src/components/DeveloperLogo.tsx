@@ -78,6 +78,15 @@ const SIZES = {
 export type DeveloperLogoSize = keyof typeof SIZES;
 
 /**
+ * Logos are fitted with `object-contain` (never cover-cropped) inside a
+ * neutral, brand-tinted backdrop, so the whole supplied artwork — wordmark,
+ * tagline, symbol — always shows completely, however tightly or loosely the
+ * source file is framed. Padding lives in the backdrop padding, not the
+ * image, so the image itself can use the full tile bounds.
+ */
+const LOGO_IMAGE_FIT = "object-contain p-[9%]" as const;
+
+/**
  * A developer's mark: monogram on a branded gradient tile, with its motif
  * faintly drawn behind. Sized from `sm` (menu rows) to `xl` (page heroes).
  */
@@ -107,7 +116,8 @@ export function DeveloperLogo({
         title={name}
         onError={() => setLogoBroken(true)}
         className={cn(
-          "shrink-0 rounded-[1.35rem] object-cover ring-1 ring-black/10",
+          "shrink-0 rounded-[1.35rem] bg-card ring-1 ring-black/10",
+          LOGO_IMAGE_FIT,
           SIZES[size],
           className,
         )}
