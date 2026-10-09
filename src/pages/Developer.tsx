@@ -132,7 +132,7 @@ function DeveloperDesk({ developer }: { developer: string }) {
             <DeveloperLogo
               name={developer}
               size="xl"
-              className="ring-4 ring-card"
+              className="relative z-10 ring-4 ring-card"
             />
           </div>
           <p className="eyebrow mt-5">Primary sale · Developer</p>
