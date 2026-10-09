@@ -125,7 +125,7 @@ export function DeveloperLogo({
         className={cn(
           "shrink-0 rounded-[1.35rem] ring-1 ring-black/10",
           name === "Marakez"
-            ? "object-cover bg-card p-0 scale-[0.99]"
+            ? "object-cover bg-card p-0 scale-[0.98]"
             : cn(LOGO_IMAGE_FIT, LOGO_PAD[size]),
           SIZES[size],
           className,
