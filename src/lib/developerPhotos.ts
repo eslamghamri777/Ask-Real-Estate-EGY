@@ -37,6 +37,10 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     kind: "rendering",
     logoUrl: "/developers/palm-hills-logo.jpg",
   },
+  SODIC: {
+    url: "/developers/sodic.jpg",
+    kind: "rendering",
+  },
 };
 
 /** The image for a developer, or null when we only have generated artwork. */
