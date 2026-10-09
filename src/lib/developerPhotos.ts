@@ -45,6 +45,7 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
   "Emaar Misr": {
     url: "/developers/emaar-misr.jpg",
     kind: "rendering",
+    logoUrl: "/developers/emaar-misr-logo.jpg",
   },
 };
 
