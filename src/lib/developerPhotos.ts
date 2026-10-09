@@ -107,9 +107,9 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     logoUrl: "/developers/kattameya.jpg",
   },
   Nouvara: {
-    url: "/developers/nouvara-logo.webp",
+    url: "/developers/nouvara.avif",
     kind: "rendering",
-    logoUrl: "/developers/nouvara.avif",
+    logoUrl: "/developers/nouvara-logo.webp",
   },
 };
 
