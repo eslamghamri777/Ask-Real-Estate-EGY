@@ -16,7 +16,7 @@
  * La Vista Developments, Madinet Masr, City Edge Developments, Tatweer
  * Misr, Lake View, ORA Developers, Saada, PRE Developments, Modon
  * Developments, Hassan Allam Properties, Kattameya, Al Ahly Sabbour,
- * Landmark (LMD), Mayan and Nouvara. Marakez, The Waterway, Il Cazar and Sky
+ * Landmark (LMD), Mayan, Azad (Tameer) and Nouvara. Marakez, The Waterway, Il Cazar and Sky
  * AD currently use generated artwork because their old ImgBB uploads are
  * unavailable; other unlisted developers use generated artwork until their
  * media lands here.
@@ -98,6 +98,11 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     url: "https://i.ibb.co/Z1Tbx2XG/images-1.jpg",
     kind: "rendering",
     logoUrl: "https://i.ibb.co/QFgh9DkH/images.jpg",
+  },
+  "Azad (Tameer)": {
+    url: "https://i.ibb.co/77Kjjwv/images.jpg",
+    kind: "rendering",
+    logoUrl: "https://i.ibb.co/T923P9D/Gemini-Generated-Image-fyxvwzfyxvwzfyxv.jpg",
   },
   "Landmark (LMD)": {
     url: "https://i.ibb.co/8nHDSrgh/1-750x500.jpg",
