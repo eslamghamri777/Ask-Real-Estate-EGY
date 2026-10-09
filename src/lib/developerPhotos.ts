@@ -15,14 +15,15 @@
  * Currently the pool covers Mountain View, Palm Hills, SODIC, Emaar Misr,
  * La Vista Developments, Madinet Masr, City Edge Developments, Tatweer
  * Misr, Lake View, ORA Developers, Saada, PRE Developments, Modon
- * Developments, Hassan Allam Properties, Kattameya, Marakez, The Waterway
- * Developments, Il Cazar, Sky AD Developments, Al Ahly Sabbour,
- * Landmark (LMD), Mayan and Nouvara; the rest of
- * the developers still use the generated
- * artwork until their media lands here. The moment a configured file is
- * missing from `public/developers/` the generated artwork covers the frame
- * and the hero falls back automatically — a missing file can never leave a
- * broken frame.
+ * Developments, Hassan Allam Properties, Kattameya, Al Ahly Sabbour,
+ * Landmark (LMD), Mayan and Nouvara. Marakez, The Waterway, Il Cazar and Sky
+ * AD currently use generated artwork because their old ImgBB uploads are
+ * unavailable; other unlisted developers use generated artwork until their
+ * media lands here.
+ *
+ * The moment a configured file is missing from `public/developers/` the
+ * generated artwork covers the frame and the hero falls back automatically —
+ * a missing file can never leave a broken frame.
  */
 
 export type DeveloperPhoto = {
@@ -93,26 +94,6 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     kind: "rendering",
     logoUrl: "/developers/pre-logo.png",
   },
-  Marakez: {
-    url: "https://i.ibb.co/mrB1TDnx/images.jpg",
-    kind: "rendering",
-    logoUrl: "https://i.ibb.co/mCyYsW44/Gemini-Generated-Image-k9cclmk9cclmk9cc.jpg",
-  },
-  "The Waterway Developments": {
-    url: "https://i.ibb.co/WNhcq30w/images-2.jpg",
-    kind: "rendering",
-    logoUrl: "https://i.ibb.co/ZztRbBVc/images-1.jpg",
-  },
-  "Il Cazar": {
-    url: "https://i.ibb.co/0yhWKSdp/images-4.jpg",
-    kind: "rendering",
-    logoUrl: "https://i.ibb.co/rfTvGC1Q/images.png",
-  },
-  "Sky AD Developments": {
-    url: "https://i.ibb.co/tTh8jGmL/Sky-Ad-New-Capital-Compound.jpg",
-    kind: "rendering",
-    logoUrl: "https://i.ibb.co/fz0Lm86h/images.png",
-  },
   "Al Ahly Sabbour": {
     url: "https://i.ibb.co/Z1Tbx2XG/images-1.jpg",
     kind: "rendering",
@@ -139,9 +120,9 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     logoUrl: "/developers/hassan-allam-logo.png",
   },
   Kattameya: {
-    url: "/developers/kattameya-logo.webp",
+    url: "/developers/kattameya.jpg",
     kind: "rendering",
-    logoUrl: "/developers/kattameya.jpg",
+    logoUrl: "/developers/kattameya-logo.webp",
   },
   Nouvara: {
     url: "/developers/nouvara-bg.webp",
