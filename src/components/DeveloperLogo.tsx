@@ -112,8 +112,8 @@ export function DeveloperLogo({
   // generated monogram tile; if that image fails to load, the monogram returns
   // (the <img> swaps out on error, never a broken icon in its place).
   const logoUrl = developerPhoto(name)?.logoUrl;
-  const [logoBroken, setLogoBroken] = useState(false);
-  const showLogoImage = Boolean(logoUrl) && !logoBroken;
+  const [failedLogoUrl, setFailedLogoUrl] = useState<string | null>(null);
+  const showLogoImage = Boolean(logoUrl) && failedLogoUrl !== logoUrl;
 
   if (showLogoImage) {
     return (
@@ -121,7 +121,7 @@ export function DeveloperLogo({
         src={logoUrl ?? undefined}
         alt={`${name} logo`}
         title={name}
-        onError={() => setLogoBroken(true)}
+        onError={() => setFailedLogoUrl(logoUrl ?? null)}
         className={cn(
           "shrink-0 rounded-[1.35rem] ring-1 ring-black/10",
           name === "Marakez"

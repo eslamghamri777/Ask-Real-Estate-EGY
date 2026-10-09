@@ -328,8 +328,8 @@ export function DeveloperScene({
   // fall straight back to the generated artwork rather than a broken frame.
   const photo = developerPhoto(name);
   const photoUrl = photo?.url ?? null;
-  const [photoBroken, setPhotoBroken] = useState(false);
-  const showPhoto = Boolean(photoUrl) && !photoBroken;
+  const [failedPhotoUrl, setFailedPhotoUrl] = useState<string | null>(null);
+  const showPhoto = Boolean(photoUrl) && failedPhotoUrl !== photoUrl;
   const labelled = badge && needsImpressionLabel(photo, showPhoto);
 
   const ink = (lightness: number, saturation = 44) =>
@@ -440,7 +440,7 @@ export function DeveloperScene({
           alt={`${name} development`}
           loading="lazy"
           decoding="async"
-          onError={() => setPhotoBroken(true)}
+          onError={() => setFailedPhotoUrl(photoUrl)}
           className="absolute inset-0 size-full object-cover"
           style={{ objectPosition: "center 65%" }}
         />

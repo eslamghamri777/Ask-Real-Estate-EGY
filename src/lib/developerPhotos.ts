@@ -15,11 +15,11 @@
  * Currently the pool covers Mountain View, Palm Hills, SODIC, Emaar Misr,
  * La Vista Developments, Madinet Masr, City Edge Developments, Tatweer
  * Misr, Lake View, ORA Developers, Saada, PRE Developments, Modon
- * Developments, Hassan Allam Properties, Kattameya, Al Ahly Sabbour,
- * Landmark (LMD), Mayan, Azad (Tameer) and Nouvara. Marakez, The Waterway, Il Cazar and Sky
- * AD currently use generated artwork because their old ImgBB uploads are
- * unavailable; other unlisted developers use generated artwork until their
- * media lands here.
+ * Developments, Hassan Allam Properties, Kattameya, Azad (Tameer) and Nouvara.
+ * Marakez, The Waterway Developments, Il Cazar, Mayan, Sky AD Developments,
+ * Al Ahly Sabbour, Landmark (LMD) and other unlisted developers use generated
+ * artwork because their former ImgBB uploads are unavailable or not configured.
+ *
  *
  * The moment a configured file is missing from `public/developers/` the
  * generated artwork covers the frame and the hero falls back automatically —
@@ -94,25 +94,10 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     kind: "rendering",
     logoUrl: "/developers/pre-logo.png",
   },
-  "Al Ahly Sabbour": {
-    url: "https://i.ibb.co/Z1Tbx2XG/images-1.jpg",
-    kind: "rendering",
-    logoUrl: "https://i.ibb.co/QFgh9DkH/images.jpg",
-  },
   "Azad (Tameer)": {
     url: "https://i.ibb.co/77Kjjwv/images.jpg",
     kind: "rendering",
     logoUrl: "https://i.ibb.co/T923P9D/Gemini-Generated-Image-fyxvwzfyxvwzfyxv.jpg",
-  },
-  "Landmark (LMD)": {
-    url: "https://i.ibb.co/8nHDSrgh/1-750x500.jpg",
-    kind: "rendering",
-    logoUrl: "https://i.ibb.co/z98NJXg/images.jpg",
-  },
-  Mayan: {
-    url: "https://i.ibb.co/k6SLXhtP/Mayan-Compound-New-Cairo-1.webp",
-    kind: "rendering",
-    logoUrl: "https://i.ibb.co/QvwNMKn3/images-1.jpg",
   },
   "Modon Developments": {
     url: "/developers/modon.jpg",
