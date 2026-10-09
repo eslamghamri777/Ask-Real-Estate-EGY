@@ -16,7 +16,7 @@
  * La Vista Developments, Madinet Masr, City Edge Developments, Tatweer
  * Misr, Lake View, ORA Developers, Saada, PRE Developments, Modon
  * Developments, Hassan Allam Properties, Kattameya, Marakez, The Waterway
- * Developments, Il Cazar, Sky AD Developments and Nouvara; the rest of
+ * Developments, Il Cazar, Sky AD Developments, Al Ahly Sabbour and Nouvara; the rest of
  * the developers still use the generated
  * artwork until their media lands here. The moment a configured file is
  * missing from `public/developers/` the generated artwork covers the frame
@@ -111,6 +111,11 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     url: "https://i.ibb.co/tTh8jGmL/Sky-Ad-New-Capital-Compound.jpg",
     kind: "rendering",
     logoUrl: "https://i.ibb.co/fz0Lm86h/images.png",
+  },
+  "Al Ahly Sabbour": {
+    url: "https://i.ibb.co/Z1Tbx2XG/images-1.jpg",
+    kind: "rendering",
+    logoUrl: "https://i.ibb.co/QFgh9DkH/images.jpg",
   },
   "Modon Developments": {
     url: "/developers/modon.jpg",
