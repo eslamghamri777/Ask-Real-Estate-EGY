@@ -40,6 +40,7 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
   SODIC: {
     url: "/developers/sodic.jpg",
     kind: "rendering",
+    logoUrl: "/developers/sodic-logo.jpg",
   },
 };
 
