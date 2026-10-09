@@ -13,7 +13,8 @@
  * building. Only list images we may publish.
  *
  * Currently the pool covers Mountain View, Palm Hills, SODIC, Emaar Misr,
- * La Vista Developments and Madinet Masr; the rest of the developers still use the generated
+ * La Vista Developments, Madinet Masr and City Edge Developments; the rest of
+ * the developers still use the generated
  * artwork until their media lands here. The moment a configured file is
  * missing from `public/developers/` the generated artwork covers the frame
  * and the hero falls back automatically — a missing file can never leave a
@@ -57,6 +58,11 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     url: "/developers/madinet-masr.webp",
     kind: "rendering",
     logoUrl: "/developers/madinet-masr-logo.jpg",
+  },
+  "City Edge Developments": {
+    url: "/developers/city-edge.webp",
+    kind: "rendering",
+    logoUrl: "/developers/city-edge-logo.jpg",
   },
 };
 
