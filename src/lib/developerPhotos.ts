@@ -95,6 +95,10 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     kind: "rendering",
     logoUrl: "/developers/pre-logo.png",
   },
+  "The Waterway Developments": {
+    kind: "rendering",
+    logoUrl: "https://i.ibb.co/cK3TjZFr/waterway-400x328.png",
+  },
   Marakez: {
     url: "https://i.ibb.co/VWtGW0y0/Gemini-Generated-Image-eamlb9eamlb9eaml.jpg",
     kind: "rendering",
