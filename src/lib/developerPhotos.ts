@@ -15,7 +15,7 @@
  * Currently the pool covers Mountain View, Palm Hills, SODIC, Emaar Misr,
  * La Vista Developments, Madinet Masr, City Edge Developments, Tatweer
  * Misr, Lake View, ORA Developers, Saada, PRE Developments, Modon
- * Developments, Hassan Allam Properties and Kattameya; the rest of
+ * Developments, Hassan Allam Properties, Kattameya and Nouvara; the rest of
  * the developers still use the generated
  * artwork until their media lands here. The moment a configured file is
  * missing from `public/developers/` the generated artwork covers the frame
@@ -105,6 +105,11 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     url: "/developers/kattameya.jpg",
     kind: "rendering",
     logoUrl: "/developers/kattameya-logo.webp",
+  },
+  Nouvara: {
+    url: "/developers/nouvara.avif",
+    kind: "rendering",
+    logoUrl: "/developers/nouvara-logo.webp",
   },
 };
 
