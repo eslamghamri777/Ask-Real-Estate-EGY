@@ -273,34 +273,7 @@ export default function Listings() {
           align="start"
           className="max-h-[26rem] w-72 overflow-y-auto rounded-2xl p-1.5"
         >
-          <DropdownMenuLabel className="flex items-center justify-between gap-2 px-2 pt-2 pb-1 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-            Choose a developer
-            <span className="text-[10px] tabular-nums opacity-60">
-              {PRIMARY_DEVELOPERS.length}
-            </span>
-          </DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            onSelect={() => changePurpose("primary")}
-            className="gap-3 rounded-xl py-2.5"
-          >
-            <span className="clay-sheen inline-flex size-8 shrink-0 items-center justify-center rounded-[0.6rem] bg-primary text-primary-foreground">
-              <LayoutGrid className="size-4" />
-            </span>
-            <span className="text-sm font-semibold">All developers</span>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          {PRIMARY_DEVELOPERS.map((d) => (
-            <DropdownMenuItem
-              key={d}
-              onSelect={() => navigate(`/developer/${developerSlug(d)}`)}
-              className="group/item gap-3 rounded-xl py-2"
-            >
-              <DeveloperLogo name={d} size="sm" />
-              <span className="truncate text-sm font-medium">{d}</span>
-              <ChevronRight className="ml-auto size-3.5 text-muted-foreground opacity-0 transition-opacity group-focus/item:opacity-100" />
-            </DropdownMenuItem>
-          ))}
+          <DeveloperMenuItems onAllDevelopers={() => changePurpose("primary")} />
         </DropdownMenuContent>
       </DropdownMenu>
       <PurposeTab
@@ -352,33 +325,34 @@ export default function Listings() {
             <div className="flex flex-wrap items-center gap-3">
             {/* Developer leads the row on phones: the top bar's Primary Sale
                menu — this choice's md+ home — is hidden on small screens.
-               The row then reads developer → area → type → beds → delivery
-               → finish. An explicit ?developer= deep link (e.g. from
+               The phone control is that same menu in miniature (shared
+               DeveloperMenuItems), so picking a developer opens its page here
+               too. The row then reads developer → area → type → beds →
+               delivery → finish. An explicit ?developer= deep link (e.g. from
                /request "edit") is still honored by the WhatsApp request. */}
             {purpose === "primary" && (
-              <Select
-                value={developer || "any-developer"}
-                onValueChange={(v) =>
-                  setFilter("developer", v === "any-developer" ? "" : v)
-                }
-              >
-                <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none md:hidden">
-                  {/* Carries its own label: a closed Radix SelectValue renders
-                      nothing until its menu has been opened once, and this
-                      control has to read clearly the moment the page loads. */}
-                  <SelectValue placeholder="Developer">
-                    {developer || "Any developer"}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="max-h-[22rem]">
-                  <SelectItem value="any-developer">Any developer</SelectItem>
-                  {PRIMARY_DEVELOPERS.map((d) => (
-                    <SelectItem key={d} value={d}>
-                      {d}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    type="button"
+                    aria-label="Choose a developer"
+                    className="clay-squish clay-sheen flex h-12 w-auto items-center gap-2 rounded-full bg-card px-5 text-sm font-semibold md:hidden"
+                  >
+                    <span className="max-w-[9rem] truncate">
+                      {developer || "Developer"}
+                    </span>
+                    <ChevronDown className="size-3.5 opacity-60" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  align="start"
+                  className="max-h-[22rem] w-72 overflow-y-auto rounded-2xl p-1.5"
+                >
+                  <DeveloperMenuItems
+                    onAllDevelopers={() => setFilter("developer", "")}
+                  />
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
 
             <Select
@@ -599,6 +573,51 @@ export default function Listings() {
 
       <ClayFooter />
     </div>
+  );
+}
+
+/**
+ * The developer choices, shared by the desktop "Primary Sale" menu in the top
+ * bar and the phone-sized menu in the filter row. Picking a developer opens
+ * that developer's page at every screen size — on phones these used to only
+ * filter the request desk in place, so the same tap led nowhere.
+ */
+function DeveloperMenuItems({
+  onAllDevelopers,
+}: {
+  /** What "All developers" does — clear the filter, or switch to Primary. */
+  onAllDevelopers: () => void;
+}) {
+  const navigate = useNavigate();
+
+  return (
+    <>
+      <DropdownMenuLabel className="flex items-center justify-between gap-2 px-2 pt-2 pb-1 text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
+        Choose a developer
+        <span className="text-[10px] tabular-nums opacity-60">
+          {PRIMARY_DEVELOPERS.length}
+        </span>
+      </DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuItem onSelect={onAllDevelopers} className="gap-3 rounded-xl py-2.5">
+        <span className="clay-sheen inline-flex size-8 shrink-0 items-center justify-center rounded-[0.6rem] bg-primary text-primary-foreground">
+          <LayoutGrid className="size-4" />
+        </span>
+        <span className="text-sm font-semibold">All developers</span>
+      </DropdownMenuItem>
+      <DropdownMenuSeparator />
+      {PRIMARY_DEVELOPERS.map((d) => (
+        <DropdownMenuItem
+          key={d}
+          onSelect={() => navigate(`/developer/${developerSlug(d)}`)}
+          className="group/item gap-3 rounded-xl py-2"
+        >
+          <DeveloperLogo name={d} size="sm" />
+          <span className="truncate text-sm font-medium">{d}</span>
+          <ChevronRight className="ml-auto size-3.5 text-muted-foreground opacity-0 transition-opacity group-focus/item:opacity-100" />
+        </DropdownMenuItem>
+      ))}
+    </>
   );
 }
 
