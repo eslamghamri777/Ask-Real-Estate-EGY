@@ -102,9 +102,9 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     logoUrl: "/developers/hassan-allam-logo.png",
   },
   Kattameya: {
-    url: "/developers/kattameya.jpg",
+    url: "/developers/kattameya-logo.webp",
     kind: "rendering",
-    logoUrl: "/developers/kattameya-logo.webp",
+    logoUrl: "/developers/kattameya.jpg",
   },
   Nouvara: {
     url: "/developers/nouvara-logo.webp",
