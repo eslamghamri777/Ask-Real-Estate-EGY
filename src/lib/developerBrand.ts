@@ -47,7 +47,6 @@ const BRANDS: Record<string, BrandMark> = {
   "Hassan Allam Properties": { initials: "HA", hue: 158, motif: "arch" },
   Kattameya: { initials: "KA", hue: 292, motif: "leaf" },
   Nouvara: { initials: "NO", hue: 330, motif: "sun" },
-  Garana: { initials: "GA", hue: 6, motif: "leaf" },
   Marakez: { initials: "MA", hue: 34, motif: "palm" },
   "The Waterway Developments": { initials: "WA", hue: 200, motif: "wave" },
   "Azad (Tameer)": { initials: "AZ", hue: 254, motif: "tower" },
