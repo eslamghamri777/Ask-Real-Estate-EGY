@@ -12,11 +12,12 @@
  * "Artist's impression" label so nobody mistakes it for a photograph of a real
  * building. Only list images we may publish.
  *
- * Currently the pool covers Mountain View, Palm Hills, SODIC and Emaar Misr;
- * the rest of the developers still use the generated artwork until their
- * media lands here. The moment a configured file is missing from
- * `public/developers/` the generated artwork covers the frame and the hero
- * falls back automatically — a missing file can never leave a broken frame.
+ * Currently the pool covers Mountain View, Palm Hills, SODIC, Emaar Misr and
+ * La Vista Developments; the rest of the developers still use the generated
+ * artwork until their media lands here. The moment a configured file is
+ * missing from `public/developers/` the generated artwork covers the frame
+ * and the hero falls back automatically — a missing file can never leave a
+ * broken frame.
  */
 
 export type DeveloperPhoto = {
@@ -46,6 +47,11 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     url: "/developers/emaar-misr.jpg",
     kind: "rendering",
     logoUrl: "/developers/emaar-misr-logo.jpg",
+  },
+  "La Vista Developments": {
+    url: "/developers/la-vista.jpg",
+    kind: "rendering",
+    logoUrl: "/developers/la-vista-logo.webp",
   },
 };
 
