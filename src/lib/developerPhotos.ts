@@ -35,6 +35,7 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
   "Palm Hills Developments": {
     url: "/developers/palm-hills.jpg",
     kind: "rendering",
+    logoUrl: "/developers/palm-hills-logo.jpg",
   },
 };
 
