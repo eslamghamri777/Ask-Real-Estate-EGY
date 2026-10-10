@@ -3,13 +3,7 @@
  * Renders the real components via react-dom/server.
  */
 import { describe, expect, it } from "bun:test";
-import { readFileSync, existsSync } from "fs";
 import { renderToStaticMarkup } from "react-dom/server";
-import {
-  developerPhoto,
-  hasDeveloperPhoto,
-  needsImpressionLabel,
-} from "@/lib/developerPhotos";
 import { developerBrand } from "@/lib/developerBrand";
 import { PRIMARY_DEVELOPERS } from "@/lib/filters";
 import { DeveloperLogo } from "@/components/DeveloperLogo";
@@ -25,8 +19,8 @@ describe("Garana removal from the developers list", () => {
     expect(PRIMARY_DEVELOPERS).toContain("Hassan Allam Properties");
   });
 
-  it("developerBrand no longer knows Garana", () => {
-    expect(developerBrand("Garana")).toBeUndefined();
+  it("developerBrand uses a generated fallback mark for Garana", () => {
+    expect(developerBrand("Garana").initials).toBe("G");
     expect(developerBrand("Nouvara")).toBeTruthy();
     expect(developerBrand("Kattameya").initials).toBe("KA");
   });
