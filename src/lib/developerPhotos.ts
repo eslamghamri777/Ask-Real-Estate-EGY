@@ -97,7 +97,7 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
   },
   "The Waterway Developments": {
     kind: "rendering",
-    logoUrl: "https://i.ibb.co/cK3TjZFr/waterway-400x328.png",
+    logoUrl: "https://i.ibb.co/DHj4c6g8/waterway-400x328.png",
   },
   Marakez: {
     url: "https://i.ibb.co/G34ZFtJN/Gemini-Generated-Image-eamlb9eamlb9eaml.jpg",
