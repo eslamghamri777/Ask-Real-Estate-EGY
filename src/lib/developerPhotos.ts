@@ -15,7 +15,7 @@
  * Currently the pool covers Mountain View, Palm Hills, SODIC, Emaar Misr,
  * La Vista Developments, Madinet Masr, City Edge Developments, Tatweer
  * Misr, Lake View, ORA Developers, Saada, PRE Developments, Modon
- * Developments, Hassan Allam Properties, Kattameya, Azad (Tameer) and Nouvara.
+ * Developments, Hassan Allam Properties, Kattameya, Tameer Development and Nouvara.
  * Marakez has a logo image and a configured background rendering.
  * The Waterway Developments, Il Cazar, Mayan, Sky AD Developments,
  * Al Ahly Sabbour, Landmark (LMD) and other unlisted developers use generated
@@ -105,10 +105,10 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     kind: "rendering",
     logoUrl: "https://i.ibb.co/XrBw4b67/images.jpg",
   },
-  "Azad (Tameer)": {
+  "Tameer Development": {
     url: "https://i.ibb.co/77Kjjwv/images.jpg",
     kind: "rendering",
-    logoUrl: "https://i.ibb.co/T923P9D/Gemini-Generated-Image-fyxvwzfyxvwzfyxv.jpg",
+    logoUrl: "https://i.ibb.co/S4jYZFMV/Gemini-Generated-Image-fyxvwzfyxvwzfyxv.jpg",
   },
   "Modon Developments": {
     url: "/developers/modon.jpg",

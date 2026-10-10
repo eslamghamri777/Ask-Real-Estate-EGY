@@ -49,7 +49,7 @@ const BRANDS: Record<string, BrandMark> = {
   Nouvara: { initials: "NO", hue: 330, motif: "sun" },
   Marakez: { initials: "MA", hue: 34, motif: "palm" },
   "The Waterway Developments": { initials: "WA", hue: 200, motif: "wave" },
-  "Azad (Tameer)": { initials: "AZ", hue: 254, motif: "tower" },
+  "Tameer Development": { initials: "TD", hue: 254, motif: "tower" },
   "Il Cazar": { initials: "IC", hue: 312, motif: "arch" },
   Mayan: { initials: "MY", hue: 122, motif: "wave" },
   "Sky AD Developments": { initials: "SKY", hue: 284, motif: "sun" },

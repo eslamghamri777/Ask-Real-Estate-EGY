@@ -52,7 +52,7 @@ export const PRIMARY_DEVELOPERS = [
   "Nouvara",
   "Marakez",
   "The Waterway Developments",
-  "Azad (Tameer)",
+  "Tameer Development",
   "Il Cazar",
   "Mayan",
   "Sky AD Developments",
