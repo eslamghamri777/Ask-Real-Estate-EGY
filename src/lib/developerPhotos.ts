@@ -96,6 +96,7 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     logoUrl: "/developers/pre-logo.png",
   },
   "The Waterway Developments": {
+    url: "https://i.ibb.co/wNTHZBdY/The-Waterway-North-Coast-Project.webp",
     kind: "rendering",
     logoUrl: "https://i.ibb.co/DHj4c6g8/waterway-400x328.png",
   },
