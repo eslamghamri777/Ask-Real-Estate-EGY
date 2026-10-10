@@ -15,7 +15,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -318,8 +317,6 @@ export default function Listings() {
                 openWhatsAppRequest();
                 return;
               }
-              // Search submits the typed-but-unsubmitted keyword.
-              setFilter("q", q.trim());
             }}
           >
             <div className="flex flex-wrap items-center gap-3">
@@ -444,16 +441,6 @@ export default function Listings() {
             </Select>
             </div>
 
-            {/* keyword row */}
-            <div className="relative">
-              <Search className="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={q}
-                onChange={(e) => setFilter("q", e.target.value)}
-                placeholder="Keyword — e.g. Nile view, furnished…"
-                className="clay-input h-12 pl-10 shadow-none"
-              />
-            </div>
             <div className="flex gap-3 justify-end">
               <Button
                 type="button"
