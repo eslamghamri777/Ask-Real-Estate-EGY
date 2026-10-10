@@ -102,7 +102,7 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
   Marakez: {
     url: "https://i.ibb.co/VWtGW0y0/Gemini-Generated-Image-eamlb9eamlb9eaml.jpg",
     kind: "rendering",
-    logoUrl: "https://i.ibb.co/VWh47fsr/images.jpg",
+    logoUrl: "https://i.ibb.co/BVwtQKxJ/image.webp",
   },
   "Azad (Tameer)": {
     url: "https://i.ibb.co/77Kjjwv/images.jpg",
