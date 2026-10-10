@@ -442,7 +442,10 @@ export function DeveloperScene({
           decoding="async"
           onError={() => setFailedPhotoUrl(photoUrl)}
           className="absolute inset-0 size-full object-cover"
-          style={{ objectPosition: "center 65%" }}
+          style={{
+            objectPosition:
+              name === "The Waterway Developments" ? "center 40%" : "center 65%",
+          }}
         />
         {labelled && <SceneBadge />}
       </div>
