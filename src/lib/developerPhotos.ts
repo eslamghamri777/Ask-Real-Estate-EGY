@@ -106,7 +106,7 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     logoUrl: "https://i.ibb.co/XrBw4b67/images.jpg",
   },
   "Tameer Development": {
-    url: "https://i.ibb.co/77Kjjwv/images.jpg",
+    url: "https://i.ibb.co/4ntFcG1L/Panoramic-View-of-Apartments-in-Rivan-New-Capital.webp",
     kind: "rendering",
     logoUrl: "https://i.ibb.co/S4jYZFMV/Gemini-Generated-Image-fyxvwzfyxvwzfyxv.jpg",
   },
