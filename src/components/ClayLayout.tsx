@@ -9,15 +9,15 @@ import { Link } from "react-router";
 
 /**
  * Header search — the magnifier button takes the customer straight to the
- * listings page, where every filtration option lives in the filter panel
- * above the results: purpose, area, property type, bedrooms, finish, and
- * (for primary sale) developer + delivery time, plus a keyword.
+ * listings page, where the available filters live above the results:
+ * purpose, area, property type, bedrooms, finish, developer, and delivery time.
  */
 function HeaderSearch() {
   return (
     <Link
       to="/listings"
-      className="clay-btn clay-btn-primary h-10 shrink-0 rounded-full px-5"
+      aria-label="Search properties"
+      className="clay-btn clay-btn-primary h-10 shrink-0 rounded-full px-3 sm:px-5"
     >
       <Search className="size-4" />
       <span className="hidden sm:inline">Search Properties</span>
@@ -84,13 +84,13 @@ export function ClayHeader({ middle }: { middle?: ReactNode }) {
   }, [isAuthenticated, isCreator, ensureCreator]);
 
   return (
-    <header className="sticky top-0 z-40 px-4 pt-4">
-      <div className="clay-card clay-sm mx-auto flex max-w-6xl items-center gap-3 px-5 py-3">
-        <Link to="/" className="clay-squish flex items-center gap-2.5">
+    <header className="sticky top-0 z-40 px-3 pt-3 sm:px-4 sm:pt-4">
+      <div className="clay-card clay-sm mx-auto flex max-w-6xl items-center gap-2 px-3 py-2.5 sm:gap-3 sm:px-5 sm:py-3">
+        <Link to="/" aria-label="Ask Real Estate home" className="clay-squish flex shrink-0 items-center gap-2 sm:gap-2.5">
           <img
             src={askMark}
             alt=""
-            className="size-10"
+            className="size-9 sm:size-10"
           />
           <span className="hidden font-display text-lg tracking-tight sm:block">
             Ask Real Estate
@@ -107,7 +107,8 @@ export function ClayHeader({ middle }: { middle?: ReactNode }) {
           {isCreator && (
             <Button
               asChild
-              className="clay-btn clay-btn-light h-10 shrink-0 rounded-full px-5 has-[>svg]:px-5 py-0 font-semibold"
+              aria-label="Open studio"
+              className="clay-btn clay-btn-light h-10 shrink-0 rounded-full px-3 py-0 font-semibold has-[>svg]:px-3 sm:px-5 sm:has-[>svg]:px-5"
             >
               <Link to="/creator">
                 <Sparkles className="size-4" />
@@ -117,7 +118,8 @@ export function ClayHeader({ middle }: { middle?: ReactNode }) {
           )}
           <Button
             asChild
-            className="clay-btn clay-btn-primary h-10 shrink-0 rounded-full px-5 has-[>svg]:px-5 py-0 font-semibold"
+            aria-label={isAuthenticated ? "My account" : "Sign in"}
+            className="clay-btn clay-btn-primary h-10 shrink-0 rounded-full px-3 py-0 font-semibold has-[>svg]:px-3 sm:px-5 sm:has-[>svg]:px-5"
           >
             <Link to={isAuthenticated ? "/dashboard" : "/auth"}>
               <UserRound className="size-4" />
@@ -201,8 +203,8 @@ export function ClayFooter() {
   const socials = useSiteSocials();
 
   return (
-    <footer className="mx-auto w-full max-w-6xl px-4 pb-8 pt-16">
-      <div className="clay-card flex flex-col items-center gap-4 px-8 py-10 text-center">
+    <footer className="mx-auto w-full max-w-6xl px-3 pb-6 pt-12 sm:px-4 sm:pb-8 sm:pt-16">
+      <div className="clay-card flex flex-col items-center gap-4 px-5 py-8 text-center sm:px-8 sm:py-10">
         <div className="flex flex-col items-center gap-2">
           <img src={askMark} alt="" className="size-10" />
           <span className="font-display text-base tracking-tight">
