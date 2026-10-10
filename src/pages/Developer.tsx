@@ -24,7 +24,7 @@ import {
 import { DELIVERY_LABELS, FINISH_LABELS } from "@/lib/primaryRequest";
 import { developerProfile } from "@/lib/developerProfiles";
 import { Building2, KeyRound, MessageCircle, RotateCcw, Search } from "lucide-react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router";
+import { Link, useParams, useSearchParams } from "react-router";
 import { useState } from "react";
 
 /**
@@ -67,7 +67,6 @@ export default function Developer() {
 }
 
 function DeveloperDesk({ developer }: { developer: string }) {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const socials = useSiteSocials();
   const profile = developerProfile(developer);
@@ -108,16 +107,6 @@ function DeveloperDesk({ developer }: { developer: string }) {
       "Fill in your first and last name above, then press send — we'll reply with matching options and prices.",
     ];
     window.location.href = whatsappUrl(socials.whatsappNumber, lines.join("\n"));
-  };
-
-  const goToRequest = () => {
-    const params = new URLSearchParams({ purpose: "primary", developer });
-    if (area) params.set("area", area);
-    if (type) params.set("type", type);
-    if (bedrooms) params.set("bedrooms", String(bedrooms));
-    if (delivery) params.set("delivery", delivery);
-    if (finish) params.set("finish", finish);
-    navigate(`/request?${params.toString()}`);
   };
 
   return (
@@ -190,13 +179,6 @@ function DeveloperDesk({ developer }: { developer: string }) {
             <h2 className="font-display mt-1 text-xl tracking-tight">Find a {developer} property</h2>
             <p className="mt-1 text-sm text-muted-foreground">Choose a few preferences and our team will send matching options.</p>
           </div>
-          <button
-            type="button"
-            onClick={goToRequest}
-            className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-          >
-            Prefer a form? Add your details
-          </button>
         </div>
         <form
           className="flex flex-col gap-3 xl:flex-row xl:flex-nowrap xl:items-center"
