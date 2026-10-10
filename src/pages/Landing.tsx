@@ -1,7 +1,6 @@
 import {
   ClayFooter,
   ClayHeader,
-  SocialIconLinks,
 } from "@/components/ClayLayout";
 import askMark from "@/assets/ask-mark.svg";
 import { ListingCard } from "@/components/ListingCard";
@@ -329,28 +328,6 @@ export default function Landing() {
           </motion.div>
         </section>
 
-        {/* ============ Contact ============ */}
-        <section className="mx-auto w-full max-w-6xl px-4 pt-24">
-          <motion.div {...fadeUp} className="clay-card clay-md px-8 py-12 text-center sm:px-12">
-            <img src={askMark} alt="" className="mx-auto size-14" />
-            <h2 className="font-display mt-5 text-3xl tracking-tight sm:text-4xl">
-              Talk to us directly
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl leading-relaxed text-muted-foreground">
-              Questions about a home, the area, or pricing? Reach us on
-              Facebook, Instagram, or WhatsApp — a real person from the team
-              replies, usually within minutes.
-            </p>
-
-            <div className="mt-8">
-              <SocialIconLinks className="mt-3" />
-            </div>
-
-            <p className="mt-6 text-xs text-muted-foreground/70">
-              Available Saturday–Thursday, 10am–8pm Egypt time
-            </p>
-          </motion.div>
-        </section>
       </main>
 
       <ClayFooter />
