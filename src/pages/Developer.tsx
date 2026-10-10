@@ -121,7 +121,7 @@ function DeveloperDesk({ developer }: { developer: string }) {
   };
 
   return (
-    <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-10">
+    <main className="mx-auto w-full max-w-7xl flex-1 px-4 pt-10">
       {/* ============ Developer details ============ */}
       <section className="clay-card clay-md overflow-hidden">
         <DeveloperScene
@@ -184,25 +184,34 @@ function DeveloperDesk({ developer }: { developer: string }) {
 
       {/* ============ Requirements ============ */}
       <section className="clay-card clay-md mt-6 p-5">
-        <div className="mb-4">
-          <p className="eyebrow">Tell us what you’re looking for</p>
-          <h2 className="font-display mt-1 text-xl tracking-tight">Find a {developer} property</h2>
-          <p className="mt-1 text-sm text-muted-foreground">Choose a few preferences and our team will send matching options.</p>
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="eyebrow">Tell us what you’re looking for</p>
+            <h2 className="font-display mt-1 text-xl tracking-tight">Find a {developer} property</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Choose a few preferences and our team will send matching options.</p>
+          </div>
+          <button
+            type="button"
+            onClick={goToRequest}
+            className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
+          >
+            Prefer a form? Add your details
+          </button>
         </div>
         <form
-          className="flex flex-col gap-3"
+          className="flex flex-col gap-3 xl:flex-row xl:flex-nowrap xl:items-center"
           onSubmit={(e) => {
             e.preventDefault();
             openWhatsAppRequest();
           }}
         >
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3 xl:min-w-0 xl:flex-1 xl:flex-nowrap xl:gap-2">
             <Select
               value={area || "any-area"}
               onValueChange={(v) => setArea(v === "any-area" ? "" : v)}
             >
-              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
-                <SelectValue placeholder="Area" />
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none xl:w-full xl:min-w-0 xl:flex-1 xl:px-3">
+                <SelectValue className="max-w-full truncate" placeholder="Area" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any-area">Any area</SelectItem>
@@ -218,8 +227,8 @@ function DeveloperDesk({ developer }: { developer: string }) {
               value={type || "any-type"}
               onValueChange={(v) => setType(v === "any-type" ? "" : v)}
             >
-              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
-                <SelectValue placeholder="Property type" />
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none xl:w-full xl:min-w-0 xl:flex-1 xl:px-3">
+                <SelectValue className="max-w-full truncate" placeholder="Property type" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any-type">Any type</SelectItem>
@@ -235,8 +244,8 @@ function DeveloperDesk({ developer }: { developer: string }) {
               value={String(bedrooms)}
               onValueChange={(v) => setBedrooms(Number(v) ? Number(v) : 0)}
             >
-              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
-                <SelectValue placeholder="Bedrooms" />
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none xl:w-full xl:min-w-0 xl:flex-1 xl:px-3">
+                <SelectValue className="max-w-full truncate" placeholder="Bedrooms" />
               </SelectTrigger>
               <SelectContent>
                 {[0, 1, 2, 3, 4, 5].map((n) => (
@@ -251,8 +260,8 @@ function DeveloperDesk({ developer }: { developer: string }) {
               value={delivery || "any-delivery"}
               onValueChange={(v) => setDelivery(v === "any-delivery" ? "" : v)}
             >
-              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
-                <SelectValue placeholder="Delivery time" />
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none xl:w-full xl:min-w-0 xl:flex-1 xl:px-3">
+                <SelectValue className="max-w-full truncate" placeholder="Delivery time" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any-delivery">Any delivery time</SelectItem>
@@ -270,8 +279,8 @@ function DeveloperDesk({ developer }: { developer: string }) {
               value={finish || "any-finish"}
               onValueChange={(v) => setFinish(v === "any-finish" ? "" : v)}
             >
-              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none">
-                <SelectValue placeholder="Finish" />
+              <SelectTrigger className="clay-sheen h-12 w-auto rounded-full border-none bg-card px-5 text-sm font-semibold shadow-none xl:w-full xl:min-w-0 xl:flex-1 xl:px-3">
+                <SelectValue className="max-w-full truncate" placeholder="Finish" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="any-finish">Any finish</SelectItem>
@@ -286,32 +295,23 @@ function DeveloperDesk({ developer }: { developer: string }) {
             </Select>
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 xl:shrink-0 xl:flex-nowrap xl:justify-end">
             <Button
               type="button"
               onClick={clearFilters}
               variant="ghost"
-              className="clay-btn clay-btn-light h-12 rounded-full px-5 text-sm"
+              className="clay-btn clay-btn-light h-12 whitespace-nowrap rounded-full px-4 text-sm"
             >
               <RotateCcw className="size-4" />
-              Reset
+              Clear
             </Button>
-            <div className="flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={goToRequest}
-                className="text-sm text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
-              >
-                Prefer a form? Add your details
-              </button>
-              <Button
-                type="submit"
-                className="clay-btn clay-btn-primary h-12 rounded-full px-6"
-              >
-                <MessageCircle className="size-4" />
-                Continue on WhatsApp
-              </Button>
-            </div>
+            <Button
+              type="submit"
+              className="clay-btn clay-btn-primary h-12 whitespace-nowrap rounded-full px-5"
+            >
+              <MessageCircle className="size-4" />
+              Continue
+            </Button>
           </div>
         </form>
       </section>
