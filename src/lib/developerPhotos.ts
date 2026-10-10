@@ -60,7 +60,6 @@ const PHOTOS: Record<string, DeveloperPhoto> = {
     logoUrl: "/developers/la-vista-logo.webp",
   },
   "Madinet Masr": {
-    url: "https://i.ibb.co/qLBKwv49/image.jpg",
     kind: "rendering",
     logoUrl: "/developers/madinet-masr-logo.jpg",
   },
